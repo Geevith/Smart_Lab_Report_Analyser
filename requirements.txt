@@ -2,6 +2,7 @@ fastapi
 uvicorn[standard]
 starlette
 itsdangerous
+psycopg2-binary
 python-multipart
 PyPDF2
 pdfplumber
