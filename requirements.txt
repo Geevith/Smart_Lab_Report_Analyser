@@ -1,5 +1,7 @@
 fastapi
-uvicorn
+uvicorn[standard]
+starlette
+itsdangerous
 python-multipart
 PyPDF2
 pdfplumber
