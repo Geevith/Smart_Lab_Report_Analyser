@@ -1,0 +1,731 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register - Smart Lab Report Analyser</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="clinical_design_system.css">
+    <style>
+        :root {
+            --primary-blue: #0055FF;
+            --bg-gray: #F9FAFB;
+            --input-bg: #F3F4F6;
+            --text-main: #111827;
+            --text-sub: #6B7280;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #F2F2F2;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .auth-container {
+            display: flex;
+            width: 100%;
+            height: 100vh;
+            background: white;
+            overflow: hidden;
+        }
+
+        /* --- Left Panel (Identical to Login) --- */
+        .left-panel {
+            flex: 1.2;
+            background: white;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-between;
+            padding: 40px;
+            overflow: hidden;
+        }
+
+        .left-bg-circles {
+            display: none;
+        }
+
+        .brand-logo {
+            z-index: 10;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 700;
+            font-size: 18px;
+            color: #1F2937;
+            align-self: flex-start;
+        }
+
+        .brand-icon {
+            width: 32px;
+            height: 32px;
+            background: #000;
+            color: white;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+        }
+
+        .character-area {
+            z-index: 10;
+            position: relative;
+            width: 100%;
+            max-width: 500px;
+            height: 400px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .character-float-wrapper {
+            animation: characterFloat 3s ease-in-out infinite;
+            will-change: transform;
+        }
+
+        .character-img {
+            width: 520px;
+            height: 520px;
+            object-fit: contain;
+            transition: transform 0.1s ease-out;
+            will-change: transform;
+            z-index: 2;
+        }
+
+        @keyframes characterFloat {
+
+            0%,
+            100% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-15px);
+            }
+        }
+
+        .floating-card {
+            position: absolute;
+            background: white;
+            padding: 10px 16px;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 12px;
+            font-weight: 600;
+            color: #374151;
+            z-index: 1;
+            animation: float 6s ease-in-out infinite;
+        }
+
+        .icon-box {
+            width: 32px;
+            height: 32px;
+            background: #FFF7ED;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+        }
+
+        @keyframes float {
+
+            0%,
+            100% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-10px);
+            }
+        }
+
+        .card-1 {
+            top: 20%;
+            left: 10%;
+            animation-delay: 0s;
+        }
+
+        .card-2 {
+            top: 15%;
+            right: 15%;
+            animation-delay: 1s;
+        }
+
+        .card-3 {
+            bottom: 25%;
+            left: 5%;
+            animation-delay: 2s;
+        }
+
+        .card-4 {
+            bottom: 20%;
+            right: 10%;
+            animation-delay: 3s;
+        }
+
+        .left-footer {
+            z-index: 10;
+            text-align: center;
+            max-width: 500px;
+        }
+
+        .left-headline {
+            font-size: 32px;
+            font-weight: 800;
+            color: #111827;
+            line-height: 1.2;
+            margin-bottom: 20px;
+        }
+
+        .pagination-dots {
+            display: flex;
+            gap: 8px;
+            justify-content: center;
+        }
+
+        .dot {
+            width: 8px;
+            height: 8px;
+            background: #E5E7EB;
+            border-radius: 4px;
+        }
+
+        .dot.active {
+            width: 24px;
+            background: var(--primary-blue);
+        }
+
+        /* --- Right Panel --- */
+        .right-panel {
+            flex: 1;
+            background: white;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 40px;
+            /* Reduced vertical padding for taller form */
+        }
+
+        .auth-form-container {
+            width: 100%;
+            max-width: 440px;
+            /* Slightly wider for 2-column inputs */
+        }
+
+        .greeting-header {
+            margin-bottom: 25px;
+        }
+
+        .greeting-header h1 {
+            font-size: 28px;
+            font-weight: 700;
+            color: #111827;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .greeting-header p {
+            color: #6B7280;
+            margin-top: 5px;
+            font-size: 15px;
+        }
+
+        .input-group {
+            margin-bottom: 16px;
+            /* Tighter spacing */
+            position: relative;
+        }
+
+        .input-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .input-icon {
+            position: absolute;
+            left: 20px;
+            color: #6B7280;
+        }
+
+        .custom-input {
+            width: 100%;
+            background: #F3F4F6;
+            border: none;
+            border-radius: 16px;
+            padding: 24px 20px 8px 50px;
+            font-size: 16px;
+            font-weight: 500;
+            color: #1F2937;
+            height: 60px;
+            /* Slightly shorter */
+            transition: all 0.2s;
+        }
+
+        .custom-input:focus {
+            outline: none;
+            background: white;
+            box-shadow: 0 0 0 2px var(--primary-blue);
+        }
+
+        .floating-label {
+            position: absolute;
+            left: 50px;
+            top: 10px;
+            font-size: 11px;
+            color: #6B7280;
+            font-weight: 500;
+            pointer-events: none;
+        }
+
+        .password-eye {
+            position: absolute;
+            right: 20px;
+            color: #9CA3AF;
+            cursor: pointer;
+        }
+
+        .row-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        /* Select styling */
+        select.custom-input {
+            appearance: none;
+            padding-right: 40px;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%236B7280' viewBox='0 0 16 16'%3E%3Cpath fill-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 20px center;
+        }
+
+        .btn-cta {
+            width: 100%;
+            height: 56px;
+            background: var(--primary-blue);
+            color: white;
+            border: none;
+            border-radius: 16px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .btn-cta:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0, 85, 255, 0.2);
+        }
+
+        .bottom-link {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 14px;
+            color: #6B7280;
+        }
+
+        .bottom-link a {
+            color: var(--primary-blue);
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .toast-msg {
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            display: none;
+            text-align: center;
+        }
+
+        .toast-error {
+            background: #FEE2E2;
+            color: #991B1B;
+        }
+
+        .toast-success {
+            background: #D1FAE5;
+            color: #065F46;
+        }
+
+        @media (max-width: 1000px) {
+            .auth-container {
+                flex-direction: column;
+                overflow-y: auto;
+                height: auto;
+            }
+
+            .left-panel {
+                height: 300px;
+                padding: 20px;
+                order: -1;
+            }
+
+            .floating-card,
+            .left-headline,
+            .pagination-dots {
+                display: none;
+            }
+
+            .right-panel {
+                padding: 40px 20px;
+            }
+
+            .character-img {
+                width: 300px;
+                height: 300px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="auth-container">
+        <!-- LEFT PANEL -->
+        <div class="left-panel">
+            <div class="brand-logo">
+                <div class="brand-icon">SL</div>
+                Smart Lab
+            </div>
+
+            <div class="character-area">
+                <div class="character-float-wrapper">
+                    <img id="characterImg" src="/assets/images/transparent_doctor_watching.png?t=2" alt="Character"
+                        class="character-img">
+                </div>
+            </div>
+
+            <!-- Decorative Cards -->
+            <div class="floating-card card-1">
+                <div class="icon-box">🎓</div><span>Lab Reports</span>
+            </div>
+            <div class="floating-card card-2">
+                <div class="icon-box">📊</div><span>Analysis</span>
+            </div>
+
+            <div class="left-footer">
+                <h2 class="left-headline">Join the future of<br>Health Intelligence.</h2>
+                <div class="pagination-dots">
+                    <div class="dot active"></div>
+                    <div class="dot"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- RIGHT PANEL -->
+        <div class="right-panel">
+            <div class="auth-form-container">
+                <div class="greeting-header">
+                    <h1>Create Account 🚀</h1>
+                    <p>Start your health journey today.</p>
+                </div>
+
+                <div id="errorMessage" class="toast-msg toast-error"></div>
+                <div id="successMessage" class="toast-msg toast-success"></div>
+
+                <form id="registerForm">
+                    <!-- Username -->
+                    <div class="input-group">
+                        <div class="input-wrapper">
+                            <svg class="input-icon" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                                <circle cx="12" cy="7" r="4"></circle>
+                            </svg>
+                            <span class="floating-label">Username</span>
+                            <input type="text" id="username" class="custom-input" placeholder="johndoe" required>
+                        </div>
+                    </div>
+
+                    <!-- Email -->
+                    <div class="input-group">
+                        <div class="input-wrapper">
+                            <svg class="input-icon" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z">
+                                </path>
+                                <polyline points="22,6 12,13 2,6"></polyline>
+                            </svg>
+                            <span class="floating-label">Email Address</span>
+                            <input type="email" id="email" class="custom-input" placeholder="john@example.com" required>
+                        </div>
+                    </div>
+
+                    <!-- Password Row -->
+                    <div class="row-group">
+                        <div class="input-group">
+                            <div class="input-wrapper">
+                                <svg class="input-icon" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                                    stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                    stroke-linejoin="round">
+                                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                                </svg>
+                                <span class="floating-label">Password</span>
+                                <input type="password" id="password" class="custom-input" placeholder="••••••" required>
+                            </div>
+                        </div>
+                        <div class="input-group">
+                            <div class="input-wrapper">
+                                <svg class="input-icon" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                                    stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                    stroke-linejoin="round">
+                                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                                </svg>
+                                <span class="floating-label">Confirm</span>
+                                <input type="password" id="confirmPassword" class="custom-input" placeholder="••••••"
+                                    required>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Personal Row -->
+                    <div class="row-group">
+                        <div class="input-group">
+                            <div class="input-wrapper">
+                                <span class="floating-label">Full Name</span>
+                                <input type="text" id="fullName" class="custom-input" style="padding-left: 20px"
+                                    placeholder="John Doe">
+                            </div>
+                        </div>
+                        <div class="input-group">
+                            <div class="input-wrapper">
+                                <span class="floating-label">Gender</span>
+                                <select id="gender" class="custom-input" style="padding-left: 20px">
+                                    <option value="" disabled selected>Select</option>
+                                    <option value="male">Male</option>
+                                    <option value="female">Female</option>
+                                    <option value="other">Other</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Date of Birth & Age Row -->
+                    <div class="row-group">
+                        <div class="input-group">
+                            <div class="input-wrapper">
+                                <span class="floating-label">Date of Birth</span>
+                                <input type="date" id="dateOfBirth" class="custom-input" style="padding-left: 20px">
+                            </div>
+                        </div>
+                        <div class="input-group">
+                            <div class="input-wrapper">
+                                <span class="floating-label">Age</span>
+                                <input type="number" id="age" class="custom-input" style="padding-left: 20px"
+                                    placeholder="25" min="0" max="120" readonly>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Ethnicity Row -->
+                    <div class="input-group">
+                        <div class="input-wrapper">
+                            <span class="floating-label">Ethnicity (Optional)</span>
+                            <select id="ethnicity" class="custom-input" style="padding-left: 20px">
+                                <option value="" selected>Prefer not to say</option>
+                                <option value="Asian">Asian</option>
+                                <option value="Black/African">Black/African</option>
+                                <option value="Hispanic/Latino">Hispanic/Latino</option>
+                                <option value="White/Caucasian">White/Caucasian</option>
+                                <option value="Middle Eastern">Middle Eastern</option>
+                                <option value="Pacific Islander">Pacific Islander</option>
+                                <option value="Native American">Native American</option>
+                                <option value="Mixed">Mixed</option>
+                                <option value="Other">Other</option>
+                            </select>
+                        </div>
+                        <!-- Ethnicity Row (End) -->
+                    </div>
+
+                    <!-- Consent Checkbox -->
+                    <div class="input-group" style="margin-bottom: 20px;">
+                        <label
+                            style="display: flex; align-items: start; gap: 10px; cursor: pointer; font-size: 13px; color: #6B7280;">
+                            <input type="checkbox" id="consentCheckbox" required
+                                style="width: 18px; height: 18px; flex-shrink: 0; margin-top: 2px;">
+                            <span>I agree to the <a href="#" style="color: var(--primary-blue);">Terms of Service</a>
+                                and <a href="#" style="color: var(--primary-blue);">Privacy Policy</a>, and consent to
+                                the processing of my health data.</span>
+                        </label>
+                    </div>
+
+                    <button type="submit" class="btn-cta" id="registerButton">Sign Up</button>
+                </form>
+
+                <div class="bottom-link">
+                    Already have an account? <a href="login.html">Log In</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="config.js"></script>
+    <script src="utils.js"></script>
+    <script src="auth.js"></script>
+    <script>
+        // --- Interactive Character Logic ---
+        const characterImg = document.getElementById('characterImg');
+        const usernameInput = document.getElementById('username');
+        const emailInput = document.getElementById('email');
+        const passwordInput = document.getElementById('password');
+        const confirmInput = document.getElementById('confirmPassword');
+        const greetingHeader = document.querySelector('.greeting-header h1');
+
+        const ASSET_WATCHING = '/assets/images/transparent_doctor_watching.png?t=2';
+        const ASSET_HIDING = '/assets/images/transparent_doctor_hiding.png?t=2';
+
+        let isHiding = false;
+
+        document.addEventListener('mousemove', (e) => {
+            if (isHiding) return;
+            const xLimit = 20;
+            const yLimit = 10;
+            // Inverted logic
+            const x = (e.clientX / window.innerWidth - 0.5) * xLimit * 2 * -1;
+            const y = (e.clientY / window.innerHeight - 0.5) * yLimit * 2 * -1;
+            characterImg.style.transform = `translate(${x}px, ${y}px)`;
+        });
+
+        // Watching inputs
+        [usernameInput, emailInput, document.getElementById('fullName'), document.getElementById('gender'),
+            document.getElementById('dateOfBirth'), document.getElementById('ethnicity')].forEach(input => {
+                if (!input) return;
+                input.addEventListener('focus', () => {
+                    isHiding = false;
+                    characterImg.src = ASSET_WATCHING;
+                    greetingHeader.innerText = "Tell me more 📝";
+                });
+            });
+
+        // Auto-calculate age from date of birth
+        const dobInput = document.getElementById('dateOfBirth');
+        const ageInput = document.getElementById('age');
+
+        dobInput.addEventListener('change', () => {
+            const dob = new Date(dobInput.value);
+            const today = new Date();
+            let age = today.getFullYear() - dob.getFullYear();
+            const monthDiff = today.getMonth() - dob.getMonth();
+
+            if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < dob.getDate())) {
+                age--;
+            }
+
+            ageInput.value = age >= 0 ? age : '';
+        });
+
+        // Hiding inputs (Passwords)
+        [passwordInput, confirmInput].forEach(input => {
+            input.addEventListener('focus', () => {
+                isHiding = true;
+                characterImg.src = ASSET_HIDING;
+                characterImg.style.transform = `translateY(10px)`;
+                greetingHeader.innerText = "Don't worry... 🙈";
+            });
+            input.addEventListener('blur', () => {
+                isHiding = false;
+                characterImg.src = ASSET_WATCHING;
+                characterImg.style.transform = `translate(0, 0)`;
+                greetingHeader.innerText = "Create Account 🚀";
+            });
+        });
+
+        // Registration Logic
+        const registerForm = document.getElementById('registerForm');
+        const registerButton = document.getElementById('registerButton');
+        const errorMessage = document.getElementById('errorMessage');
+        const successMessage = document.getElementById('successMessage');
+
+        registerForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            errorMessage.style.display = 'none';
+            successMessage.style.display = 'none';
+
+            const password = passwordInput.value;
+            const confirm = confirmInput.value;
+
+            if (password !== confirm) {
+                errorMessage.textContent = 'Passwords do not match';
+                errorMessage.style.display = 'block';
+                return;
+            }
+
+            const formData = {
+                username: usernameInput.value.trim(),
+                email: emailInput.value.trim(),
+                password: password,
+                confirm_password: confirm,
+                full_name: document.getElementById('fullName').value.trim() || null,
+                date_of_birth: document.getElementById('dateOfBirth').value || null,
+                age: parseInt(document.getElementById('age').value) || null,
+                gender: document.getElementById('gender').value || null,
+                ethnicity: document.getElementById('ethnicity').value || null,
+                consent: document.getElementById('consentCheckbox').checked
+            };
+
+            registerButton.disabled = true;
+            registerButton.innerText = 'Creating Account...';
+
+            try {
+                const result = await handleRegister(formData);
+
+                if (result.success) {
+                    successMessage.textContent = 'Account created! Redirecting...';
+                    successMessage.style.display = 'block';
+                    characterImg.style.transform = `translateY(-20px) scale(1.1)`; // Bounce
+                    setTimeout(() => {
+                        window.location.href = result.auto_login ? 'upload_ui.html' : 'login.html?registered=true';
+                    }, 1000);
+                } else {
+                    throw new Error(result.error || 'Registration failed');
+                }
+            } catch (error) {
+                errorMessage.textContent = error.message;
+                errorMessage.style.display = 'block';
+                registerButton.disabled = false;
+                registerButton.innerText = 'Sign Up';
+
+                // Shake validation
+                const container = document.querySelector('.auth-form-container');
+                container.style.animation = 'shake 0.4s ease-in-out';
+                setTimeout(() => container.style.animation = '', 400);
+            }
+        });
+
+        const styleSheet = document.createElement("style");
+        styleSheet.innerText = `
+            @keyframes shake {
+                0%, 100% { transform: translateX(0); }
+                25% { transform: translateX(-10px); }
+                75% { transform: translateX(10px); }
+            }
+        `;
+        document.head.appendChild(styleSheet);
+    </script>
+</body>
+
+</html>

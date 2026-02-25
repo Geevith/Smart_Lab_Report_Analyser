@@ -1,0 +1,659 @@
+/* =============================================================================
+   skeleton_and_alerts.css
+   
+   New additions covering:
+     • Shimmer skeleton loading screens
+     • Critical value alert modal
+     • Upload drag-and-drop zone
+     • Progress bar
+     • Improved toast notifications
+     • Status/severity pills with text + icon (accessibility)
+     • Print styles
+   
+   Include in <head> AFTER clinical_design_system.css
+   ============================================================================= */
+
+/* ── CSS Custom Properties ─────────────────────────────────────────────────── */
+
+:root {
+    --color-critical: #C0392B;
+    --color-critical-bg: #FDEDEC;
+    --color-critical-text: #922B21;
+    --color-high: #E67E22;
+    --color-high-bg: #FEF9E7;
+    --color-normal: #27AE60;
+    --color-normal-bg: #EAFAF1;
+    --color-review: #2E86C1;
+    --color-review-bg: #EBF5FB;
+
+    --skeleton-base: #E8E8E8;
+    --skeleton-shimmer: #F5F5F5;
+    --skeleton-duration: 1.4s;
+
+    --z-modal: 9000;
+    --z-notification: 9500;
+    --transition-modal: 0.25s ease;
+}
+
+/* ── Skeleton shimmer ──────────────────────────────────────────────────────── */
+
+@keyframes skeleton-shimmer {
+    0% {
+        background-position: -400px 0;
+    }
+
+    100% {
+        background-position: 400px 0;
+    }
+}
+
+.skeleton-loading {
+    background: linear-gradient(90deg,
+            var(--skeleton-base) 25%,
+            var(--skeleton-shimmer) 50%,
+            var(--skeleton-base) 75%);
+    background-size: 800px 100%;
+    animation: skeleton-shimmer var(--skeleton-duration) infinite linear;
+    border-radius: 4px;
+    color: transparent !important;
+    user-select: none;
+    pointer-events: none;
+}
+
+/* Specific skeleton shapes */
+.skeleton-text {
+    height: 1em;
+    width: 70%;
+    border-radius: 3px;
+}
+
+.skeleton-title {
+    height: 1.5em;
+    width: 50%;
+    border-radius: 3px;
+}
+
+.skeleton-badge {
+    height: 2em;
+    width: 6em;
+    border-radius: 12px;
+    display: inline-block;
+}
+
+.skeleton-card {
+    height: 120px;
+    width: 100%;
+    border-radius: 8px;
+}
+
+.skeleton-table-row {
+    height: 48px;
+    width: 100%;
+    border-radius: 4px;
+    margin-bottom: 6px;
+}
+
+.skeleton-system-card {
+    height: 180px;
+    border-radius: 12px;
+}
+
+/* Fade in when real content replaces skeletons */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(4px);
+    }
+
+    to {
+        opacity: 1;
+        transform: none;
+    }
+}
+
+.skeleton-loaded {
+    animation: fadeInUp 0.3s ease;
+}
+
+/* ── Toast Notification System ──────────────────────────────────────────────── */
+
+#notification-container {
+    position: fixed;
+    top: 1rem;
+    right: 1rem;
+    z-index: var(--z-notification);
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    pointer-events: none;
+    max-width: 380px;
+    width: calc(100vw - 2rem);
+}
+
+.notification {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.625rem;
+    padding: 0.75rem 1rem;
+    border-radius: 10px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+    font-size: 0.9rem;
+    line-height: 1.4;
+    pointer-events: auto;
+    opacity: 0;
+    transform: translateX(20px);
+    transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.notification--visible {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+.notification--dismissing {
+    opacity: 0;
+    transform: translateX(20px);
+}
+
+.notification--success {
+    background: #EAFAF1;
+    border-left: 4px solid #27AE60;
+    color: #1A5E39;
+}
+
+.notification--error {
+    background: #FDEDEC;
+    border-left: 4px solid #C0392B;
+    color: #922B21;
+}
+
+.notification--warning {
+    background: #FEF9E7;
+    border-left: 4px solid #E67E22;
+    color: #784212;
+}
+
+.notification--info {
+    background: #EBF5FB;
+    border-left: 4px solid #2E86C1;
+    color: #1A4F72;
+}
+
+.notification__icon {
+    font-size: 1rem;
+    flex-shrink: 0;
+    margin-top: 1px;
+}
+
+.notification__message {
+    flex: 1;
+}
+
+.notification__close {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 1.1rem;
+    opacity: 0.5;
+    padding: 0 2px;
+    color: inherit;
+    flex-shrink: 0;
+    line-height: 1;
+}
+
+.notification__close:hover {
+    opacity: 1;
+}
+
+/* ── Critical Value Alert Modal ─────────────────────────────────────────────── */
+
+.critical-alert-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.75);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: var(--z-modal);
+    padding: 1rem;
+    animation: overlayIn 0.2s ease;
+}
+
+@keyframes overlayIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+.critical-alert-overlay.critical-alert-closing {
+    animation: overlayOut 0.3s ease forwards;
+}
+
+@keyframes overlayOut {
+    to {
+        opacity: 0;
+    }
+}
+
+.critical-alert-box {
+    background: #fff;
+    border-radius: 16px;
+    max-width: 540px;
+    width: 100%;
+    padding: 2rem;
+    box-shadow: 0 24px 64px rgba(0, 0, 0, 0.4);
+    border-top: 6px solid var(--color-critical);
+    outline: none;
+    animation: boxIn 0.25s ease;
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
+@keyframes boxIn {
+    from {
+        transform: scale(0.92) translateY(-12px);
+        opacity: 0;
+    }
+
+    to {
+        transform: none;
+        opacity: 1;
+    }
+}
+
+.critical-alert-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+}
+
+.critical-alert-icon {
+    font-size: 2rem;
+}
+
+.critical-alert-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--color-critical);
+    margin: 0;
+}
+
+.critical-alert-subtitle {
+    font-size: 0.95rem;
+    color: #444;
+    line-height: 1.6;
+    margin-bottom: 1.25rem;
+}
+
+.critical-params-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-bottom: 1.25rem;
+}
+
+.critical-param-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    background: var(--color-critical-bg);
+    border: 1px solid #f5c6cb;
+    border-radius: 8px;
+    padding: 0.625rem 0.875rem;
+    flex-wrap: wrap;
+}
+
+.critical-param-name {
+    font-weight: 600;
+    flex: 1;
+    color: #333;
+    min-width: 120px;
+}
+
+.critical-param-value {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: var(--color-critical);
+}
+
+.critical-param-unit {
+    font-size: 0.8rem;
+    color: #666;
+    margin-left: 2px;
+}
+
+.critical-param-badge {
+    background: var(--color-critical);
+    color: #fff;
+    font-size: 0.65rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    padding: 2px 8px;
+    border-radius: 4px;
+    white-space: nowrap;
+}
+
+.critical-alert-emergency {
+    display: flex;
+    gap: 0.75rem;
+    align-items: flex-start;
+    background: #FFF3CD;
+    border: 1px solid #FFEAA7;
+    border-radius: 8px;
+    padding: 0.75rem;
+    font-size: 0.9rem;
+    color: #856404;
+    margin-bottom: 1rem;
+}
+
+.critical-alert-emergency-icon {
+    font-size: 1.25rem;
+    flex-shrink: 0;
+}
+
+.critical-alert-disclaimer {
+    font-size: 0.78rem;
+    color: #888;
+    line-height: 1.5;
+    border-top: 1px solid #eee;
+    padding-top: 1rem;
+    margin-bottom: 1.25rem;
+}
+
+.critical-alert-actions {
+    text-align: center;
+}
+
+.critical-alert-acknowledge {
+    background: var(--color-critical);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    padding: 0.75rem 2rem;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+    width: 100%;
+}
+
+.critical-alert-acknowledge:hover {
+    background: #A93226;
+}
+
+.critical-alert-acknowledge:focus-visible {
+    outline: 3px solid #E74C3C;
+    outline-offset: 2px;
+}
+
+/* ── Drag-and-Drop Upload Zone ──────────────────────────────────────────────── */
+
+.drop-zone {
+    border: 2px dashed #B0BEC5;
+    border-radius: 12px;
+    padding: 3rem 2rem;
+    text-align: center;
+    cursor: pointer;
+    transition: border-color 0.2s, background 0.2s, transform 0.1s;
+    background: #FAFAFA;
+    position: relative;
+    outline: none;
+}
+
+.drop-zone:hover,
+.drop-zone:focus-within {
+    border-color: var(--color-review);
+    background: #EBF5FB;
+}
+
+.drop-zone:focus {
+    box-shadow: 0 0 0 3px rgba(46, 134, 193, 0.3);
+}
+
+.drop-zone--over {
+    border-color: var(--color-normal);
+    background: #EAFAF1;
+    transform: scale(1.01);
+}
+
+.drop-zone--selected {
+    border-color: var(--color-normal);
+    border-style: solid;
+}
+
+.drop-zone__icon {
+    font-size: 3rem;
+    margin-bottom: 0.75rem;
+    display: block;
+}
+
+.drop-zone__label {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #333;
+    margin: 0;
+}
+
+.drop-zone__sublabel {
+    font-size: 0.85rem;
+    color: #888;
+    margin-top: 0.25rem;
+}
+
+/* Visually hidden real input (needed for accessibility) */
+.drop-zone input[type="file"] {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    cursor: pointer;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+}
+
+/* ── Upload Progress Bar ────────────────────────────────────────────────────── */
+
+.upload-progress-wrap {
+    margin-top: 1rem;
+}
+
+.upload-progress-track {
+    background: #E0E0E0;
+    border-radius: 6px;
+    height: 8px;
+    overflow: hidden;
+}
+
+.upload-progress-bar {
+    height: 100%;
+    background: linear-gradient(90deg, #2E86C1, #1ABC9C);
+    border-radius: 6px;
+    transition: width 0.3s ease;
+    width: 0%;
+}
+
+.upload-progress-label {
+    font-size: 0.85rem;
+    color: #666;
+    margin-top: 0.5rem;
+    text-align: center;
+}
+
+/* ── Quality Badge ───────────────────────────────────────────────────────────── */
+
+.quality-badge {
+    border-radius: 8px;
+    padding: 0.75rem 1rem;
+    margin-top: 1rem;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.9rem;
+}
+
+.quality-good {
+    background: #EAFAF1;
+    border: 1px solid #A9DFBF;
+    color: #1A5E39;
+}
+
+.quality-fair {
+    background: #FEF9E7;
+    border: 1px solid #FAD7A0;
+    color: #784212;
+}
+
+.quality-poor {
+    background: #FDEDEC;
+    border: 1px solid #F5C6CB;
+    color: #922B21;
+}
+
+.quality-score {
+    font-size: 1.3rem;
+    font-weight: 700;
+}
+
+.quality-issues {
+    list-style: disc;
+    margin: 0.5rem 0 0 1.5rem;
+    font-size: 0.85rem;
+    width: 100%;
+}
+
+/* ── Status pills (text + icon for accessibility) ────────────────────────────── */
+
+.status-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 3px 10px;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.status-icon {
+    font-size: 0.75rem;
+}
+
+.status-Normal,
+.status-normal {
+    background: var(--color-normal-bg);
+    color: #1A5E39;
+}
+
+.status-Low,
+.status-low {
+    background: #EBF5FB;
+    color: #154360;
+}
+
+.status-High,
+.status-high {
+    background: var(--color-high-bg);
+    color: #784212;
+}
+
+.status-Critical,
+.status-critical {
+    background: var(--color-critical-bg);
+    color: var(--color-critical-text);
+}
+
+.status-Review,
+.status-review {
+    background: var(--color-review-bg);
+    color: #1A4F72;
+}
+
+/* ── Severity pills ──────────────────────────────────────────────────────────── */
+
+.severity-pill {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+.severity-Low,
+.severity-low {
+    background: #EAFAF1;
+    color: #1A5E39;
+}
+
+.severity-Medium,
+.severity-medium {
+    background: #FEF9E7;
+    color: #784212;
+}
+
+.severity-High,
+.severity-high {
+    background: #FDEDEC;
+    color: #922B21;
+}
+
+.severity-Critical,
+.severity-critical {
+    background: var(--color-critical);
+    color: #fff;
+}
+
+/* ── Error state ─────────────────────────────────────────────────────────────── */
+
+.error-state {
+    text-align: center;
+    padding: 4rem 2rem;
+    color: #666;
+}
+
+.error-state__icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    display: block;
+}
+
+/* ── Print styles ─────────────────────────────────────────────────────────── */
+
+@media print {
+
+    nav,
+    .upload-btn,
+    .export-btn,
+    .critical-alert-overlay,
+    .drop-zone,
+    .upload-progress-wrap,
+    #notification-container {
+        display: none !important;
+    }
+
+    body {
+        font-size: 11pt;
+        color: #000;
+        background: #fff;
+    }
+}
+
+/* ── Reduced motion ──────────────────────────────────────────────────────────── */
+
+@media (prefers-reduced-motion: reduce) {
+
+    .skeleton-loading,
+    .critical-alert-overlay,
+    .critical-alert-box,
+    .notification {
+        animation: none !important;
+        transition: none !important;
+    }
+}

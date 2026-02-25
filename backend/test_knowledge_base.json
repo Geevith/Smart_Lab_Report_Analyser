@@ -1,0 +1,1686 @@
+{
+    "metadata": {
+        "version": "1.0",
+        "description": "Master test knowledge base for Smart Lab Report Analyzer",
+        "total_tests": 56,
+        "last_updated": "2026-01-07"
+    },
+    "tests": {
+        "hemoglobin": {
+            "name": "Hemoglobin",
+            "category": "CBC",
+            "aliases": [
+                "Hb",
+                "Hgb",
+                "Haemoglobin",
+                "Hemoglobin (Hb)"
+            ],
+            "unit": "g/dL",
+            "reference_range": {
+                "min": 13.0,
+                "max": 17.0,
+                "note": "Male: 13-17; Female: 12-15.5"
+            },
+            "demographic_ranges": [
+                {
+                    "age_min": 18,
+                    "age_max": 120,
+                    "gender": "male",
+                    "ethnicity": "any",
+                    "min": 13.0,
+                    "max": 17.0,
+                    "unit": "g/dL",
+                    "note": "Adult male reference range"
+                },
+                {
+                    "age_min": 18,
+                    "age_max": 120,
+                    "gender": "female",
+                    "ethnicity": "any",
+                    "min": 12.0,
+                    "max": 15.5,
+                    "unit": "g/dL",
+                    "note": "Adult female reference range"
+                },
+                {
+                    "age_min": 0,
+                    "age_max": 17,
+                    "gender": "any",
+                    "ethnicity": "any",
+                    "min": 11.0,
+                    "max": 16.0,
+                    "unit": "g/dL",
+                    "note": "Pediatric reference range"
+                }
+            ],
+            "conditional_adjustments": {
+                "pregnancy": {
+                    "min": 11.0,
+                    "max": 14.0,
+                    "note": "Pregnancy adjustment (physiologic hemodilution)"
+                },
+                "high_altitude": {
+                    "offset": 0.5,
+                    "note": "High altitude increases Hb by approximately 0.5 g/dL"
+                }
+            },
+            "keywords": [
+                "hemoglobin",
+                "blood",
+                "hb"
+            ],
+            "related_conditions": [
+                "Anemia",
+                "Polycythemia",
+                "Dehydration"
+            ],
+            "panel": "CBC"
+        },
+        "rbc_count": {
+            "name": "RBC Count",
+            "category": "CBC",
+            "aliases": [
+                "RBC",
+                "Red Blood Cell Count",
+                "Erythrocyte Count",
+                "Erythrocyte (RBC) Count"
+            ],
+            "unit": "million/µL",
+            "reference_range": {
+                "min": 4.5,
+                "max": 5.9,
+                "note": "Male: 4.7-6.1; Female: 4.2-5.4"
+            },
+            "demographic_ranges": [
+                {
+                    "age_min": 18,
+                    "age_max": 120,
+                    "gender": "male",
+                    "min": 4.7,
+                    "max": 6.1,
+                    "unit": "million/µL"
+                },
+                {
+                    "age_min": 18,
+                    "age_max": 120,
+                    "gender": "female",
+                    "min": 4.2,
+                    "max": 5.4,
+                    "unit": "million/µL"
+                }
+            ],
+            "keywords": [
+                "rbc",
+                "red blood cell",
+                "erythrocyte"
+            ],
+            "related_conditions": [
+                "Anemia",
+                "Polycythemia"
+            ],
+            "panel": "CBC"
+        },
+        "wbc_count": {
+            "name": "WBC Count",
+            "category": "CBC",
+            "aliases": [
+                "WBC",
+                "White Blood Cell Count",
+                "Total Leucocytes Count",
+                "Total Leucocyte (WBC) Count",
+                "TLC",
+                "Leukocyte Count"
+            ],
+            "unit": "cells/µL",
+            "reference_range": {
+                "min": 4000,
+                "max": 11000
+            },
+            "keywords": [
+                "wbc",
+                "white blood cell",
+                "leucocyte",
+                "leukocyte"
+            ],
+            "related_conditions": [
+                "Infection",
+                "Leukemia",
+                "Immune disorders"
+            ],
+            "panel": "CBC"
+        },
+        "platelet_count": {
+            "name": "Platelet Count",
+            "category": "CBC",
+            "aliases": [
+                "PLT",
+                "Platelets",
+                "Platelet count",
+                "Thrombocyte Count"
+            ],
+            "unit": "cells/µL",
+            "reference_range": {
+                "min": 150000,
+                "max": 450000
+            },
+            "keywords": [
+                "platelet",
+                "plt",
+                "thrombocyte"
+            ],
+            "related_conditions": [
+                "Thrombocytopenia",
+                "Thrombocytosis",
+                "Bleeding disorders"
+            ],
+            "panel": "CBC"
+        },
+        "hematocrit": {
+            "name": "Hematocrit",
+            "category": "CBC",
+            "aliases": [
+                "Hct",
+                "PCV",
+                "Packed Cell Volume",
+                "PCV (Packed Cell Volume)"
+            ],
+            "unit": "%",
+            "reference_range": {
+                "min": 40,
+                "max": 50,
+                "note": "Male: 40-50; Female: 36-44"
+            },
+            "demographic_ranges": [
+                {
+                    "age_min": 18,
+                    "age_max": 120,
+                    "gender": "male",
+                    "min": 40,
+                    "max": 50,
+                    "unit": "%"
+                },
+                {
+                    "age_min": 18,
+                    "age_max": 120,
+                    "gender": "female",
+                    "min": 36,
+                    "max": 44,
+                    "unit": "%"
+                }
+            ],
+            "keywords": [
+                "hematocrit",
+                "pcv",
+                "packed cell"
+            ],
+            "related_conditions": [
+                "Anemia",
+                "Dehydration",
+                "Polycythemia"
+            ],
+            "panel": "CBC"
+        },
+        "mcv": {
+            "name": "MCV",
+            "category": "CBC",
+            "aliases": [
+                "Mean Corpuscular Volume",
+                "MCV (Mean Corpuscular Volume)"
+            ],
+            "unit": "fL",
+            "reference_range": {
+                "min": 80,
+                "max": 100
+            },
+            "keywords": [
+                "mcv",
+                "mean corpuscular volume"
+            ],
+            "related_conditions": [
+                "Microcytic anemia",
+                "Macrocytic anemia"
+            ],
+            "panel": "CBC"
+        },
+        "mch": {
+            "name": "MCH",
+            "category": "CBC",
+            "aliases": [
+                "Mean Corpuscular Hemoglobin",
+                "MCH (Mean Corpuscular Hb)"
+            ],
+            "unit": "pg",
+            "reference_range": {
+                "min": 27,
+                "max": 31
+            },
+            "keywords": [
+                "mch",
+                "mean corpuscular hemoglobin"
+            ],
+            "related_conditions": [
+                "Iron deficiency",
+                "Vitamin B12 deficiency"
+            ],
+            "panel": "CBC"
+        },
+        "mchc": {
+            "name": "MCHC",
+            "category": "CBC",
+            "aliases": [
+                "Mean Corpuscular Hemoglobin Concentration",
+                "MCHC (Mean Corpuscular Hb Concn.)"
+            ],
+            "unit": "g/dL",
+            "reference_range": {
+                "min": 32,
+                "max": 36
+            },
+            "keywords": [
+                "mchc",
+                "mean corpuscular hemoglobin concentration"
+            ],
+            "related_conditions": [
+                "Iron deficiency anemia",
+                "Spherocytosis"
+            ],
+            "panel": "CBC"
+        },
+        "rdw": {
+            "name": "RDW",
+            "category": "CBC",
+            "aliases": [
+                "Red Cell Distribution Width",
+                "RDW (Red Cell Distribution Width)"
+            ],
+            "unit": "%",
+            "reference_range": {
+                "min": 11.6,
+                "max": 14.0
+            },
+            "keywords": [
+                "rdw",
+                "red cell distribution"
+            ],
+            "related_conditions": [
+                "Anemia",
+                "Nutritional deficiencies"
+            ],
+            "panel": "CBC"
+        },
+        "mpv": {
+            "name": "MPV",
+            "category": "CBC",
+            "aliases": [
+                "Mean Platelet Volume",
+                "MPV (Mean Platelet Volume)"
+            ],
+            "unit": "fL",
+            "reference_range": {
+                "min": 6.0,
+                "max": 9.5
+            },
+            "keywords": [
+                "mpv",
+                "mean platelet volume"
+            ],
+            "related_conditions": [
+                "Thrombocytopenia",
+                "Bone marrow disorders"
+            ],
+            "panel": "CBC"
+        },
+        "pdw": {
+            "name": "PDW",
+            "category": "CBC",
+            "aliases": [
+                "Platelet Distribution Width",
+                "PDW (Platelet Distribution Width)"
+            ],
+            "unit": "fL",
+            "reference_range": {
+                "min": 9.0,
+                "max": 17.0
+            },
+            "keywords": [
+                "pdw",
+                "platelet distribution"
+            ],
+            "related_conditions": [
+                "Platelet activation",
+                "Inflammation"
+            ],
+            "panel": "CBC"
+        },
+        "absolute_neutrophil_count": {
+            "name": "Absolute Neutrophil Count",
+            "category": "CBC",
+            "aliases": [
+                "ANC",
+                "Absolute Neutrophils Count",
+                "Neutrophil Count"
+            ],
+            "unit": "cells/µL",
+            "reference_range": {
+                "min": 2000,
+                "max": 7000
+            },
+            "keywords": [
+                "neutrophil",
+                "anc"
+            ],
+            "related_conditions": [
+                "Neutropenia",
+                "Infection",
+                "Inflammation"
+            ],
+            "panel": "CBC"
+        },
+        "absolute_lymphocyte_count": {
+            "name": "Absolute Lymphocyte Count",
+            "category": "CBC",
+            "aliases": [
+                "ALC",
+                "Lymphocyte Count"
+            ],
+            "unit": "cells/µL",
+            "reference_range": {
+                "min": 1000,
+                "max": 3000
+            },
+            "keywords": [
+                "lymphocyte",
+                "alc"
+            ],
+            "related_conditions": [
+                "Viral infections",
+                "Immune disorders"
+            ],
+            "panel": "CBC"
+        },
+        "absolute_eosinophil_count": {
+            "name": "Absolute Eosinophil Count",
+            "category": "CBC",
+            "aliases": [
+                "AEC",
+                "Eosinophil Count"
+            ],
+            "unit": "cells/µL",
+            "reference_range": {
+                "min": 20,
+                "max": 500
+            },
+            "keywords": [
+                "eosinophil",
+                "aec"
+            ],
+            "related_conditions": [
+                "Allergies",
+                "Parasitic infections",
+                "Asthma"
+            ],
+            "panel": "CBC"
+        },
+        "esr": {
+            "name": "ESR",
+            "category": "Inflammatory",
+            "aliases": [
+                "Erythrocyte Sedimentation Rate",
+                "ESR (Erythrocyte Sedimentation Rate)",
+                "Sed Rate"
+            ],
+            "unit": "mm/hr",
+            "reference_range": {
+                "min": 0,
+                "max": 20,
+                "note": "Male: 0-15; Female: 0-20"
+            },
+            "keywords": [
+                "esr",
+                "sedimentation",
+                "sed rate"
+            ],
+            "related_conditions": [
+                "Inflammation",
+                "Infection",
+                "Autoimmune diseases"
+            ],
+            "panel": "CBC"
+        },
+        "fasting_blood_glucose": {
+            "name": "Fasting Blood Glucose",
+            "category": "Diabetes",
+            "aliases": [
+                "FBS",
+                "Fasting Blood Sugar",
+                "Glucose Fasting",
+                "Fasting Glucose"
+            ],
+            "unit": "mg/dL",
+            "reference_range": {
+                "min": 70,
+                "max": 100
+            },
+            "keywords": [
+                "glucose",
+                "fasting",
+                "sugar",
+                "fbs"
+            ],
+            "related_conditions": [
+                "Diabetes",
+                "Prediabetes",
+                "Hypoglycemia"
+            ],
+            "panel": "Diabetes Panel"
+        },
+        "glucose_post_prandial": {
+            "name": "Glucose Post Prandial",
+            "category": "Diabetes",
+            "aliases": [
+                "PPBS",
+                "Post Prandial Blood Sugar",
+                "PP Glucose",
+                "2-Hour Glucose"
+            ],
+            "unit": "mg/dL",
+            "reference_range": {
+                "min": 70,
+                "max": 140
+            },
+            "keywords": [
+                "glucose",
+                "post prandial",
+                "ppbs",
+                "after meal"
+            ],
+            "related_conditions": [
+                "Diabetes",
+                "Impaired glucose tolerance"
+            ],
+            "panel": "Diabetes Panel"
+        },
+        "hba1c": {
+            "name": "HbA1C",
+            "category": "Diabetes",
+            "aliases": [
+                "Glycated Hemoglobin",
+                "HbA1c",
+                "A1C",
+                "HbA1C- Glycated Haemoglobin",
+                "Glycosylated Hemoglobin"
+            ],
+            "unit": "%",
+            "reference_range": {
+                "min": 4.0,
+                "max": 5.6
+            },
+            "keywords": [
+                "hba1c",
+                "a1c",
+                "glycated",
+                "hemoglobin"
+            ],
+            "related_conditions": [
+                "Diabetes",
+                "Poor glycemic control"
+            ],
+            "panel": "Diabetes Panel"
+        },
+        "bun": {
+            "name": "BUN",
+            "category": "Kidney",
+            "aliases": [
+                "Blood Urea Nitrogen",
+                "BUN, Serum",
+                "Urea Nitrogen"
+            ],
+            "unit": "mg/dL",
+            "reference_range": {
+                "min": 6,
+                "max": 20
+            },
+            "keywords": [
+                "bun",
+                "urea",
+                "nitrogen"
+            ],
+            "related_conditions": [
+                "Kidney disease",
+                "Dehydration",
+                "Heart failure"
+            ],
+            "panel": "KFT"
+        },
+        "creatinine": {
+            "name": "Creatinine",
+            "category": "Kidney",
+            "aliases": [
+                "Creatinine, Serum",
+                "Serum Creatinine",
+                "Creat"
+            ],
+            "unit": "mg/dL",
+            "reference_range": {
+                "min": 0.67,
+                "max": 1.17,
+                "note": "Male: 0.74-1.35; Female: 0.59-1.04"
+            },
+            "keywords": [
+                "creatinine",
+                "kidney"
+            ],
+            "related_conditions": [
+                "Kidney disease",
+                "Muscle disorders"
+            ],
+            "panel": "KFT"
+        },
+        "uric_acid": {
+            "name": "Uric Acid",
+            "category": "Kidney",
+            "aliases": [
+                "Uric Acid, Serum",
+                "Serum Uric Acid",
+                "UA"
+            ],
+            "unit": "mg/dL",
+            "reference_range": {
+                "min": 3.4,
+                "max": 7.0,
+                "note": "Male: 3.4-7.0; Female: 2.4-6.0"
+            },
+            "keywords": [
+                "uric acid",
+                "gout"
+            ],
+            "related_conditions": [
+                "Gout",
+                "Kidney stones",
+                "Hyperuricemia"
+            ],
+            "panel": "KFT"
+        },
+        "sodium": {
+            "name": "Sodium",
+            "category": "Electrolytes",
+            "aliases": [
+                "Na",
+                "Sodium, Serum",
+                "Serum Sodium",
+                "Na+"
+            ],
+            "unit": "mmol/L",
+            "reference_range": {
+                "min": 136,
+                "max": 145
+            },
+            "keywords": [
+                "sodium",
+                "na",
+                "electrolyte"
+            ],
+            "related_conditions": [
+                "Hyponatremia",
+                "Hypernatremia",
+                "Dehydration"
+            ],
+            "panel": "Electrolytes"
+        },
+        "potassium": {
+            "name": "Potassium",
+            "category": "Electrolytes",
+            "aliases": [
+                "K",
+                "Potassium, Serum",
+                "Serum Potassium",
+                "K+"
+            ],
+            "unit": "mmol/L",
+            "reference_range": {
+                "min": 3.5,
+                "max": 5.1
+            },
+            "keywords": [
+                "potassium",
+                "k",
+                "electrolyte"
+            ],
+            "related_conditions": [
+                "Hypokalemia",
+                "Hyperkalemia",
+                "Arrhythmias"
+            ],
+            "panel": "Electrolytes"
+        },
+        "chloride": {
+            "name": "Chloride",
+            "category": "Electrolytes",
+            "aliases": [
+                "Cl",
+                "Chloride, Serum",
+                "Serum Chloride",
+                "Cl-"
+            ],
+            "unit": "mmol/L",
+            "reference_range": {
+                "min": 98,
+                "max": 107
+            },
+            "keywords": [
+                "chloride",
+                "cl",
+                "electrolyte"
+            ],
+            "related_conditions": [
+                "Metabolic disorders",
+                "Dehydration"
+            ],
+            "panel": "Electrolytes"
+        },
+        "bicarbonate": {
+            "name": "Bicarbonate",
+            "category": "Electrolytes",
+            "aliases": [
+                "HCO3",
+                "CO2",
+                "Bicarbonate, Serum"
+            ],
+            "unit": "mmol/L",
+            "reference_range": {
+                "min": 22,
+                "max": 29
+            },
+            "keywords": [
+                "bicarbonate",
+                "hco3",
+                "co2"
+            ],
+            "related_conditions": [
+                "Metabolic acidosis",
+                "Metabolic alkalosis"
+            ],
+            "panel": "Electrolytes"
+        },
+        "calcium": {
+            "name": "Calcium",
+            "category": "Minerals",
+            "aliases": [
+                "Ca",
+                "Calcium, Serum",
+                "Serum Calcium"
+            ],
+            "unit": "mg/dL",
+            "reference_range": {
+                "min": 8.6,
+                "max": 10.0
+            },
+            "keywords": [
+                "calcium",
+                "ca",
+                "bone"
+            ],
+            "related_conditions": [
+                "Hypocalcemia",
+                "Hypercalcemia",
+                "Osteoporosis"
+            ],
+            "panel": "Minerals"
+        },
+        "phosphorus": {
+            "name": "Phosphorus",
+            "category": "Minerals",
+            "aliases": [
+                "Phosphorus, Serum",
+                "Serum Phosphorus",
+                "Phosphate"
+            ],
+            "unit": "mg/dL",
+            "reference_range": {
+                "min": 2.5,
+                "max": 4.5
+            },
+            "keywords": [
+                "phosphorus",
+                "phosphate"
+            ],
+            "related_conditions": [
+                "Hyperphosphatemia",
+                "Hypophosphatemia",
+                "Kidney disease"
+            ],
+            "panel": "Minerals"
+        },
+        "bilirubin_total": {
+            "name": "Bilirubin Total",
+            "category": "Liver",
+            "aliases": [
+                "Total Bilirubin",
+                "T. Bili",
+                "Bilirubin, Total"
+            ],
+            "unit": "mg/dL",
+            "reference_range": {
+                "min": 0.0,
+                "max": 1.2
+            },
+            "keywords": [
+                "bilirubin",
+                "total",
+                "liver"
+            ],
+            "related_conditions": [
+                "Jaundice",
+                "Liver disease",
+                "Hemolysis"
+            ],
+            "panel": "LFT"
+        },
+        "bilirubin_direct": {
+            "name": "Bilirubin Direct",
+            "category": "Liver",
+            "aliases": [
+                "Direct Bilirubin",
+                "D. Bili",
+                "Conjugated Bilirubin"
+            ],
+            "unit": "mg/dL",
+            "reference_range": {
+                "min": 0.0,
+                "max": 0.3
+            },
+            "keywords": [
+                "bilirubin",
+                "direct",
+                "conjugated"
+            ],
+            "related_conditions": [
+                "Cholestasis",
+                "Bile duct obstruction"
+            ],
+            "panel": "LFT"
+        },
+        "bilirubin_indirect": {
+            "name": "Bilirubin Indirect",
+            "category": "Liver",
+            "aliases": [
+                "Indirect Bilirubin",
+                "I. Bili",
+                "Unconjugated Bilirubin",
+                "Bilirubin- Indirect"
+            ],
+            "unit": "mg/dL",
+            "reference_range": {
+                "min": 0.1,
+                "max": 1.0
+            },
+            "keywords": [
+                "bilirubin",
+                "indirect",
+                "unconjugated"
+            ],
+            "related_conditions": [
+                "Hemolysis",
+                "Gilbert syndrome"
+            ],
+            "panel": "LFT"
+        },
+        "sgot": {
+            "name": "SGOT",
+            "category": "Liver",
+            "aliases": [
+                "AST",
+                "SGOT (AST)",
+                "Aspartate Aminotransferase"
+            ],
+            "unit": "U/L",
+            "reference_range": {
+                "min": 0,
+                "max": 40
+            },
+            "keywords": [
+                "sgot",
+                "ast",
+                "liver",
+                "enzyme"
+            ],
+            "related_conditions": [
+                "Liver damage",
+                "Heart attack",
+                "Muscle injury"
+            ],
+            "panel": "LFT"
+        },
+        "sgpt": {
+            "name": "SGPT",
+            "category": "Liver",
+            "aliases": [
+                "ALT",
+                "SGPT (ALT)",
+                "Alanine Aminotransferase"
+            ],
+            "unit": "U/L",
+            "reference_range": {
+                "min": 0,
+                "max": 41
+            },
+            "keywords": [
+                "sgpt",
+                "alt",
+                "liver",
+                "enzyme"
+            ],
+            "related_conditions": [
+                "Liver damage",
+                "Hepatitis",
+                "Fatty liver"
+            ],
+            "panel": "LFT"
+        },
+        "alkaline_phosphatase": {
+            "name": "Alkaline Phosphatase",
+            "category": "Liver",
+            "aliases": [
+                "ALP",
+                "Alk Phos",
+                "Alkaline Phosphatase, Serum"
+            ],
+            "unit": "U/L",
+            "reference_range": {
+                "min": 40,
+                "max": 129
+            },
+            "keywords": [
+                "alkaline phosphatase",
+                "alp",
+                "bone",
+                "liver"
+            ],
+            "related_conditions": [
+                "Liver disease",
+                "Bone disorders",
+                "Cholestasis"
+            ],
+            "panel": "LFT"
+        },
+        "gamma_gt": {
+            "name": "Gamma GT",
+            "category": "Liver",
+            "aliases": [
+                "GGT",
+                "GGTP",
+                "Gamma GT (GGTP)",
+                "Gamma-Glutamyl Transferase"
+            ],
+            "unit": "U/L",
+            "reference_range": {
+                "min": 0,
+                "max": 60
+            },
+            "keywords": [
+                "ggt",
+                "ggtp",
+                "gamma",
+                "liver"
+            ],
+            "related_conditions": [
+                "Liver disease",
+                "Alcohol use",
+                "Bile duct problems"
+            ],
+            "panel": "LFT"
+        },
+        "total_cholesterol": {
+            "name": "Total Cholesterol",
+            "category": "Lipids",
+            "aliases": [
+                "TC",
+                "Cholesterol Total",
+                "Cholesterol Total, Serum",
+                "Cholesterol"
+            ],
+            "unit": "mg/dL",
+            "reference_range": {
+                "min": 0,
+                "max": 200
+            },
+            "keywords": [
+                "cholesterol",
+                "total",
+                "lipid"
+            ],
+            "related_conditions": [
+                "Hypercholesterolemia",
+                "Heart disease",
+                "Stroke"
+            ],
+            "panel": "Lipid Profile"
+        },
+        "triglycerides": {
+            "name": "Triglycerides",
+            "category": "Lipids",
+            "aliases": [
+                "TG",
+                "Triglycerides, Serum",
+                "Trigs"
+            ],
+            "unit": "mg/dL",
+            "reference_range": {
+                "min": 0,
+                "max": 150
+            },
+            "keywords": [
+                "triglycerides",
+                "tg",
+                "lipid"
+            ],
+            "related_conditions": [
+                "Hypertriglyceridemia",
+                "Metabolic syndrome",
+                "Pancreatitis"
+            ],
+            "panel": "Lipid Profile"
+        },
+        "hdl_cholesterol": {
+            "name": "HDL Cholesterol",
+            "category": "Lipids",
+            "aliases": [
+                "HDL",
+                "HDL Cholesterol Direct",
+                "Good Cholesterol",
+                "High-Density Lipoprotein"
+            ],
+            "unit": "mg/dL",
+            "reference_range": {
+                "min": 40,
+                "max": 200
+            },
+            "keywords": [
+                "hdl",
+                "good cholesterol",
+                "lipid"
+            ],
+            "related_conditions": [
+                "Low HDL increases heart disease risk"
+            ],
+            "panel": "Lipid Profile"
+        },
+        "ldl_cholesterol": {
+            "name": "LDL Cholesterol",
+            "category": "Lipids",
+            "aliases": [
+                "LDL",
+                "Bad Cholesterol",
+                "Low-Density Lipoprotein"
+            ],
+            "unit": "mg/dL",
+            "reference_range": {
+                "min": 0,
+                "max": 100
+            },
+            "keywords": [
+                "ldl",
+                "bad cholesterol",
+                "lipid"
+            ],
+            "related_conditions": [
+                "Atherosclerosis",
+                "Heart disease",
+                "Stroke"
+            ],
+            "panel": "Lipid Profile"
+        },
+        "vldl_cholesterol": {
+            "name": "VLDL Cholesterol",
+            "category": "Lipids",
+            "aliases": [
+                "VLDL",
+                "Very Low-Density Lipoprotein"
+            ],
+            "unit": "mg/dL",
+            "reference_range": {
+                "min": 6,
+                "max": 38
+            },
+            "keywords": [
+                "vldl",
+                "cholesterol",
+                "lipid"
+            ],
+            "related_conditions": [
+                "Hypertriglyceridemia",
+                "Atherosclerosis"
+            ],
+            "panel": "Lipid Profile"
+        },
+        "total_protein": {
+            "name": "Total Protein",
+            "category": "Proteins",
+            "aliases": [
+                "TP",
+                "Protein, Total",
+                "Serum Protein"
+            ],
+            "unit": "g/dL",
+            "reference_range": {
+                "min": 6.4,
+                "max": 8.3
+            },
+            "keywords": [
+                "protein",
+                "total"
+            ],
+            "related_conditions": [
+                "Liver disease",
+                "Kidney disease",
+                "Malnutrition"
+            ],
+            "panel": "Proteins"
+        },
+        "albumin": {
+            "name": "Albumin",
+            "category": "Proteins",
+            "aliases": [
+                "Albumin, Serum",
+                "Serum Albumin",
+                "Alb"
+            ],
+            "unit": "g/dL",
+            "reference_range": {
+                "min": 3.5,
+                "max": 5.2
+            },
+            "keywords": [
+                "albumin",
+                "protein"
+            ],
+            "related_conditions": [
+                "Liver disease",
+                "Kidney disease",
+                "Malnutrition"
+            ],
+            "panel": "Proteins"
+        },
+        "globulin": {
+            "name": "Globulin",
+            "category": "Proteins",
+            "aliases": [
+                "Glob",
+                "Serum Globulin"
+            ],
+            "unit": "g/dL",
+            "reference_range": {
+                "min": 1.8,
+                "max": 3.6
+            },
+            "keywords": [
+                "globulin",
+                "protein"
+            ],
+            "related_conditions": [
+                "Chronic infections",
+                "Autoimmune diseases"
+            ],
+            "panel": "Proteins"
+        },
+        "serum_iron": {
+            "name": "Serum Iron",
+            "category": "Iron Studies",
+            "aliases": [
+                "Iron",
+                "Iron, Serum",
+                "Fe"
+            ],
+            "unit": "µg/dL",
+            "reference_range": {
+                "min": 33,
+                "max": 193
+            },
+            "keywords": [
+                "iron",
+                "serum"
+            ],
+            "related_conditions": [
+                "Iron deficiency",
+                "Hemochromatosis",
+                "Anemia"
+            ],
+            "panel": "Iron Studies"
+        },
+        "tibc": {
+            "name": "TIBC",
+            "category": "Iron Studies",
+            "aliases": [
+                "Total Iron Binding Capacity"
+            ],
+            "unit": "µg/dL",
+            "reference_range": {
+                "min": 250,
+                "max": 450
+            },
+            "keywords": [
+                "tibc",
+                "iron",
+                "binding"
+            ],
+            "related_conditions": [
+                "Iron deficiency",
+                "Chronic illness"
+            ],
+            "panel": "Iron Studies"
+        },
+        "uibc": {
+            "name": "UIBC",
+            "category": "Iron Studies",
+            "aliases": [
+                "Unsaturated Iron Binding Capacity"
+            ],
+            "unit": "µg/dL",
+            "reference_range": {
+                "min": 125,
+                "max": 345
+            },
+            "keywords": [
+                "uibc",
+                "iron",
+                "binding"
+            ],
+            "related_conditions": [
+                "Iron deficiency",
+                "Iron overload"
+            ],
+            "panel": "Iron Studies"
+        },
+        "transferrin_saturation": {
+            "name": "Transferrin Saturation",
+            "category": "Iron Studies",
+            "aliases": [
+                "Transferin Saturation",
+                "TSAT",
+                "Iron Saturation"
+            ],
+            "unit": "%",
+            "reference_range": {
+                "min": 14,
+                "max": 50
+            },
+            "keywords": [
+                "transferrin",
+                "saturation",
+                "iron"
+            ],
+            "related_conditions": [
+                "Iron deficiency",
+                "Hemochromatosis"
+            ],
+            "panel": "Iron Studies"
+        },
+        "cpk_total": {
+            "name": "CPK Total",
+            "category": "Cardiac",
+            "aliases": [
+                "CPK",
+                "Creatine Phosphokinase",
+                "CK"
+            ],
+            "unit": "U/L",
+            "reference_range": {
+                "min": 0,
+                "max": 190
+            },
+            "keywords": [
+                "cpk",
+                "creatine",
+                "kinase",
+                "muscle"
+            ],
+            "related_conditions": [
+                "Heart attack",
+                "Muscle injury",
+                "Rhabdomyolysis"
+            ],
+            "panel": "Cardiac Enzymes"
+        },
+        "ldh": {
+            "name": "LDH",
+            "category": "Cardiac",
+            "aliases": [
+                "Lactate Dehydrogenase",
+                "LDH (Lactate Dehydrogenase), Serum"
+            ],
+            "unit": "U/L",
+            "reference_range": {
+                "min": 0,
+                "max": 250
+            },
+            "keywords": [
+                "ldh",
+                "lactate",
+                "dehydrogenase"
+            ],
+            "related_conditions": [
+                "Heart attack",
+                "Liver disease",
+                "Hemolysis",
+                "Cancer"
+            ],
+            "panel": "Cardiac Enzymes"
+        },
+        "hscrp": {
+            "name": "HsCRP",
+            "category": "Inflammatory",
+            "aliases": [
+                "High Sensitivity CRP",
+                "hs-CRP",
+                "HsCRP (High Sensitivity CRP)",
+                "C-Reactive Protein"
+            ],
+            "unit": "mg/L",
+            "reference_range": {
+                "min": 0.0,
+                "max": 3.0
+            },
+            "keywords": [
+                "crp",
+                "hscrp",
+                "c-reactive",
+                "inflammation"
+            ],
+            "related_conditions": [
+                "Inflammation",
+                "Cardiovascular risk",
+                "Infection"
+            ],
+            "panel": "Inflammatory Markers"
+        },
+        "ft3": {
+            "name": "FT3",
+            "category": "Thyroid",
+            "aliases": [
+                "Free T3",
+                "Free Triiodothyronine",
+                "FT3 (Free Triiodothyronine)"
+            ],
+            "unit": "pg/mL",
+            "reference_range": {
+                "min": 2.0,
+                "max": 4.4
+            },
+            "keywords": [
+                "ft3",
+                "free t3",
+                "thyroid"
+            ],
+            "related_conditions": [
+                "Hyperthyroidism",
+                "Hypothyroidism"
+            ],
+            "panel": "Thyroid Panel"
+        },
+        "ft4": {
+            "name": "FT4",
+            "category": "Thyroid",
+            "aliases": [
+                "Free T4",
+                "Free Thyroxine",
+                "FT4 (Free Thyroxine)"
+            ],
+            "unit": "ng/dL",
+            "reference_range": {
+                "min": 0.93,
+                "max": 1.7
+            },
+            "keywords": [
+                "ft4",
+                "free t4",
+                "thyroid"
+            ],
+            "related_conditions": [
+                "Hyperthyroidism",
+                "Hypothyroidism"
+            ],
+            "panel": "Thyroid Panel"
+        },
+        "tsh": {
+            "name": "TSH",
+            "category": "Thyroid",
+            "aliases": [
+                "Thyroid Stimulating Hormone",
+                "TSH (Thyroid Stimulating Hormone) - Ultrasensitive, Serum",
+                "Thyrotropin"
+            ],
+            "unit": "µIU/mL",
+            "reference_range": {
+                "min": 0.54,
+                "max": 5.3
+            },
+            "keywords": [
+                "tsh",
+                "thyroid stimulating hormone",
+                "thyroid"
+            ],
+            "related_conditions": [
+                "Hypothyroidism",
+                "Hyperthyroidism",
+                "Thyroid disorders"
+            ],
+            "panel": "Thyroid Panel"
+        },
+        "vitamin_d": {
+            "name": "Vitamin D",
+            "category": "Vitamins",
+            "aliases": [
+                "25-OH Vitamin D",
+                "Vitamin D Total - 25 Hydroxy (OH)",
+                "25-Hydroxy Vitamin D",
+                "Vit D"
+            ],
+            "unit": "ng/mL",
+            "reference_range": {
+                "min": 30,
+                "max": 100
+            },
+            "keywords": [
+                "vitamin d",
+                "25-oh",
+                "cholecalciferol"
+            ],
+            "related_conditions": [
+                "Vitamin D deficiency",
+                "Osteoporosis",
+                "Rickets"
+            ],
+            "panel": "Vitamins"
+        },
+        "vitamin_b12": {
+            "name": "Vitamin B12",
+            "category": "Vitamins",
+            "aliases": [
+                "B12",
+                "Cyanocobalamin",
+                "Vitamin B12 (Cyanocobalamin)",
+                "Cobalamin"
+            ],
+            "unit": "pg/mL",
+            "reference_range": {
+                "min": 197,
+                "max": 771
+            },
+            "keywords": [
+                "vitamin b12",
+                "b12",
+                "cobalamin"
+            ],
+            "related_conditions": [
+                "Vitamin B12 deficiency",
+                "Pernicious anemia",
+                "Neurological disorders"
+            ],
+            "panel": "Vitamins"
+        },
+        "psa": {
+            "name": "PSA",
+            "category": "Tumor Markers",
+            "aliases": [
+                "Prostate Specific Antigen",
+                "Total PSA",
+                "Total PSA (Prostate Specific Antigen)"
+            ],
+            "unit": "ng/mL",
+            "reference_range": {
+                "min": 0.0,
+                "max": 4.0
+            },
+            "keywords": [
+                "psa",
+                "prostate"
+            ],
+            "related_conditions": [
+                "Prostate cancer",
+                "Benign prostatic hyperplasia",
+                "Prostatitis"
+            ],
+            "panel": "Tumor Markers"
+        },
+        "homocysteine": {
+            "name": "Homocysteine",
+            "category": "Cardiovascular",
+            "aliases": [
+                "Hcy",
+                "Homocysteine, Serum"
+            ],
+            "unit": "µmol/L",
+            "reference_range": {
+                "min": 0,
+                "max": 15
+            },
+            "keywords": [
+                "homocysteine",
+                "cardiovascular"
+            ],
+            "related_conditions": [
+                "Cardiovascular disease",
+                "Stroke",
+                "Vitamin B deficiency"
+            ],
+            "panel": "Cardiovascular Risk"
+        },
+        "ra_factor": {
+            "name": "RA Factor",
+            "category": "Autoimmune",
+            "aliases": [
+                "Rheumatoid Factor",
+                "RF",
+                "RA (Rheumatoid Arthritis) Factor, Serum"
+            ],
+            "unit": "IU/mL",
+            "reference_range": {
+                "min": 0,
+                "max": 14
+            },
+            "keywords": [
+                "rheumatoid",
+                "ra factor",
+                "rf",
+                "autoimmune"
+            ],
+            "related_conditions": [
+                "Rheumatoid arthritis",
+                "Autoimmune diseases"
+            ],
+            "panel": "Autoimmune Markers"
+        }
+    },
+    "panels": {
+        "CBC": {
+            "name": "Complete Blood Count",
+            "tests": [
+                "hemoglobin",
+                "rbc_count",
+                "wbc_count",
+                "platelet_count",
+                "hematocrit",
+                "mcv",
+                "mch",
+                "mchc",
+                "rdw",
+                "mpv",
+                "pdw",
+                "absolute_neutrophil_count",
+                "absolute_lymphocyte_count",
+                "absolute_eosinophil_count",
+                "esr"
+            ],
+            "description": "Comprehensive blood count testing for general health assessment",
+            "category": "Blood"
+        },
+        "Lipid Profile": {
+            "name": "Lipid Profile",
+            "tests": [
+                "total_cholesterol",
+                "triglycerides",
+                "hdl_cholesterol",
+                "ldl_cholesterol",
+                "vldl_cholesterol"
+            ],
+            "description": "Cholesterol and triglyceride testing for cardiovascular risk assessment",
+            "category": "Lipids"
+        },
+        "LFT": {
+            "name": "Liver Function Tests",
+            "tests": [
+                "bilirubin_total",
+                "bilirubin_direct",
+                "bilirubin_indirect",
+                "sgot",
+                "sgpt",
+                "alkaline_phosphatase",
+                "gamma_gt",
+                "total_protein",
+                "albumin",
+                "globulin"
+            ],
+            "description": "Liver enzyme and protein testing",
+            "category": "Liver"
+        },
+        "KFT": {
+            "name": "Kidney Function Tests",
+            "tests": [
+                "bun",
+                "creatinine",
+                "uric_acid",
+                "sodium",
+                "potassium"
+            ],
+            "description": "Kidney function and electrolyte testing",
+            "category": "Kidney"
+        },
+        "Thyroid Panel": {
+            "name": "Thyroid Function Panel",
+            "tests": [
+                "tsh",
+                "ft3",
+                "ft4"
+            ],
+            "description": "Thyroid hormone testing",
+            "category": "Thyroid"
+        },
+        "Diabetes Panel": {
+            "name": "Diabetes Screening Panel",
+            "tests": [
+                "fasting_blood_glucose",
+                "glucose_post_prandial",
+                "hba1c"
+            ],
+            "description": "Glucose testing for diabetes screening and monitoring",
+            "category": "Diabetes"
+        },
+        "Electrolytes": {
+            "name": "Electrolyte Panel",
+            "tests": [
+                "sodium",
+                "potassium",
+                "chloride",
+                "bicarbonate"
+            ],
+            "description": "Electrolyte balance testing",
+            "category": "Electrolytes"
+        },
+        "Iron Studies": {
+            "name": "Iron Studies Panel",
+            "tests": [
+                "serum_iron",
+                "tibc",
+                "uibc",
+                "transferrin_saturation"
+            ],
+            "description": "Iron metabolism testing",
+            "category": "Iron"
+        },
+        "Cardiac Enzymes": {
+            "name": "Cardiac Enzyme Panel",
+            "tests": [
+                "cpk_total",
+                "ldh"
+            ],
+            "description": "Cardiac and muscle enzyme testing",
+            "category": "Cardiac"
+        }
+    },
+    "unit_variants": {
+        "g/dL": [
+            "g/dl",
+            "gm/dl",
+            "g/l"
+        ],
+        "mg/dL": [
+            "mg/dl"
+        ],
+        "cells/µL": [
+            "cells/ul",
+            "cells/µl",
+            "/ul",
+            "/µl",
+            "10^3/µl",
+            "10∧3/µl",
+            "x10^3/µl",
+            "cells/cu.mm",
+            "k/ul"
+        ],
+        "million/µL": [
+            "million/ul",
+            "million/µl",
+            "mill/cu.mm",
+            "10^6/ul",
+            "10∧6/ul"
+        ],
+        "%": [
+            "%",
+            "percent"
+        ],
+        "fL": [
+            "fl"
+        ],
+        "pg": [
+            "pg"
+        ],
+        "mm/hr": [
+            "mm/hr",
+            "mm/h"
+        ],
+        "U/L": [
+            "u/l",
+            "iu/l",
+            "IU/L"
+        ],
+        "ng/mL": [
+            "ng/ml"
+        ],
+        "ng/dL": [
+            "ng/dl"
+        ],
+        "µg/dL": [
+            "µg/dl",
+            "ug/dl"
+        ],
+        "µIU/mL": [
+            "µiu/ml",
+            "uiu/ml",
+            "miu/l",
+            "µIU/mL"
+        ],
+        "IU/mL": [
+            "iu/ml"
+        ],
+        "µmol/L": [
+            "µmol/l",
+            "umol/l"
+        ],
+        "mmol/L": [
+            "mmol/l"
+        ],
+        "pg/mL": [
+            "pg/ml"
+        ]
+    }
+}

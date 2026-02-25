@@ -1,0 +1,182 @@
+/* ========================================
+   MOBILE TOUCH OPTIMIZATIONS (Phase 6)
+   ======================================== */
+
+/* Ensure minimum touch target sizes (44x44px iOS, 48x48px Android) */
+@media (max-width: 768px) {
+
+    /* Larger touch targets for clickable elements */
+    button,
+    .cursor-pointer,
+    summary,
+    [onclick] {
+        min-height: 44px;
+        min-width: 44px;
+        padding: 0.75rem 1rem;
+    }
+
+    /* Body map markers - larger tap targets */
+    .body-marker {
+        cursor: pointer;
+    }
+
+    .body-marker circle {
+        r: 6px;
+        /* Larger visual size on mobile */
+    }
+
+    /* System detail modal - full screen on mobile */
+    #systemDetailModal>div {
+        max-width: 100%;
+        max-height: 95vh;
+        margin: 0;
+        border-radius: 1rem 1rem 0 0;
+    }
+
+    /* Touch-friendly spacing */
+    .severity-badge {
+        padding: 0.5rem 1rem;
+        font-size: 0.75rem;
+    }
+
+    /* Larger tap areas for details/summary */
+    details summary {
+        padding: 1rem;
+        margin: -0.5rem;
+    }
+
+    /* Prevent accidental zooming on input focus */
+    input,
+    select,
+    textarea {
+        font-size: 16px;
+    }
+
+    /* Smooth momentum scrolling */
+    * {
+        -webkit-overflow-scrolling: touch;
+    }
+
+    /* Prevent text selection on rapid taps */
+    .body-marker,
+    .system-marker,
+    button {
+        -webkit-touch-callout: none;
+        -webkit-user-select: none;
+        user-select: none;
+    }
+
+    /* Improve scrollable areas */
+    .overflow-y-auto,
+    .overflow-x-auto {
+        scroll-behavior: smooth;
+    }
+
+    /* Sticky header for mobile */
+    nav {
+        position: sticky;
+        top: 0;
+        z-index: 40;
+        background: inherit;
+    }
+
+    /* Chart canvas responsive sizing */
+    canvas {
+        max-width: 100%;
+        height: auto !important;
+    }
+}
+
+/* Landscape mobile optimizations */
+@media (max-width: 768px) and (orientation: landscape) {
+    #systemDetailModal>div {
+        max-height: 90vh;
+    }
+
+    .max-h-\[80vh\] {
+        max-height: 70vh !important;
+    }
+}
+
+/* Tablet touch optimizations */
+@media (min-width: 769px) and (max-width: 1024px) {
+
+    button,
+    .cursor-pointer {
+        min-height: 40px;
+        padding: 0.625rem 0.875rem;
+    }
+}
+
+/* Active state for touch feedback */
+@media (hover: none) and (pointer: coarse) {
+
+    /* This applies to touch devices only */
+    button:active,
+    .cursor-pointer:active,
+    .body-marker:active {
+        opacity: 0.7;
+        transform: scale(0.98);
+        transition: all 0.1s ease;
+    }
+
+    /* Highlight color for mobile taps */
+    * {
+        -webkit-tap-highlight-color: rgba(20, 184, 166, 0.2);
+    }
+}
+
+/* Safe area for devices with notches */
+@supports (padding: max(0px)) {
+    body {
+        padding-left: max(0px, env(safe-area-inset-left));
+        padding-right: max(0px, env(safe-area-inset-right));
+        padding-top: max(0px, env(safe-area-inset-top));
+        padding-bottom: max(0px, env(safe-area-inset-bottom));
+    }
+}
+
+/* Prevent horizontal scroll on mobile */
+@media (max-width: 768px) {
+
+    body,
+    html {
+        overflow-x: hidden;
+        max-width: 100vw;
+    }
+
+    /* Ensure modals fit screen */
+    .fixed.inset-0 {
+        max-width: 100vw;
+        max-height: 100vh;
+    }
+}
+
+/* Accessibility - Larger font sizes on mobile */
+@media (max-width: 768px) {
+    .text-xs {
+        font-size: 0.8125rem;
+    }
+
+    .text-sm {
+        font-size: 0.9375rem;
+    }
+}
+
+/* Touch gesture improvements */
+@media (pointer: coarse) {
+
+    /* Increase spacing between tappable elements */
+    .space-y-2>*+* {
+        margin-top: 0.75rem;
+    }
+
+    .space-y-3>*+* {
+        margin-top: 1rem;
+    }
+
+    /* Prevent accidental scroll while tapping */
+    .overflow-hidden {
+        touch-action: pan-y pinch-zoom;
+    }
+}

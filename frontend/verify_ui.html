@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MedLab Analyzer - Validation Summary</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+        rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="clinical_design_system.css">
+    <script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#0D9488",
+                        "primary-blue": "#0ea5e9",
+                        "background-dark": "#030711",
+                        "glass-border": "rgba(255, 255, 255, 0.1)",
+                    },
+                    fontFamily: {
+                        "sans": ["Inter", "sans-serif"],
+                        "mono": ["JetBrains Mono", "monospace"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "2xl": "1rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+    <style type="text/tailwindcss">
+        @layer utilities {
+            /* Light Mode Gradient - Soft Clinical Gray-Green */
+            .mesh-gradient {
+                background-color: #F0F5F5;
+                background-image: 
+                    radial-gradient(at 0% 0%, rgba(13, 148, 136, 0.03) 0, transparent 50%), 
+                    radial-gradient(at 100% 0%, rgba(13, 148, 136, 0.05) 0, transparent 50%);
+            }
+            
+            /* Dark Mode Gradient */
+            .dark .mesh-gradient {
+                background-color: #030711;
+                background-image: 
+                    radial-gradient(at 0% 0%, hsla(174, 80%, 15%, 1) 0, transparent 50%), 
+                    radial-gradient(at 100% 0%, hsla(180, 80%, 10%, 1) 0, transparent 50%),
+                    radial-gradient(at 50% 100%, hsla(170, 70%, 12%, 1) 0, transparent 50%);
+            }
+            
+            /* Light Mode Glass Panel - White with Teal-Gray Borders */
+            .glass-panel {
+                background: #FFFFFF;
+                backdrop-filter: none;
+                border: 1px solid #CBD5E1;
+                box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02), 0 2px 4px -1px rgba(0, 0, 0, 0.02);
+            }
+            
+            /* Dark Mode Glass Panel */
+            .dark .glass-panel {
+                background: rgba(15, 23, 42, 0.4);
+                backdrop-filter: blur(16px);
+                border: 1px solid rgba(255, 255, 255, 0.08);
+            }
+            
+            /* Light Mode Glass Pill - White with Slate Borders */
+            .glass-pill {
+                background: #FFFFFF;
+                backdrop-filter: none;
+                border: 1px solid #E2E8F0;
+                transition: all 0.3s ease;
+            }
+            
+            .glass-pill:hover {
+                background: #F9FAFB;
+                border-color: #CBD5E1;
+            }
+            
+            /* Dark Mode Glass Pill */
+            .dark .glass-pill {
+                background: rgba(255, 255, 255, 0.03);
+                backdrop-filter: blur(8px);
+                border: 1px solid rgba(255, 255, 255, 0.08);
+            }
+            
+            .dark .glass-pill:hover {
+                background: rgba(255, 255, 255, 0.06);
+                border-color: rgba(255, 255, 255, 0.15);
+            }
+            
+            /* Light Mode Glass Header - Subtle Slate Background */
+            .glass-header {
+                background: #F1F5F9;
+                backdrop-filter: none;
+                border-top: 1px solid #E2E8F0;
+                border-bottom: 1px solid #E2E8F0;
+            }
+            
+            /* Dark Mode Glass Header */
+            .dark .glass-header {
+                background: rgba(13, 148, 136, 0.08);
+                backdrop-filter: blur(12px);
+                border-top: 1px solid rgba(255, 255, 255, 0.1);
+                border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            }
+            
+            /* Scrollbar */
+            .custom-scrollbar::-webkit-scrollbar {
+                width: 4px;
+            }
+            .custom-scrollbar::-webkit-scrollbar-track {
+                background: transparent;
+            }
+            .custom-scrollbar::-webkit-scrollbar-thumb {
+                background: #CBD5E1;
+                border-radius: 10px;
+            }
+            .dark .custom-scrollbar::-webkit-scrollbar-thumb {
+                background: rgba(255, 255, 255, 0.1);
+            }
+            
+            /* Glow Effect */
+            .glow-teal {
+                box-shadow: 0 0 30px -10px rgba(13, 148, 136, 0.4);
+            }
+            
+            /* Text Precision */
+            .text-precision {
+                font-family: 'JetBrains Mono', monospace;
+                letter-spacing: -0.02em;
+            }
+            
+            /* Details Summary */
+            details > summary {
+                list-style: none;
+            }
+            details > summary::-webkit-details-marker {
+                display: none;
+            }
+        }
+    </style>
+</head>
+
+<body class="mesh-gradient font-sans h-screen flex flex-col text-slate-800 dark:text-slate-200 overflow-hidden">
+    <!-- Header -->
+    <header
+        class="flex shrink-0 items-center justify-between border-b border-glass-border px-8 py-3 bg-white/80 dark:bg-slate-950/40 backdrop-blur-xl z-20">
+        <div class="flex items-center gap-4">
+            <div
+                class="w-10 h-10 bg-primary rounded-xl flex items-center justify-center text-white shadow-lg shadow-primary/30 relative">
+                <span class="material-symbols-outlined text-xl">biotech</span>
+                <div class="absolute inset-0 bg-primary blur-lg opacity-40 rounded-xl"></div>
+            </div>
+            <div>
+                <h2 class="text-slate-900 dark:text-white text-lg font-bold leading-tight tracking-tight">MedLab <span
+                        class="text-primary">Analyzer</span></h2>
+                <p class="text-[10px] text-slate-500 font-medium uppercase tracking-widest">Clinical Intelligence</p>
+            </div>
+        </div>
+        <div class="flex items-center gap-8">
+            <button id="darkModeToggle"
+                class="glass-pill rounded-full p-2 text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white transition-colors">
+                <span class="material-symbols-outlined text-lg">light_mode</span>
+            </button>
+            <!-- Profile Dropdown -->
+            <div id="navActions" class="flex items-center gap-2"></div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="flex flex-1 overflow-hidden">
+        <!-- Left Sidebar - Validation Summary -->
+        <aside class="w-[420px] glass-panel border-r border-glass-border flex flex-col relative z-10">
+            <div class="flex-1 overflow-y-auto custom-scrollbar p-8">
+                <!-- Status & Progress -->
+                <div class="mb-10">
+                    <div class="flex justify-between items-center mb-3">
+                        <span id="statusLabel"
+                            class="text-primary text-[10px] font-bold uppercase tracking-[0.2em]">System Status:
+                            Validating</span>
+                        <span id="progressPercent" class="text-precision text-xs text-primary">0%</span>
+                    </div>
+                    <div class="h-1 w-full bg-white/5 rounded-full overflow-hidden">
+                        <div id="progressBar" class="h-full bg-primary glow-teal w-0 transition-all duration-1000">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Title -->
+                <div class="mb-10">
+                    <h1 class="text-slate-900 dark:text-white text-3xl font-bold tracking-tight mb-3">Validation Summary
+                    </h1>
+                    <p class="text-slate-500 dark:text-slate-400 text-sm leading-relaxed font-light">Precision
+                        cross-referencing completed
+                        across all extracted parameters.</p>
+                </div>
+
+                <!-- Metric Pills -->
+                <div class="space-y-3 mb-12">
+                    <div class="glass-pill rounded-full px-6 py-4 flex items-center justify-between group">
+                        <div class="flex items-center gap-3">
+                            <span class="material-symbols-outlined text-primary text-xl">verified_user</span>
+                            <p class="text-slate-600 dark:text-slate-300 text-sm font-medium">Successfully Validated</p>
+                        </div>
+                        <span id="validatedCount"
+                            class="text-precision text-xl font-semibold text-slate-900 dark:text-white">0</span>
+                    </div>
+                    <div class="glass-pill rounded-full px-6 py-4 flex items-center justify-between group">
+                        <div class="flex items-center gap-3">
+                            <span
+                                class="material-symbols-outlined text-emerald-600 dark:text-emerald-400 text-xl">auto_fix_high</span>
+                            <p class="text-slate-600 dark:text-slate-300 text-sm font-medium">Auto-Resolved</p>
+                        </div>
+                        <span id="autoResolvedCount"
+                            class="text-precision text-xl font-semibold text-slate-900 dark:text-white">0</span>
+                    </div>
+                    <div class="glass-pill rounded-full px-6 py-4 flex items-center justify-between group opacity-60">
+                        <div class="flex items-center gap-3">
+                            <span
+                                class="material-symbols-outlined text-slate-500 dark:text-slate-400 text-xl">priority_high</span>
+                            <p class="text-slate-600 dark:text-slate-300 text-sm font-medium">Pending Review</p>
+                        </div>
+                        <span id="pendingCount"
+                            class="text-precision text-xl font-semibold text-slate-900 dark:text-white">0</span>
+                    </div>
+                </div>
+
+                <!-- Clinical Protocols -->
+                <div class="space-y-8">
+                    <h3 class="text-slate-500 text-[10px] font-bold uppercase tracking-[0.25em]">Clinical Protocols</h3>
+                    <div class="space-y-6">
+                        <div class="flex gap-4 group">
+                            <div
+                                class="shrink-0 size-10 rounded-xl glass-pill flex items-center justify-center text-primary">
+                                <span class="material-symbols-outlined text-xl">rule</span>
+                            </div>
+                            <div>
+                                <p class="text-slate-700 dark:text-slate-100 text-sm font-medium">Unit Standardization
+                                </p>
+                                <p class="text-slate-500 text-xs mt-1 leading-relaxed">ISO-80000-1 compliance
+                                    verification.</p>
+                            </div>
+                        </div>
+                        <div class="flex gap-4 group">
+                            <div
+                                class="shrink-0 size-10 rounded-xl glass-pill flex items-center justify-center text-primary">
+                                <span class="material-symbols-outlined text-xl">translate</span>
+                            </div>
+                            <div>
+                                <p class="text-slate-700 dark:text-slate-100 text-sm font-medium">Ontology Normalization
+                                </p>
+                                <p class="text-slate-500 text-xs mt-1 leading-relaxed">SNOMED CT & LOINC mapping.</p>
+                            </div>
+                        </div>
+                        <div class="flex gap-4 group">
+                            <div
+                                class="shrink-0 size-10 rounded-xl glass-pill flex items-center justify-center text-primary">
+                                <span class="material-symbols-outlined text-xl">balance</span>
+                            </div>
+                            <div>
+                                <p class="text-slate-700 dark:text-slate-100 text-sm font-medium">Plausibility Check</p>
+                                <p class="text-slate-500 text-xs mt-1 leading-relaxed">Biological range variance
+                                    analysis.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Footer CTA -->
+            <div class="p-8 bg-slate-50/80 dark:bg-slate-950/20 backdrop-blur-md border-t border-glass-border">
+                <div class="flex flex-col gap-5">
+                    <div id="integrityIndicator"
+                        class="flex items-center gap-4 bg-emerald-500/5 border border-emerald-500/20 px-4 py-3 rounded-2xl">
+                        <div class="size-2 rounded-full bg-emerald-500 animate-pulse"></div>
+                        <div class="flex-1">
+                            <p
+                                class="text-emerald-600 dark:text-emerald-400 text-xs font-bold uppercase tracking-wider">
+                                Integrity Passed</p>
+                        </div>
+                    </div>
+                    <button id="confirmBtn"
+                        class="w-full bg-primary hover:bg-teal-400 text-white font-bold py-4 px-6 rounded-2xl transition-all flex items-center justify-center gap-3 shadow-2xl shadow-primary/20 group">
+                        <span class="text-sm">PROCEED TO INSIGHTS</span>
+                        <span
+                            class="material-symbols-outlined text-lg group-hover:translate-x-1 transition-transform">arrow_forward</span>
+                    </button>
+                    <button id="discardBtn"
+                        class="text-slate-500 text-[10px] text-center font-medium tracking-wide hover:text-slate-800 dark:hover:text-slate-300 transition-colors">
+                        START OVER
+                    </button>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Right Panel - Validated Parameters -->
+        <section class="flex-1 bg-transparent flex flex-col h-full overflow-hidden relative">
+            <!-- Panel Header -->
+            <div
+                class="flex items-center justify-between border-b border-glass-border px-10 py-8 bg-white/80 dark:bg-slate-950/20 backdrop-blur-md shrink-0">
+                <div class="flex items-center gap-5">
+                    <h2 class="text-slate-900 dark:text-white text-xl font-semibold tracking-tight">Validated Lab
+                        Parameters</h2>
+                    <span id="totalBadge"
+                        class="text-precision text-[10px] bg-primary/10 text-primary border border-primary/20 px-3 py-1 rounded-full">0
+                        ENTRIES</span>
+                </div>
+                <div class="flex items-center gap-4">
+                    <div
+                        class="flex items-center glass-pill rounded-full px-5 py-2 gap-3 group focus-within:ring-1 ring-primary/50 transition-all">
+                        <span class="material-symbols-outlined text-slate-500 text-lg">search</span>
+                        <input id="searchInput" type="text" placeholder="FILTER PARAMETERS..."
+                            class="bg-transparent border-none focus:ring-0 text-xs w-56 text-slate-800 dark:text-white placeholder-slate-400 dark:placeholder-slate-600 font-medium uppercase tracking-wider">
+                    </div>
+                    <button
+                        class="glass-pill rounded-full p-2 text-slate-400 hover:text-white hover:bg-white/10 transition-colors">
+                        <span class="material-symbols-outlined text-lg">filter_list</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Categorized Parameters -->
+            <div id="categorizedParams" class="flex-1 overflow-y-auto custom-scrollbar px-10 py-8 space-y-8">
+                <!-- Categories will be populated by JS -->
+            </div>
+        </section>
+    </main>
+
+    <script src="config.js"></script>
+    <script src="utils.js"></script>
+    <script src="auth.js"></script>
+    <script src="verify_ui.js"></script>
+    <script>
+            // Initialize auth and create profile dropdown
+            (async function () {
+                const user = await checkAuth();
+                const navElement = document.getElementById('navActions');
+                if (navElement) {
+                    createProfileDropdown(navElement, user);
+                }
+            })();
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html class="light" lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>History - Smart Lab Report Analyser</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+    <link rel="stylesheet" href="clinical_design_system.css">
+    <script src="https://cdn.tailwindcss.com?plugins=forms,typography"></script>
+    <script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        primary: "#0D9488", // Medical Teal
+                        charcoal: "#1F2937",
+                        "background-light": "#F9FAFB",
+                        "background-dark": "#020617",
+                    },
+                    fontFamily: {
+                        display: ["Inter", "sans-serif"],
+                    },
+                    boxShadow: {
+                        'glow': '0 0 20px -5px rgba(13, 148, 136, 0.5)',
+                    }
+                },
+            },
+        };
+    </script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .glass-panel {
+            backdrop-filter: blur(8px);
+        }
+
+        .favorite-btn.active .material-icons-round {
+            color: #f59e0b;
+        }
+
+        .report-card {
+            transition: all 0.2s ease;
+        }
+
+        .report-card:hover {
+            transform: translateY(-2px);
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(8px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.3s ease forwards;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .slide-up {
+            animation: slideUp 0.3s ease forwards;
+        }
+
+        .filter-pill {
+            transition: all 0.2s ease;
+        }
+
+        .filter-pill.active {
+            background: #0D9488;
+            color: white;
+            border-color: #0D9488;
+        }
+    </style>
+</head>
+
+<body class="bg-background-light dark:bg-background-dark text-charcoal dark:text-gray-100 min-h-screen flex flex-col">
+    <!-- Header -->
+    <header
+        class="border-b border-gray-200 dark:border-slate-700/50 bg-white/50 dark:bg-slate-900/95 backdrop-blur-md sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 bg-primary rounded-xl flex items-center justify-center text-white">
+                    <span class="material-icons-round">biotech</span>
+                </div>
+                <div>
+                    <h1 class="text-xl font-bold tracking-tight text-gray-900 dark:text-white">MedLab <span
+                            class="text-primary">Analyzer</span></h1>
+                    <p class="text-xs text-gray-500 dark:text-gray-400 font-medium">Report History</p>
+                </div>
+            </div>
+            <nav class="hidden md:flex items-center gap-8 text-sm font-medium text-gray-600 dark:text-gray-300">
+                <a href="upload_ui.html" class="hover:text-primary transition-colors flex items-center gap-1">
+                    <span class="material-icons-round text-lg">add_circle_outline</span> New Analysis
+                </a>
+                <a href="history.html" class="text-primary font-bold flex items-center gap-1">
+                    <span class="material-icons-round text-lg">history</span> History
+                </a>
+
+                <button id="darkModeToggle"
+                    class="flex items-center gap-2 p-1 bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-full hover:bg-slate-200 dark:hover:bg-slate-700 transition-all">
+                    <div
+                        class="w-8 h-8 rounded-full bg-white dark:bg-transparent flex items-center justify-center shadow-sm dark:shadow-none text-slate-900 dark:text-slate-400">
+                        <span class="material-icons-round text-lg">light_mode</span>
+                    </div>
+                    <div
+                        class="w-8 h-8 rounded-full dark:bg-slate-700 flex items-center justify-center text-slate-400 dark:text-white">
+                        <span class="material-icons-round text-lg">dark_mode</span>
+                    </div>
+                </button>
+
+                <div id="navActions" class="flex items-center gap-2"></div>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="flex-grow max-w-7xl w-full mx-auto px-6 py-8">
+
+        <!-- Page Header -->
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
+            <div>
+                <h2 class="text-3xl font-extrabold tracking-tight text-gray-900 dark:text-white">Analysis History</h2>
+                <p class="text-gray-500 dark:text-gray-400 mt-1">View, manage, and organize your past lab report
+                    analyses.</p>
+            </div>
+            <a href="upload_ui.html"
+                class="inline-flex items-center gap-2 px-5 py-3 bg-primary hover:bg-teal-700 text-white font-semibold rounded-xl transition-all shadow-lg shadow-teal-500/20 hover:shadow-glow">
+                <span class="material-icons-round text-lg">upload_file</span>
+                New Analysis
+            </a>
+        </div>
+
+        <!-- Stats Cards -->
+        <div id="statsBar" class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
+            <div
+                class="bg-white dark:bg-slate-900/60 border border-gray-100 dark:border-slate-700/30 rounded-2xl p-5 flex items-center gap-4">
+                <div class="w-12 h-12 bg-blue-50 dark:bg-blue-900/20 rounded-xl flex items-center justify-center">
+                    <span class="material-icons-round text-blue-600 dark:text-blue-400 text-2xl">description</span>
+                </div>
+                <div>
+                    <p class="text-2xl font-bold text-gray-900 dark:text-white" id="statTotal">-</p>
+                    <p class="text-xs text-gray-500 dark:text-gray-400 font-medium">Total Reports</p>
+                </div>
+            </div>
+            <div
+                class="bg-white dark:bg-slate-900/60 border border-gray-100 dark:border-slate-700/30 rounded-2xl p-5 flex items-center gap-4">
+                <div class="w-12 h-12 bg-amber-50 dark:bg-amber-900/20 rounded-xl flex items-center justify-center">
+                    <span class="material-icons-round text-amber-500 dark:text-amber-400 text-2xl">star</span>
+                </div>
+                <div>
+                    <p class="text-2xl font-bold text-gray-900 dark:text-white" id="statFavorites">-</p>
+                    <p class="text-xs text-gray-500 dark:text-gray-400 font-medium">Favorites</p>
+                </div>
+            </div>
+            <div
+                class="bg-white dark:bg-slate-900/60 border border-gray-100 dark:border-slate-700/30 rounded-2xl p-5 flex items-center gap-4">
+                <div class="w-12 h-12 bg-rose-50 dark:bg-rose-900/20 rounded-xl flex items-center justify-center">
+                    <span class="material-icons-round text-rose-500 dark:text-rose-400 text-2xl">flag</span>
+                </div>
+                <div>
+                    <p class="text-2xl font-bold text-gray-900 dark:text-white" id="statFlagged">-</p>
+                    <p class="text-xs text-gray-500 dark:text-gray-400 font-medium">Flagged</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Controls Bar -->
+        <div class="flex flex-col md:flex-row gap-4 mb-6">
+            <!-- Search -->
+            <div class="relative flex-grow">
+                <span
+                    class="material-icons-round absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-xl">search</span>
+                <input id="searchInput" type="text" placeholder="Search reports by filename..."
+                    class="w-full pl-12 pr-4 py-3 bg-white dark:bg-slate-900/60 border border-gray-200 dark:border-slate-700/50 rounded-xl text-sm text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all" />
+            </div>
+            <!-- Sort -->
+            <select id="sortSelect"
+                class="px-4 py-3 bg-white dark:bg-slate-900/60 border border-gray-200 dark:border-slate-700/50 rounded-xl text-sm text-gray-700 dark:text-gray-300 focus:outline-none focus:ring-2 focus:ring-primary/50 cursor-pointer min-w-[160px]">
+                <option value="newest">Newest First</option>
+                <option value="oldest">Oldest First</option>
+            </select>
+        </div>
+
+        <!-- Filter Pills -->
+        <div class="flex flex-wrap gap-2 mb-6">
+            <button
+                class="filter-pill active px-4 py-2 rounded-full text-sm font-medium border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-slate-700 transition-all"
+                data-filter="all">
+                <span class="material-icons-round text-sm align-middle mr-1">apps</span>All
+            </button>
+            <button
+                class="filter-pill px-4 py-2 rounded-full text-sm font-medium border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-slate-700 transition-all"
+                data-filter="favorites">
+                <span class="material-icons-round text-sm align-middle mr-1">star</span>Favorites
+            </button>
+            <button
+                class="filter-pill px-4 py-2 rounded-full text-sm font-medium border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-slate-700 transition-all"
+                data-filter="attention">
+                <span class="material-icons-round text-sm align-middle mr-1">warning</span>Needs Attention
+            </button>
+            <button
+                class="filter-pill px-4 py-2 rounded-full text-sm font-medium border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-slate-700 transition-all"
+                data-filter="normal">
+                <span class="material-icons-round text-sm align-middle mr-1">check_circle</span>Normal
+            </button>
+        </div>
+
+        <!-- Loading State -->
+        <div id="loading" class="hidden flex flex-col items-center justify-center py-20">
+            <div class="w-16 h-16 bg-teal-50 dark:bg-teal-900/30 rounded-full flex items-center justify-center mb-4">
+                <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+            </div>
+            <p class="text-gray-500 dark:text-gray-400 font-medium">Loading your reports...</p>
+        </div>
+
+        <!-- Empty State -->
+        <div id="emptyState"
+            class="hidden flex flex-col items-center justify-center py-20 bg-white dark:bg-slate-900/60 rounded-2xl border border-gray-100 dark:border-slate-700/30 shadow-sm text-center">
+            <div class="w-24 h-24 bg-gray-100 dark:bg-slate-800 rounded-full flex items-center justify-center mb-6">
+                <span class="material-icons-round text-5xl text-gray-300 dark:text-gray-600">folder_open</span>
+            </div>
+            <h3 class="text-xl font-bold text-gray-800 dark:text-white mb-2">No reports found</h3>
+            <p class="text-gray-500 dark:text-gray-400 mb-8 max-w-md">Upload your first lab report to get started with
+                advanced health insights and tracking.</p>
+            <a href="upload_ui.html"
+                class="flex items-center gap-2 px-6 py-3 bg-primary hover:bg-teal-700 text-white rounded-xl font-semibold transition-all shadow-lg shadow-teal-500/20">
+                <span class="material-icons-round">upload_file</span>
+                Start New Analysis
+            </a>
+        </div>
+
+        <!-- History List -->
+        <div id="historyList" class="grid gap-4"></div>
+
+    </main>
+
+    <!-- Delete Confirmation Modal -->
+    <div id="deleteModal"
+        class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div
+            class="bg-white dark:bg-slate-900 p-8 rounded-2xl shadow-2xl max-w-sm w-full border border-gray-200 dark:border-slate-700 slide-up">
+            <div
+                class="w-16 h-16 bg-rose-50 dark:bg-rose-900/20 rounded-full flex items-center justify-center mx-auto mb-5">
+                <span class="material-icons-round text-rose-500 text-3xl">delete_forever</span>
+            </div>
+            <h3 class="text-xl font-bold text-gray-900 dark:text-white text-center mb-2">Delete Report?</h3>
+            <p class="text-sm text-gray-500 dark:text-gray-400 text-center mb-6">This action cannot be undone. The
+                report and all its data will be permanently removed.</p>
+            <div class="flex gap-3">
+                <button id="cancelDeleteBtn"
+                    class="flex-1 px-4 py-3 bg-gray-100 dark:bg-slate-800 text-gray-700 dark:text-gray-300 font-medium rounded-xl hover:bg-gray-200 dark:hover:bg-slate-700 transition-colors">
+                    Cancel
+                </button>
+                <button id="confirmDeleteBtn"
+                    class="flex-1 px-4 py-3 bg-rose-500 hover:bg-rose-600 text-white font-semibold rounded-xl transition-colors flex items-center justify-center gap-2">
+                    <span class="material-icons-round text-lg">delete</span> Delete
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notes Modal -->
+    <div id="notesModal"
+        class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div
+            class="bg-white dark:bg-slate-900 p-8 rounded-2xl shadow-2xl max-w-md w-full border border-gray-200 dark:border-slate-700 slide-up">
+            <div class="flex items-center justify-between mb-5">
+                <h3 class="text-xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
+                    <span class="material-icons-round text-primary">edit_note</span> Report Notes
+                </h3>
+                <button id="closeNotesBtn"
+                    class="w-8 h-8 rounded-full hover:bg-gray-100 dark:hover:bg-slate-800 flex items-center justify-center transition-colors">
+                    <span class="material-icons-round text-gray-500">close</span>
+                </button>
+            </div>
+            <p id="notesReportName" class="text-sm text-gray-500 dark:text-gray-400 mb-4 truncate"></p>
+            <textarea id="notesTextarea" rows="5" placeholder="Add personal notes about this report..."
+                class="w-full px-4 py-3 bg-gray-50 dark:bg-slate-800/60 border border-gray-200 dark:border-slate-700/50 rounded-xl text-sm text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all resize-none"></textarea>
+            <div class="flex gap-3 mt-5">
+                <button id="cancelNotesBtn"
+                    class="flex-1 px-4 py-3 bg-gray-100 dark:bg-slate-800 text-gray-700 dark:text-gray-300 font-medium rounded-xl hover:bg-gray-200 dark:hover:bg-slate-700 transition-colors">
+                    Cancel
+                </button>
+                <button id="saveNotesBtn"
+                    class="flex-1 px-4 py-3 bg-primary hover:bg-teal-700 text-white font-semibold rounded-xl transition-colors flex items-center justify-center gap-2">
+                    <span class="material-icons-round text-lg">save</span> Save Notes
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notification Container -->
+    <div id="notification-container" class="fixed top-4 right-4 z-[60] flex flex-col gap-2 pointer-events-none"></div>
+
+    <!-- Footer -->
+    <footer class="p-8 border-t border-gray-100 dark:border-gray-900 text-center mt-auto">
+        <p class="text-sm text-gray-500 dark:text-gray-400">
+            © 2024 MedLab AI Intelligence. All Rights Reserved.
+        </p>
+    </footer>
+
+    <script src="config.js?v=99"></script>
+    <script src="utils.js"></script>
+    <script src="auth.js?v=3"></script>
+    <script src="history.js?v=2"></script>
+</body>
+
+</html>

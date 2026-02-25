@@ -1,0 +1,770 @@
+{
+    "metadata": {
+        "version": "1.0.0",
+        "last_updated": "2026-02-07",
+        "description": "Medical insights knowledge base with personalization support",
+        "total_rules": 119
+    },
+    "rules": [
+        {
+            "parameter": "Hemoglobin",
+            "status": "Low",
+            "insight": "Low hemoglobin levels can be associated with anemia, which may result from iron deficiency, vitamin deficiencies, or other factors. Consult a healthcare provider for proper evaluation.",
+            "severity": "MEDIUM",
+            "age_variants": {
+                "pediatric": "Low hemoglobin in children may indicate iron deficiency anemia, which is common during growth spurts. A healthcare provider can assess nutritional needs.",
+                "geriatric": "Low hemoglobin in older adults may be related to chronic disease, nutritional deficiencies, or bone marrow changes. Medical evaluation is recommended."
+            },
+            "lifestyle": {
+                "diet": [
+                    "Increase iron-rich foods (red meat, spinach, lentils)",
+                    "Pair iron sources with vitamin C for better absorption",
+                    "Consider iron-fortified cereals"
+                ],
+                "supplements": [
+                    "Iron supplementation may be recommended by your doctor",
+                    "Take iron supplements on an empty stomach if tolerated"
+                ],
+                "monitoring": [
+                    "Regular follow-up blood tests to track improvement"
+                ]
+            },
+            "symptom_questions": [
+                "Are you experiencing unusual fatigue or weakness?",
+                "Have you noticed pale skin or shortness of breath?",
+                "Do you have heavy menstrual periods? (for females)"
+            ],
+            "external_resources": [
+                {
+                    "name": "Mayo Clinic - Anemia",
+                    "url": "https://www.mayoclinic.org/diseases-conditions/anemia/symptoms-causes/syc-20351360"
+                },
+                {
+                    "name": "NIH - Iron Deficiency",
+                    "url": "https://www.nhlbi.nih.gov/health/anemia/iron-deficiency-anemia"
+                }
+            ]
+        },
+        {
+            "parameter": "Hemoglobin",
+            "status": "High",
+            "insight": "Elevated hemoglobin levels can occur due to dehydration, smoking, living at high altitudes, or other underlying conditions. Using this result for self-diagnosis is not recommended.",
+            "severity": "MEDIUM",
+            "lifestyle": {
+                "hydration": [
+                    "Ensure adequate daily water intake (8-10 glasses)",
+                    "Increase fluids during exercise or hot weather"
+                ],
+                "smoking": [
+                    "If you smoke, consider cessation programs",
+                    "Smoking can elevate hemoglobin levels"
+                ],
+                "monitoring": [
+                    "Track symptoms like headaches or dizziness"
+                ]
+            },
+            "symptom_questions": [
+                "Have you been adequately hydrated?",
+                "Do you smoke or use tobacco products?",
+                "Do you live at high altitude?"
+            ],
+            "external_resources": [
+                {
+                    "name": "Mayo Clinic - Polycythemia",
+                    "url": "https://www.mayoclinic.org/diseases-conditions/polycythemia-vera/symptoms-causes/syc-20355850"
+                }
+            ]
+        },
+        {
+            "parameter": "WBC Count",
+            "status": "High",
+            "insight": "A high white blood cell count (Leukocytosis) is often a sign of the body reacting to an infection or inflammation, but can have other causes.",
+            "severity": "MEDIUM",
+            "lifestyle": {
+                "rest": [
+                    "Get adequate sleep and rest to support immune function"
+                ],
+                "stress": [
+                    "Manage stress through relaxation techniques"
+                ],
+                "hygiene": [
+                    "Practice good hygiene to prevent infections"
+                ]
+            },
+            "symptom_questions": [
+                "Have you had recent infections or illness?",
+                "Are you experiencing fever or chills?",
+                "Have you been under significant stress?"
+            ],
+            "external_resources": [
+                {
+                    "name": "MedlinePlus - High WBC Count",
+                    "url": "https://medlineplus.gov/ency/article/003657.htm"
+                }
+            ]
+        },
+        {
+            "parameter": "WBC Count",
+            "status": "Low",
+            "insight": "A low white blood cell count (Leukopenia) can be seen in various conditions, including viral infections or bone marrow issues. Medical advice is recommended.",
+            "severity": "HIGH",
+            "lifestyle": {
+                "prevention": [
+                    "Avoid crowded places during flu season",
+                    "Practice strict hand hygiene"
+                ],
+                "diet": [
+                    "Eat a balanced diet rich in vitamins and minerals",
+                    "Consider vitamin B12 and folate sources"
+                ],
+                "precautions": [
+                    "Report any signs of infection immediately to your doctor"
+                ]
+            },
+            "symptom_questions": [
+                "Have you had recent viral infections?",
+                "Are you taking any new medications?",
+                "Do you have frequent infections?"
+            ],
+            "external_resources": [
+                {
+                    "name": "Mayo Clinic - Low WBC Count",
+                    "url": "https://www.mayoclinic.org/symptoms/low-white-blood-cell-count/basics/definition/sym-20050615"
+                }
+            ]
+        },
+        {
+            "parameter": "Platelet Count",
+            "status": "Low",
+            "insight": "Low platelet count (Thrombocytopenia) may affect blood clotting. Common causes include viral infections, nutrient deficiencies, or medication side effects.",
+            "severity": "HIGH",
+            "lifestyle": {
+                "safety": [
+                    "Avoid contact sports and activities with injury risk",
+                    "Use soft toothbrush to prevent gum bleeding"
+                ],
+                "diet": [
+                    "Include vitamin K-rich foods (leafy greens)",
+                    "Ensure adequate vitamin B12 and folate intake"
+                ],
+                "precautions": [
+                    "Report unusual bruising or bleeding immediately"
+                ]
+            },
+            "symptom_questions": [
+                "Have you noticed unusual bruising or bleeding?",
+                "Do you have frequent nosebleeds?",
+                "Are you taking any blood-thinning medications?"
+            ],
+            "external_resources": [
+                {
+                    "name": "Mayo Clinic - Thrombocytopenia",
+                    "url": "https://www.mayoclinic.org/diseases-conditions/thrombocytopenia/symptoms-causes/syc-20378293"
+                }
+            ]
+        },
+        {
+            "parameter": "Platelet Count",
+            "status": "High",
+            "insight": "High platelet count (Thrombocytosis) can satisfy a normal reaction to inflammation or infection, but persistent elevation should be evaluated by a doctor.",
+            "severity": "MEDIUM",
+            "lifestyle": {
+                "hydration": [
+                    "Stay well-hydrated to maintain blood flow"
+                ],
+                "activity": [
+                    "Maintain regular physical activity",
+                    "Avoid prolonged immobility"
+                ],
+                "monitoring": [
+                    "Follow up with your healthcare provider"
+                ]
+            },
+            "symptom_questions": [
+                "Have you had recent infections or surgery?",
+                "Do you experience headaches or dizziness?"
+            ],
+            "external_resources": [
+                {
+                    "name": "MedlinePlus - High Platelet Count",
+                    "url": "https://medlineplus.gov/ency/article/000580.htm"
+                }
+            ]
+        },
+        {
+            "parameter": "Fasting Blood Glucose",
+            "status": "High",
+            "insight": "Elevated fasting glucose levels can be associated with insulin resistance, pre-diabetes, or diabetes mellitus. Lifestyle modification and medical consultation are recommended.",
+            "severity": "HIGH",
+            "lifestyle": {
+                "diet": [
+                    "Reduce refined carbohydrates and sugary foods",
+                    "Choose whole grains over white bread/rice",
+                    "Increase fiber intake",
+                    "Control portion sizes"
+                ],
+                "exercise": [
+                    "Aim for 150 minutes of moderate exercise weekly",
+                    "Include both cardio and strength training",
+                    "Take short walks after meals"
+                ],
+                "weight": [
+                    "If overweight, even 5-10% weight loss can improve blood sugar"
+                ],
+                "monitoring": [
+                    "Check blood sugar regularly as recommended",
+                    "Keep a food diary"
+                ]
+            },
+            "symptom_questions": [
+                "Do you experience increased thirst or urination?",
+                "Have you noticed unexplained weight loss?",
+                "Do you feel unusually tired?"
+            ],
+            "external_resources": [
+                {
+                    "name": "CDC - Diabetes Prevention",
+                    "url": "https://www.cdc.gov/diabetes/prevention/index.html"
+                },
+                {
+                    "name": "Mayo Clinic - Prediabetes",
+                    "url": "https://www.mayoclinic.org/diseases-conditions/prediabetes/symptoms-causes/syc-20355278"
+                }
+            ]
+        },
+        {
+            "parameter": "Fasting Blood Glucose",
+            "status": "Low",
+            "insight": "Low fasting glucose (hypoglycemia) may be caused by medication, prolonged fasting, or hormonal imbalances. Please discuss with your healthcare provider.",
+            "severity": "MEDIUM",
+            "lifestyle": {
+                "diet": [
+                    "Eat regular meals and snacks",
+                    "Include protein and complex carbs",
+                    "Avoid skipping breakfast"
+                ],
+                "monitoring": [
+                    "Track when symptoms occur in relation to meals"
+                ],
+                "precautions": [
+                    "Carry a quick sugar source (glucose tablets, juice)"
+                ]
+            },
+            "symptom_questions": [
+                "Do you experience shakiness, sweating, or confusion?",
+                "Do symptoms improve after eating?",
+                "Are you taking diabetes medications?"
+            ],
+            "external_resources": [
+                {
+                    "name": "Mayo Clinic - Hypoglycemia",
+                    "url": "https://www.mayoclinic.org/diseases-conditions/hypoglycemia/symptoms-causes/syc-20373685"
+                }
+            ]
+        },
+        {
+            "parameter": "HbA1C",
+            "status": "High",
+            "insight": "Elevated HbA1C indicates poor long-term blood sugar control and may suggest pre-diabetes or diabetes. This marker reflects average glucose levels over the past 2-3 months.",
+            "severity": "HIGH",
+            "lifestyle": {
+                "diet": [
+                    "Follow a low glycemic index diet",
+                    "Limit processed foods and added sugars",
+                    "Eat balanced meals with protein, fiber, healthy fats"
+                ],
+                "exercise": [
+                    "Regular physical activity improves insulin sensitivity",
+                    "Start with 30 minutes daily walking"
+                ],
+                "weight": [
+                    "Weight loss can significantly improve HbA1C levels"
+                ],
+                "sleep": [
+                    "Aim for 7-9 hours of quality sleep",
+                    "Poor sleep affects blood sugar control"
+                ]
+            },
+            "symptom_questions": [
+                "Have you been monitoring your blood sugar at home?",
+                "Are you following a diabetes meal plan?",
+                "How has your energy level been?"
+            ],
+            "external_resources": [
+                {
+                    "name": "ADA - Understanding A1C",
+                    "url": "https://www.diabetes.org/a1c"
+                },
+                {
+                    "name": "NIH - Managing Diabetes",
+                    "url": "https://www.niddk.nih.gov/health-information/diabetes"
+                }
+            ]
+        },
+        {
+            "parameter": "Total Cholesterol",
+            "status": "High",
+            "insight": "Elevated total cholesterol is a risk factor for cardiovascular disease. Lifestyle modifications including diet and exercise, along with medical guidance, are recommended.",
+            "severity": "MEDIUM",
+            "lifestyle": {
+                "diet": [
+                    "Reduce saturated and trans fats",
+                    "Increase soluble fiber (oats, beans, fruits)",
+                    "Choose lean proteins and fish",
+                    "Add plant sterols/stanols",
+                    "Use heart-healthy oils (olive, canola)"
+                ],
+                "exercise": [
+                    "Aim for 150 minutes moderate aerobic activity weekly",
+                    "Exercise raises HDL (good cholesterol)"
+                ],
+                "weight": [
+                    "Losing 5-10 pounds can lower cholesterol"
+                ],
+                "smoking": [
+                    "Quit smoking to improve HDL levels"
+                ]
+            },
+            "symptom_questions": [
+                "Do you have a family history of high cholesterol or heart disease?",
+                "What does your typical diet look like?",
+                "How often do you exercise?"
+            ],
+            "external_resources": [
+                {
+                    "name": "AHA - Cholesterol Management",
+                    "url": "https://www.heart.org/en/health-topics/cholesterol"
+                },
+                {
+                    "name": "Mayo Clinic - High Cholesterol",
+                    "url": "https://www.mayoclinic.org/diseases-conditions/high-blood-cholesterol/symptoms-causes/syc-20350800"
+                }
+            ]
+        },
+        {
+            "parameter": "LDL Cholesterol",
+            "status": "High",
+            "insight": "Elevated LDL (bad cholesterol) is a major risk factor for atherosclerosis and cardiovascular disease. Diet, exercise, and possibly medication may be recommended.",
+            "severity": "HIGH",
+            "lifestyle": {
+                "diet": [
+                    "Limit saturated fat to <7% of calories",
+                    "Avoid trans fats completely",
+                    "Increase soluble fiber intake",
+                    "Add nuts and seeds in moderation"
+                ],
+                "exercise": [
+                    "Regular aerobic exercise can lower LDL"
+                ],
+                "weight": [
+                    "Even modest weight loss helps reduce LDL"
+                ]
+            },
+            "symptom_questions": [
+                "Do you have chest pain or shortness of breath?",
+                "What is your family cardiac history?"
+            ],
+            "external_resources": [
+                {
+                    "name": "NIH - LDL Cholesterol",
+                    "url": "https://www.nhlbi.nih.gov/health/blood-cholesterol"
+                }
+            ]
+        },
+        {
+            "parameter": "HDL Cholesterol",
+            "status": "Low",
+            "insight": "Low HDL (good cholesterol) is a risk factor for heart disease. Regular exercise and healthy fats can help increase HDL levels.",
+            "severity": "MEDIUM",
+            "lifestyle": {
+                "exercise": [
+                    "Aerobic exercise is most effective for raising HDL",
+                    "Aim for at least 30 minutes 5 days/week"
+                ],
+                "diet": [
+                    "Include healthy fats (olive oil, avocados, nuts)",
+                    "Eat fatty fish 2-3 times weekly",
+                    "Limit refined carbs"
+                ],
+                "weight": [
+                    "Weight loss can increase HDL"
+                ],
+                "smoking": [
+                    "Quitting smoking can raise HDL by up to 10%"
+                ],
+                "alcohol": [
+                    "Moderate alcohol may raise HDL (consult your doctor)"
+                ]
+            },
+            "symptom_questions": [
+                "Do you exercise regularly?",
+                "Do you smoke?",
+                "What does your typical diet include?"
+            ],
+            "external_resources": [
+                {
+                    "name": "Mayo Clinic - HDL Cholesterol",
+                    "url": "https://www.mayoclinic.org/diseases-conditions/high-blood-cholesterol/in-depth/hdl-cholesterol/art-20046388"
+                }
+            ]
+        },
+        {
+            "parameter": "Triglycerides",
+            "status": "High",
+            "insight": "Elevated triglycerides increase cardiovascular risk and can be associated with obesity, diabetes, or metabolic syndrome. Dietary changes and weight loss may help.",
+            "severity": "HIGH",
+            "lifestyle": {
+                "diet": [
+                    "Limit sugar and refined carbohydrates",
+                    "Avoid sugary beverages",
+                    "Reduce overall calorie intake",
+                    "Choose healthy fats",
+                    "Increase omega-3 fatty acids (fish, flaxseed)"
+                ],
+                "alcohol": [
+                    "Limit or avoid alcohol - it significantly raises triglycerides"
+                ],
+                "exercise": [
+                    "Regular physical activity can lower triglycerides by 20-30%"
+                ],
+                "weight": [
+                    "Weight loss is very effective for lowering triglycerides"
+                ]
+            },
+            "symptom_questions": [
+                "How much alcohol do you consume weekly?",
+                "Do you eat a lot of sweets or processed foods?"
+            ],
+            "external_resources": [
+                {
+                    "name": "AHA - Triglycerides",
+                    "url": "https://www.heart.org/en/health-topics/cholesterol/about-cholesterol/what-your-cholesterol-levels-mean"
+                }
+            ]
+        },
+        {
+            "parameter": "TSH",
+            "status": "High",
+            "insight": "Elevated TSH indicates hypothyroidism (underactive thyroid). The pituitary gland increases TSH to stimulate the thyroid. Thyroid hormone replacement may be needed.",
+            "severity": "MEDIUM",
+            "age_variants": {
+                "geriatric": "Hypothyroidism is common in older adults. Symptoms may be subtle and include fatigue, cold intolerance, and cognitive changes."
+            },
+            "lifestyle": {
+                "diet": [
+                    "Ensure adequate iodine intake (but don't over-supplement)",
+                    "Selenium-rich foods may support thyroid health",
+                    "Avoid excessive soy products"
+                ],
+                "medication": [
+                    "Take thyroid medication on empty stomach",
+                    "Be consistent with timing"
+                ],
+                "monitoring": [
+                    "Regular TSH monitoring needed to adjust medication"
+                ]
+            },
+            "symptom_questions": [
+                "Are you experiencing fatigue, weight gain, or cold intolerance?",
+                "Have you noticed dry skin or hair loss?",
+                "Are you feeling depressed or sluggish?"
+            ],
+            "external_resources": [
+                {
+                    "name": "Mayo Clinic - Hypothyroidism",
+                    "url": "https://www.mayoclinic.org/diseases-conditions/hypothyroidism/symptoms-causes/syc-20350284"
+                },
+                {
+                    "name": "ATA - Thyroid Information",
+                    "url": "https://www.thyroid.org/hypothyroidism/"
+                }
+            ]
+        },
+        {
+            "parameter": "TSH",
+            "status": "Low",
+            "insight": "Low TSH can indicate hyperthyroidism (overactive thyroid) or excessive thyroid hormone replacement. The pituitary reduces TSH when thyroid hormone levels are high.",
+            "severity": "MEDIUM",
+            "lifestyle": {
+                "stress": [
+                    "Manage stress - it can affect thyroid function"
+                ],
+                "diet": [
+                    "Avoid excessive iodine intake",
+                    "Limit caffeine if experiencing palpitations"
+                ],
+                "monitoring": [
+                    "Regular thyroid function monitoring important"
+                ]
+            },
+            "symptom_questions": [
+                "Have you experienced rapid heartbeat or palpitations?",
+                "Are you losing weight unintentionally?",
+                "Do you feel anxious or jittery?",
+                "Are you taking thyroid medication?"
+            ],
+            "external_resources": [
+                {
+                    "name": "Mayo Clinic - Hyperthyroidism",
+                    "url": "https://www.mayoclinic.org/diseases-conditions/hyperthyroidism/symptoms-causes/syc-20373659"
+                }
+            ]
+        },
+        {
+            "parameter": "Creatinine",
+            "status": "High",
+            "insight": "Elevated creatinine levels may indicate reduced kidney function or dehydration. This is an important marker for kidney health and warrants medical evaluation.",
+            "severity": "HIGH",
+            "lifestyle": {
+                "hydration": [
+                    "Ensure adequate fluid intake unless restricted"
+                ],
+                "diet": [
+                    "May need to limit protein intake (consult doctor)",
+                    "Monitor sodium and potassium intake",
+                    "Limit phosphorus if kidney disease confirmed"
+                ],
+                "medications": [
+                    "Avoid NSAIDs (ibuprofen, naproxen) - can harm kidneys",
+                    "Review all medications with doctor"
+                ],
+                "blood_pressure": [
+                    "Control blood pressure to protect kidneys"
+                ]
+            },
+            "symptom_questions": [
+                "Are you urinating less frequently?",
+                "Do you have swelling in legs or ankles?",
+                "Are you experiencing fatigue or confusion?"
+            ],
+            "external_resources": [
+                {
+                    "name": "NKF - Kidney Disease",
+                    "url": "https://www.kidney.org/atoz/content/about-chronic-kidney-disease"
+                },
+                {
+                    "name": "NIH - Creatinine Test",
+                    "url": "https://www.niddk.nih.gov/health-information/kidney-disease"
+                }
+            ]
+        },
+        {
+            "parameter": "BUN",
+            "status": "High",
+            "insight": "Elevated BUN (Blood Urea Nitrogen) can indicate reduced kidney function, dehydration, high protein diet, or other conditions. Follow up with your healthcare provider.",
+            "severity": "MEDIUM",
+            "lifestyle": {
+                "hydration": [
+                    "Increase fluid intake if dehydrated"
+                ],
+                "diet": [
+                    "May need to moderate protein intake",
+                    "Ensure balanced nutrition"
+                ],
+                "monitoring": [
+                    "Track urine output and color"
+                ]
+            },
+            "symptom_questions": [
+                "Have you been adequately hydrated?",
+                "Are you eating a very high protein diet?",
+                "Do you have any urinary symptoms?"
+            ],
+            "external_resources": [
+                {
+                    "name": "MedlinePlus - BUN Test",
+                    "url": "https://medlineplus.gov/lab-tests/bun-blood-urea-nitrogen/"
+                }
+            ]
+        },
+        {
+            "parameter": "Vitamin D",
+            "status": "Low",
+            "insight": "Vitamin D deficiency can affect bone health, immune function, and overall well-being. Supplementation and sun exposure may be recommended.",
+            "severity": "MEDIUM",
+            "lifestyle": {
+                "sunlight": [
+                    "Get 10-30 minutes of midday sun several times weekly (with sun safety)",
+                    "Sun exposure is best source of vitamin D"
+                ],
+                "diet": [
+                    "Eat vitamin D-rich foods (fatty fish, egg yolks, fortified milk)",
+                    "Consider fortified cereals and orange juice"
+                ],
+                "supplements": [
+                    "Your doctor may recommend 1000-2000 IU daily",
+                    "Take with food containing fat for better absorption"
+                ],
+                "bone_health": [
+                    "Ensure adequate calcium intake (works with vitamin D)"
+                ]
+            },
+            "symptom_questions": [
+                "Do you spend most time indoors?",
+                "Are you experiencing bone or muscle pain?",
+                "Do you have frequent infections?"
+            ],
+            "external_resources": [
+                {
+                    "name": "NIH - Vitamin D",
+                    "url": "https://ods.od.nih.gov/factsheets/VitaminD-HealthProfessional/"
+                },
+                {
+                    "name": "Mayo Clinic - Vitamin D Deficiency",
+                    "url": "https://www.mayoclinic.org/drugs-supplements-vitamin-d/art-20363792"
+                }
+            ]
+        },
+        {
+            "parameter": "Vitamin B12",
+            "status": "Low",
+            "insight": "Vitamin B12 deficiency can cause anemia, neurological symptoms, and fatigue. Common in vegetarians, elderly, or those with absorption issues. Supplementation is often effective.",
+            "severity": "MEDIUM",
+            "age_variants": {
+                "geriatric": "B12 absorption decreases with age. Older adults may need B12 supplements or injections even with adequate dietary intake."
+            },
+            "lifestyle": {
+                "diet": [
+                    "Increase B12-rich foods (meat, fish, dairy, eggs)",
+                    "Vegetarians: use fortified foods or supplements",
+                    "Consider fortified nutritional yeast, plant milks"
+                ],
+                "supplements": [
+                    "Oral supplements or sublingual tablets",
+                    "Injections may be needed if absorption is impaired"
+                ],
+                "monitoring": [
+                    "Retest after 2-3 months of supplementation"
+                ]
+            },
+            "symptom_questions": [
+                "Are you vegetarian or vegan?",
+                "Do you experience numbness or tingling in hands/feet?",
+                "Have you noticed memory problems or confusion?",
+                "Do you feel weak or tired?"
+            ],
+            "external_resources": [
+                {
+                    "name": "NIH - Vitamin B12",
+                    "url": "https://ods.od.nih.gov/factsheets/VitaminB12-HealthProfessional/"
+                },
+                {
+                    "name": "Mayo Clinic - B12 Deficiency",
+                    "url": "https://www.mayoclinic.org/diseases-conditions/vitamin-deficiency-anemia/symptoms-causes/syc-20355025"
+                }
+            ]
+        },
+        {
+            "parameter": "SGPT",
+            "status": "High",
+            "insight": "Elevated SGPT (ALT) is more specific to liver damage and can be caused by hepatitis, fatty liver disease, medications, or alcohol use.",
+            "severity": "MEDIUM",
+            "lifestyle": {
+                "alcohol": [
+                    "Limit or avoid alcohol completely"
+                ],
+                "diet": [
+                    "Reduce saturated fats and refined carbs",
+                    "Increase fruits, vegetables, whole grains",
+                    "Avoid excessive fructose and added sugars"
+                ],
+                "weight": [
+                    "Weight loss can improve fatty liver disease",
+                    "Even 10% weight loss shows benefits"
+                ],
+                "exercise": [
+                    "Regular physical activity improves liver health"
+                ],
+                "medications": [
+                    "Review all medications and supplements with doctor",
+                    "Some can affect liver function"
+                ]
+            },
+            "symptom_questions": [
+                "Do you drink alcohol regularly?",
+                "Are you taking any new medications or supplements?",
+                "Have you experienced jaundice or abdominal pain?"
+            ],
+            "external_resources": [
+                {
+                    "name": "Mayo Clinic - Liver Disease",
+                    "url": "https://www.mayoclinic.org/diseases-conditions/liver-problems/symptoms-causes/syc-20374502"
+                },
+                {
+                    "name": "NIDDK - NAFLD",
+                    "url": "https://www.niddk.nih.gov/health-information/liver-disease/nafld-nash"
+                }
+            ]
+        },
+        {
+            "parameter": "SGOT",
+            "status": "High",
+            "insight": "Elevated SGOT (AST) can indicate liver damage, muscle injury, or heart problems. Further evaluation is needed to determine the cause.",
+            "severity": "MEDIUM",
+            "lifestyle": {
+                "alcohol": [
+                    "Limit alcohol intake"
+                ],
+                "exercise": [
+                    "Intense exercise can temporarily elevate AST",
+                    "Allow adequate recovery between workouts"
+                ],
+                "medications": [
+                    "Review medications with healthcare provider"
+                ]
+            },
+            "symptom_questions": [
+                "Have you recently done intense physical activity?",
+                "Do you have any chest pain or discomfort?",
+                "Are you experiencing liver-related symptoms?"
+            ],
+            "external_resources": [
+                {
+                    "name": "MedlinePlus - Liver Function Tests",
+                    "url": "https://medlineplus.gov/lab-tests/liver-function-tests/"
+                }
+            ]
+        },
+        {
+            "parameter": "Uric Acid",
+            "status": "High",
+            "insight": "Elevated uric acid (Hyperuricemia) can be associated with gout, kidney stones, or kidney disease. Dietary modifications may be recommended.",
+            "severity": "MEDIUM",
+            "lifestyle": {
+                "diet": [
+                    "Limit high-purine foods (red meat, organ meats, certain seafood)",
+                    "Reduce alcohol, especially beer",
+                    "Limit high-fructose corn syrup and sugary drinks",
+                    "Increase low-fat dairy products",
+                    "Drink cherry juice (may help lower uric acid)"
+                ],
+                "hydration": [
+                    "Drink plenty of water (helps flush uric acid)",
+                    "Aim for 8-12 glasses daily"
+                ],
+                "weight": [
+                    "Gradual weight loss can reduce uric acid",
+                    "Avoid crash diets (can temporarily raise levels)"
+                ],
+                "coffee": [
+                    "Moderate coffee intake may lower uric acid levels"
+                ]
+            },
+            "symptom_questions": [
+                "Have you experienced joint pain, especially in big toe?",
+                "Do you have a history of gout attacks?",
+                "Have you had kidney stones?"
+            ],
+            "external_resources": [
+                {
+                    "name": "Mayo Clinic - Gout",
+                    "url": "https://www.mayoclinic.org/diseases-conditions/gout/symptoms-causes/syc-20372897"
+                },
+                {
+                    "name": "Arthritis Foundation - Gout Diet",
+                    "url": "https://www.arthritis.org/health-wellness/healthy-living/nutrition/anti-inflammatory/best-foods-for-gout"
+                }
+            ]
+        }
+    ]
+}

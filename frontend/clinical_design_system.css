@@ -1,0 +1,555 @@
+/* ========================================
+   CLINICAL SEVERITY DESIGN SYSTEM
+   Medical-grade visual encoding for lab results
+   ======================================== */
+
+:root {
+    /* Severity Colors - Light Mode */
+    --severity-normal-bg: #F1F5F9;
+    --severity-normal-border: #CBD5E1;
+    --severity-normal-text: #64748B;
+
+    --severity-mild-bg: #FEF3C7;
+    --severity-mild-border: #FDE68A;
+    --severity-mild-text: #B45309;
+
+    --severity-moderate-bg: #FFEDD5;
+    --severity-moderate-border: #FED7AA;
+    --severity-moderate-text: #C2410C;
+
+    --severity-critical-bg: #FEE2E2;
+    --severity-critical-border: #FECACA;
+    --severity-critical-text: #991B1B;
+
+    /* Confidence Colors */
+    --confidence-high: #14B8A6;
+    --confidence-medium: #3B82F6;
+    --confidence-low: #F59E0B;
+
+    /* Trend Colors */
+    --trend-improving: #10B981;
+    --trend-stable: #6366F1;
+    --trend-worsening: #EF4444;
+}
+
+html.dark {
+    /* Severity Colors - Dark Mode (same hue, adjusted brightness) */
+    --severity-normal-bg: rgba(148, 163, 184, 0.1);
+    --severity-normal-border: rgba(148, 163, 184, 0.2);
+    --severity-normal-text: #94A3B8;
+
+    --severity-mild-bg: rgba(251, 191, 36, 0.1);
+    --severity-mild-border: rgba(251, 191, 36, 0.2);
+    --severity-mild-text: #FBBF24;
+
+    --severity-moderate-bg: rgba(249, 115, 22, 0.1);
+    --severity-moderate-border: rgba(249, 115, 22, 0.2);
+    --severity-moderate-text: #FB923C;
+
+    --severity-critical-bg: rgba(239, 68, 68, 0.1);
+    --severity-critical-border: rgba(239, 68, 68, 0.2);
+    --severity-critical-text: #F87171;
+
+    /* Confidence Colors - Dark Mode */
+    --confidence-high: #5EEAD4;
+    --confidence-medium: #60A5FA;
+    --confidence-low: #FBBF24;
+
+    /* Trend Colors - Dark Mode */
+    --trend-improving: #34D399;
+    --trend-stable: #818CF8;
+    --trend-worsening: #F87171;
+}
+
+/* ========================================
+   SEVERITY BADGE COMPONENT
+   ======================================== */
+
+.severity-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    padding: 0.25rem 0.75rem;
+    border-radius: 9999px;
+    font-size: 0.625rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    transition: all 0.2s ease;
+}
+
+.severity-badge-normal {
+    background: var(--severity-normal-bg);
+    border: 1px solid var(--severity-normal-border);
+    color: var(--severity-normal-text);
+}
+
+.severity-badge-mild {
+    background: var(--severity-mild-bg);
+    border: 1px solid var(--severity-mild-border);
+    color: var(--severity-mild-text);
+}
+
+.severity-badge-moderate {
+    background: var(--severity-moderate-bg);
+    border: 1px solid var(--severity-moderate-border);
+    color: var(--severity-moderate-text);
+}
+
+.severity-badge-critical {
+    background: var(--severity-critical-bg);
+    border: 1px solid var(--severity-critical-border);
+    color: var(--severity-critical-text);
+}
+
+/* ========================================
+   SEVERITY DOT INDICATOR
+   ======================================== */
+
+.severity-dot {
+    width: 0.5rem;
+    height: 0.5rem;
+    border-radius: 9999px;
+    flex-shrink: 0;
+    display: inline-block;
+}
+
+.severity-dot-normal {
+    background: var(--severity-normal-text);
+    box-shadow: 0 0 6px rgba(100, 116, 139, 0.3);
+}
+
+.severity-dot-mild {
+    background: var(--severity-mild-text);
+    box-shadow: 0 0 6px rgba(245, 158, 11, 0.4);
+}
+
+.severity-dot-moderate {
+    background: var(--severity-moderate-text);
+    box-shadow: 0 0 6px rgba(249, 115, 22, 0.5);
+}
+
+.severity-dot-critical {
+    background: var(--severity-critical-text);
+    box-shadow: 0 0 8px rgba(239, 68, 68, 0.6);
+    animation: pulse-critical 2s ease-in-out infinite;
+}
+
+/* ========================================
+   CONFIDENCE INDICATOR
+   ======================================== */
+
+.confidence-indicator {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.confidence-bar-container {
+    width: 100%;
+    height: 0.375rem;
+    background: var(--severity-normal-bg);
+    border-radius: 9999px;
+    overflow: hidden;
+}
+
+.confidence-bar {
+    height: 100%;
+    border-radius: 9999px;
+    transition: width 0.8s ease, background-color 0.3s ease;
+}
+
+.confidence-bar.confidence-high {
+    background: var(--confidence-high);
+}
+
+.confidence-bar.confidence-medium {
+    background: var(--confidence-medium);
+}
+
+.confidence-bar.confidence-low {
+    background: var(--confidence-low);
+}
+
+/* ========================================
+   TREND BADGES
+   ======================================== */
+
+.trend-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.25rem 0.5rem;
+    border-radius: 9999px;
+    font-size: 0.625rem;
+    font-weight: 600;
+    transition: all 0.2s ease;
+}
+
+.trend-improving {
+    background: rgba(16, 185, 129, 0.1);
+    color: var(--trend-improving);
+    border: 1px solid rgba(16, 185, 129, 0.2);
+}
+
+.trend-stable {
+    background: rgba(99, 102, 241, 0.1);
+    color: var(--trend-stable);
+    border: 1px solid rgba(99, 102, 241, 0.2);
+}
+
+.trend-worsening {
+    background: rgba(239, 68, 68, 0.1);
+    color: var(--trend-worsening);
+    border: 1px solid rgba(239, 68, 68, 0.2);
+}
+
+/* ========================================
+   ANIMATIONS
+   ======================================== */
+
+/* Critical Pulse Animation */
+@keyframes pulse-critical {
+
+    0%,
+    100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+
+    50% {
+        opacity: 0.7;
+        transform: scale(1.15);
+    }
+}
+
+/* Attention Marker Animation */
+@keyframes attention-pulse {
+
+    0%,
+    100% {
+        opacity: 1;
+        box-shadow: 0 0 0 0 rgba(249, 115, 22, 0.7);
+    }
+
+    50% {
+        opacity: 0.8;
+        box-shadow: 0 0 0 4px rgba(249, 115, 22, 0);
+    }
+}
+
+/* Marker Pulse for Body Map */
+@keyframes marker-pulse {
+
+    0%,
+    100% {
+        opacity: 0.6;
+        transform: scale(1);
+    }
+
+    50% {
+        opacity: 0;
+        transform: scale(1.8);
+    }
+}
+
+/* ========================================
+   ATTENTION MARKERS
+   ======================================== */
+
+.attention-required {
+    position: relative;
+}
+
+.attention-required::before {
+    content: '';
+    position: absolute;
+    top: -2px;
+    right: -2px;
+    width: 8px;
+    height: 8px;
+    background: var(--severity-moderate-text);
+    border-radius: 50%;
+    animation: attention-pulse 1.5s ease-in-out infinite;
+    z-index: 10;
+}
+
+/* ========================================
+   INTERACTIVE BODY MAP MARKERS
+   ======================================== */
+
+.system-marker {
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.system-marker:hover .marker-bg {
+    opacity: 0.8;
+    stroke-width: 3;
+}
+
+.marker-pulse.critical {
+    animation: marker-pulse 2s ease-in-out infinite;
+}
+
+/* ========================================
+   AUDIT TRAIL STYLES
+   ======================================== */
+
+.audit-trail-section summary {
+    cursor: pointer;
+    user-select: none;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 0;
+    transition: color 0.2s ease;
+}
+
+.audit-trail-section summary:hover {
+    color: var(--confidence-high);
+}
+
+.audit-trail-section[open] summary {
+    margin-bottom: 0.75rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--severity-normal-border);
+}
+
+.audit-field {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.5rem;
+    padding: 0.375rem 0;
+}
+
+.audit-label {
+    font-weight: 600;
+    color: var(--severity-normal-text);
+    min-width: 5rem;
+    flex-shrink: 0;
+    font-size: 0.75rem;
+}
+
+.audit-value {
+    flex: 1;
+    font-size: 0.75rem;
+    line-height: 1.5;
+}
+
+.audit-value code {
+    background: var(--severity-normal-bg);
+    padding: 0.125rem 0.375rem;
+    border-radius: 0.25rem;
+    font-family: 'Courier New', monospace;
+    font-size: 0.625rem;
+}
+
+/* ========================================
+   EXPLAINABILITY PANEL
+   ======================================== */
+
+.explainability-step {
+    padding: 1rem;
+    border-left: 3px solid var(--severity-normal-border);
+    margin-left: 1rem;
+    transition: border-color 0.3s ease;
+}
+
+.explainability-step:hover {
+    border-color: var(--confidence-high);
+}
+
+.explainability-step .step-number {
+    width: 2rem;
+    height: 2rem;
+    background: var(--severity-normal-bg);
+    border-radius: 9999px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 0.875rem;
+    color: var(--severity-normal-text);
+}
+
+/* ========================================
+   PRIORITY BADGES (for follow-up tests)
+   ======================================== */
+
+.priority-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.125rem 0.5rem;
+    border-radius: 9999px;
+    font-size: 0.625rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.priority-high {
+    background: var(--severity-critical-bg);
+    color: var(--severity-critical-text);
+    border: 1px solid var(--severity-critical-border);
+}
+
+.priority-medium {
+    background: var(--severity-moderate-bg);
+    color: var(--severity-moderate-text);
+    border: 1px solid var(--severity-moderate-border);
+}
+
+.priority-low {
+    background: var(--severity-mild-bg);
+    color: var(--severity-mild-text);
+    border: 1px solid var(--severity-mild-border);
+}
+
+/* ========================================
+   RESPONSIVE ADJUSTMENTS
+   ======================================== */
+
+@media (max-width: 768px) {
+    .severity-badge {
+        font-size: 0.5625rem;
+        padding: 0.1875rem 0.5rem;
+    }
+
+    .audit-field {
+        flex-direction: column;
+        gap: 0.25rem;
+    }
+
+    .audit-label {
+        min-width: auto;
+    }
+}
+
+/* ========================================
+   ACCESSIBILITY
+   ======================================== */
+
+/* Respect reduced motion preference */
+@media (prefers-reduced-motion: reduce) {
+
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}
+
+/* High contrast mode adjustments */
+@media (prefers-contrast: high) {
+    .severity-badge {
+        border-width: 2px;
+    }
+
+    .confidence-bar-container {
+        border: 1px solid currentColor;
+    }
+}
+
+/* ========================================
+   MINIMALIST DOCUMENTATION UTILITIES
+   ======================================== */
+
+/* Outline Icon Base */
+.icon-outline {
+    stroke-width: 1.5px;
+    fill: none;
+    stroke: currentColor;
+    transition: all 0.3s ease;
+}
+
+.icon-outline:hover {
+    stroke-width: 2px;
+}
+
+/* Card Hover */
+.card-hover {
+    transition: all 0.3s ease;
+    border: 1px solid var(--severity-normal-border);
+}
+
+.card-hover:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.025);
+    border-color: var(--confidence-high);
+}
+
+/* Nav Active */
+.nav-link-active {
+    color: var(--confidence-high);
+    position: relative;
+}
+
+.nav-link-active::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background-color: var(--confidence-high);
+    border-radius: 999px;
+}
+
+/* Process Timeline */
+.process-line {
+    position: absolute;
+    top: 2rem;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background: var(--severity-normal-border);
+    z-index: 0;
+}
+
+.process-step {
+    position: relative;
+    z-index: 10;
+    background: white;
+}
+
+html.dark .process-step {
+    background: rgb(15 23 42);
+}
+
+/* Sticky Sidebar */
+.doc-nav-link {
+    display: block;
+    padding-left: 1rem;
+    border-left: 2px solid transparent;
+    color: var(--severity-normal-text);
+    transition: all 0.2s;
+}
+
+.doc-nav-link:hover,
+.doc-nav-link.active {
+    color: var(--confidence-high);
+    border-left-color: var(--confidence-high);
+}
+
+/* Animation */
+@keyframes fade-in-up {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.animate-fade-in-up {
+    animation: fade-in-up 0.5s ease-out forwards;
+}
+
+   

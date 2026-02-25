@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MedLab Analyzer - Documentation</title>
+    <!-- Fonts matched to Landing Page -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=Inter:wght@400;500;600&display=swap"
+        rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+
+    <!-- Styles -->
+    <script src="https://cdn.tailwindcss.com?plugins=forms,typography"></script>
+    <link href="clinical_design_system.css" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        // Landing Page Palette
+                        primary: "#3B82F6", // Accent Blue from landing
+                        slate: {
+                            50: "#F8FAFC",
+                            100: "#F1F5F9",
+                            400: "#94A3B8",
+                            600: "#475569",
+                            900: "#0F172A",
+                        },
+                        "landing-bg": "#EAEFF5",
+                    },
+                    fontFamily: {
+                        sans: ["Inter", "sans-serif"],
+                        display: ["Poppins", "sans-serif"],
+                    },
+                },
+            },
+        };
+    </script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #EAEFF5;
+            background-image: radial-gradient(circle at 10% 10%, rgba(235, 240, 255, 1) 0%, rgba(240, 230, 250, 0.5) 100%);
+            color: #0F172A;
+            scroll-behavior: smooth;
+        }
+
+        h1,
+        h2,
+        h3,
+        h4,
+        .font-display {
+            font-family: 'Poppins', sans-serif;
+        }
+
+        /* Glass Cards matched to landing aesthetics */
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.65);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.8);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.025);
+        }
+
+        .glass-panel:hover {
+            background: rgba(255, 255, 255, 0.85);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05);
+            transform: translateY(-2px);
+            transition: all 0.3s ease;
+        }
+
+        /* Sidebar styles */
+        .sidebar {
+            background: transparent;
+        }
+
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+        /* Icon outlines with Landing Blue */
+        .icon-outline {
+            stroke: #3B82F6;
+        }
+
+        /* --- NAVBAR STYLES FROM LANDING PAGE --- */
+        :root {
+            --light-text-primary: #0F172A;
+            --light-text-secondary: #475569;
+            --accent-blue: #3B82F6;
+        }
+
+        .landing-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 2rem 4rem;
+            /* Matching reference padding EXACTLY */
+            position: absolute;
+            width: 100%;
+            top: 0;
+            z-index: 100;
+            background: transparent;
+            border: none;
+        }
+
+        .brand-logo {
+            font-family: 'Poppins', sans-serif;
+            font-weight: 800;
+            font-size: 1.25rem;
+            color: var(--light-text-primary);
+            text-decoration: none;
+            letter-spacing: -0.02em;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2.5rem;
+            align-items: center;
+        }
+
+        .nav-link {
+            text-decoration: none;
+            color: var(--light-text-secondary);
+            font-weight: 500;
+            font-size: 0.9rem;
+            transition: color 0.2s;
+        }
+
+        .nav-link:hover {
+            color: var(--light-text-primary);
+        }
+
+        .btn-pill {
+            padding: 0.75rem 2rem;
+            border-radius: 9999px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            text-decoration: none;
+            transition: transform 0.2s;
+            background: var(--accent-blue);
+            color: white;
+            box-shadow: 0 4px 14px rgba(59, 130, 246, 0.3);
+        }
+
+        .btn-pill:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4);
+        }
+    </style>
+</head>
+
+<body class="antialiased min-h-screen flex flex-col">
+
+    <!-- Navbar Identical to Landing Page -->
+    <nav class="landing-nav">
+        <a href="index.html" class="brand-logo">
+            <span class="material-icons-round" style="color:#3B82F6">analytics</span>
+            Smart Lab.
+        </a>
+
+        <div class="nav-links">
+            <a href="documentation_ui.html" class="nav-link"
+                style="color: var(--light-text-primary); font-weight: 600;">How it Works</a>
+            <a href="login.html" class="nav-link">Login</a>
+            <a href="register.html" class="btn-pill">Sign Up</a>
+        </div>
+    </nav>
+
+    <div class="flex-grow max-w-[1400px] mx-auto w-full px-4 md:px-16 py-12 pt-32 flex flex-col md:flex-row gap-16">
+
+        <!-- Sticky Sidebar -->
+        <aside class="hidden md:block w-64 flex-shrink-0">
+            <div class="sticky top-32">
+                <h5 class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-6 px-4">Contents</h5>
+                <nav class="space-y-1 relative" id="page-nav">
+                    <!-- Vertical Line -->
+                    <div class="absolute left-0 top-2 bottom-2 w-0.5 bg-slate-200 ml-4"></div>
+
+                    <a href="#intro"
+                        class="doc-nav-link text-sm py-2 pl-8 border-l-2 border-transparent text-slate-600 hover:text-blue-600">Introduction</a>
+                    <a href="#getting-started"
+                        class="doc-nav-link text-sm py-2 pl-8 border-l-2 border-transparent text-slate-600 hover:text-blue-600">Getting
+                        Started</a>
+                    <a href="#how-it-works"
+                        class="doc-nav-link text-sm py-2 pl-8 border-l-2 border-transparent text-slate-600 hover:text-blue-600">How
+                        it Works</a>
+                    <a href="#interpreting-results"
+                        class="doc-nav-link text-sm py-2 pl-8 border-l-2 border-transparent text-slate-600 hover:text-blue-600">Interpreting
+                        Results</a>
+                    <a href="#supported-tests"
+                        class="doc-nav-link text-sm py-2 pl-8 border-l-2 border-transparent text-slate-600 hover:text-blue-600">Supported
+                        Tests</a>
+                    <a href="#faq"
+                        class="doc-nav-link text-sm py-2 pl-8 border-l-2 border-transparent text-slate-600 hover:text-blue-600">FAQ</a>
+                </nav>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="flex-1 min-w-0 space-y-20 pb-24">
+
+            <!-- Hero Header -->
+            <section id="intro" class="animate-fade-in-up">
+                <h1 class="text-4xl md:text-5xl font-extrabold tracking-tight text-slate-900 mb-6 leading-tight">
+                    Smart Lab <br>
+                    <span
+                        class="text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-indigo-500">Documentation.</span>
+                </h1>
+                <p class="text-lg text-slate-600 leading-relaxed max-w-2xl mb-8">
+                    Master the capabilities of your Intelligent Adaptive Assistant. From secure uploads to analyzing
+                    complex biomarkers, everything you need is here.
+                </p>
+            </section>
+
+            <!-- 1. Getting Started -->
+            <section id="getting-started" class="scroll-mt-32">
+                <h2 class="text-2xl font-bold text-slate-900 mb-8">Getting Started</h2>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <!-- Step 1 -->
+                    <div class="glass-panel p-8 rounded-3xl relative group">
+                        <div
+                            class="w-14 h-14 bg-white rounded-2xl flex items-center justify-center mb-6 shadow-sm group-hover:scale-110 transition-transform duration-300">
+                            <span class="material-icons-round text-blue-500 text-3xl">cloud_upload</span>
+                        </div>
+                        <h3 class="text-lg font-bold text-slate-900 mb-3">1. Upload Report</h3>
+                        <p class="text-sm text-slate-600 leading-relaxed">
+                            Drag & drop your lab report. We support standard PDF, JPG, and PNG formats.
+                        </p>
+                    </div>
+
+                    <!-- Step 2 -->
+                    <div class="glass-panel p-8 rounded-3xl relative group">
+                        <div
+                            class="w-14 h-14 bg-white rounded-2xl flex items-center justify-center mb-6 shadow-sm group-hover:scale-110 transition-transform duration-300">
+                            <span class="material-icons-round text-indigo-500 text-3xl">verified</span>
+                        </div>
+                        <h3 class="text-lg font-bold text-slate-900 mb-3">2. Smart Verify</h3>
+                        <p class="text-sm text-slate-600 leading-relaxed">
+                            Our AI validates biomarkers instantly. Review confidence scores for accuracy.
+                        </p>
+                    </div>
+
+                    <!-- Step 3 -->
+                    <div class="glass-panel p-8 rounded-3xl relative group">
+                        <div
+                            class="w-14 h-14 bg-white rounded-2xl flex items-center justify-center mb-6 shadow-sm group-hover:scale-110 transition-transform duration-300">
+                            <span class="material-icons-round text-emerald-500 text-3xl">insights</span>
+                        </div>
+                        <h3 class="text-lg font-bold text-slate-900 mb-3">3. View Analytics</h3>
+                        <p class="text-sm text-slate-600 leading-relaxed">
+                            Get system impacts, health trends, and personalized insights immediately.
+                        </p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 2. How it Works -->
+            <section id="how-it-works" class="scroll-mt-32">
+                <h2 class="text-2xl font-bold text-slate-900 mb-10">How it Works</h2>
+
+                <div class="bg-white/50 backdrop-blur-sm rounded-3xl p-8 border border-white/60">
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-8 relative">
+                        <!-- Connecting Line (Desktop) -->
+                        <div class="hidden md:block absolute top-8 left-12 right-12 h-0.5 bg-slate-200 z-0"></div>
+
+                        <!-- Step A -->
+                        <div class="relative z-10 flex flex-col items-start md:items-center md:text-center gap-4">
+                            <div
+                                class="w-16 h-16 bg-white border-4 border-slate-50 rounded-full flex items-center justify-center shadow-lg">
+                                <span class="material-icons-round text-slate-400">scanner</span>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-slate-900">OCR Engine</h4>
+                                <p class="text-xs text-slate-500 mt-1">Text Extraction</p>
+                            </div>
+                        </div>
+
+                        <!-- Step B -->
+                        <div class="relative z-10 flex flex-col items-start md:items-center md:text-center gap-4">
+                            <div
+                                class="w-16 h-16 bg-white border-4 border-slate-50 rounded-full flex items-center justify-center shadow-lg">
+                                <span class="material-icons-round text-blue-500">psychology</span>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-slate-900">AI Context</h4>
+                                <p class="text-xs text-slate-500 mt-1">NLP & Regex</p>
+                            </div>
+                        </div>
+
+                        <!-- Step C -->
+                        <div class="relative z-10 flex flex-col items-start md:items-center md:text-center gap-4">
+                            <div
+                                class="w-16 h-16 bg-white border-4 border-slate-50 rounded-full flex items-center justify-center shadow-lg">
+                                <span class="material-icons-round text-indigo-500">model_training</span>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-slate-900">Validation</h4>
+                                <p class="text-xs text-slate-500 mt-1">Reference Checks</p>
+                            </div>
+                        </div>
+
+                        <!-- Step D -->
+                        <div class="relative z-10 flex flex-col items-start md:items-center md:text-center gap-4">
+                            <div
+                                class="w-16 h-16 bg-white border-4 border-slate-50 rounded-full flex items-center justify-center shadow-lg">
+                                <span class="material-icons-round text-emerald-500">bar_chart</span>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-slate-900">Insights</h4>
+                                <p class="text-xs text-slate-500 mt-1">Visual Analytics</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 3. Supported Tests -->
+            <section id="supported-tests" class="scroll-mt-32">
+                <h2 class="text-2xl font-bold text-slate-900 mb-8">Supported Analyses</h2>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <div class="glass-panel px-6 py-4 rounded-2xl text-center">
+                        <span class="block font-bold text-slate-800">CBC</span>
+                        <span class="text-xs text-slate-500 uppercase tracking-wide">Blood Count</span>
+                    </div>
+                    <div class="glass-panel px-6 py-4 rounded-2xl text-center">
+                        <span class="block font-bold text-slate-800">Lipid</span>
+                        <span class="text-xs text-slate-500 uppercase tracking-wide">Cholesterol</span>
+                    </div>
+                    <div class="glass-panel px-6 py-4 rounded-2xl text-center">
+                        <span class="block font-bold text-slate-800">LFT</span>
+                        <span class="text-xs text-slate-500 uppercase tracking-wide">Liver</span>
+                    </div>
+                    <div class="glass-panel px-6 py-4 rounded-2xl text-center">
+                        <span class="block font-bold text-slate-800">KFT</span>
+                        <span class="text-xs text-slate-500 uppercase tracking-wide">Kidney</span>
+                    </div>
+                    <div class="glass-panel px-6 py-4 rounded-2xl text-center">
+                        <span class="block font-bold text-slate-800">Thyroid</span>
+                        <span class="text-xs text-slate-500 uppercase tracking-wide">T3 T4 TSH</span>
+                    </div>
+                    <div class="glass-panel px-6 py-4 rounded-2xl text-center">
+                        <span class="block font-bold text-slate-800">Glucose</span>
+                        <span class="text-xs text-slate-500 uppercase tracking-wide">Diabetes</span>
+                    </div>
+                    <div class="glass-panel px-6 py-4 rounded-2xl text-center">
+                        <span class="block font-bold text-slate-800">Iron</span>
+                        <span class="text-xs text-slate-500 uppercase tracking-wide">Anemia</span>
+                    </div>
+                    <div class="glass-panel px-6 py-4 rounded-2xl text-center">
+                        <span class="block font-bold text-slate-800">Vitamins</span>
+                        <span class="text-xs text-slate-500 uppercase tracking-wide">D & B12</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 4. FAQ -->
+            <section id="faq" class="scroll-mt-32">
+                <h2 class="text-2xl font-bold text-slate-900 mb-8">FAQ</h2>
+                <div class="space-y-4">
+                    <div class="glass-panel rounded-2xl p-6">
+                        <h4 class="font-bold text-slate-900 mb-2">Is my data secure?</h4>
+                        <p class="text-sm text-slate-600">Yes. File analysis is performed with strict privacy controls.
+                            In this demo/beta version, data is processed in ephemeral sessions and is not stored
+                            permanently.</p>
+                    </div>
+                    <div class="glass-panel rounded-2xl p-6">
+                        <h4 class="font-bold text-slate-900 mb-2">What happens if a test isn't recognized?</h4>
+                        <p class="text-sm text-slate-600">The system flags unrecognized parameters. You can view these
+                            in the "Validation Summary" step. Always compare results with your original PDF.</p>
+                    </div>
+                    <div class="glass-panel rounded-2xl p-6">
+                        <h4 class="font-bold text-slate-900 mb-2">Can I analyze handwritten reports?</h4>
+                        <p class="text-sm text-slate-600">Our OCR is optimized for digital text. Handwritten reports may
+                            have lower accuracy and we recommend using printed lab reports for best results.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Limitations / Disclaimer (Subtle) -->
+            <section id="limitations" class="mt-12 p-6 rounded-2xl bg-slate-100 border border-slate-200">
+                <div class="flex gap-4">
+                    <span class="material-icons-round text-slate-400">info</span>
+                    <div class="text-xs text-slate-500 space-y-2">
+                        <p><strong>Medical Disclaimer:</strong> This tool is an assistive AI technology for educational
+                            and informational purposes. It does not provide medical diagnosis. Always consult a
+                            qualified healthcare professional.</p>
+                        <p><strong>System Limits:</strong> Reference ranges vary by laboratory. Ensure your report's
+                            units match the standard system units (mg/dL to mmol/L conversions are automatic).</p>
+                    </div>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <!-- Footer -->
+    <footer class="mt-auto py-12 px-8 text-center border-t border-slate-200/60">
+        <p class="text-sm text-slate-500">&copy; 2026 Smart Lab Analyser. Intelligent Health Intelligence.</p>
+    </footer>
+
+    <script>
+        // Scroll spy
+        const navLinks = document.querySelectorAll('.doc-nav-link');
+        const sections = document.querySelectorAll('section');
+
+        window.addEventListener('scroll', () => {
+            let current = '';
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop;
+                if (pageYOffset >= sectionTop - 200) {
+                    current = section.getAttribute('id');
+                }
+            });
+
+            navLinks.forEach(link => {
+                // Reset styling
+                link.classList.remove('text-blue-600', 'font-bold', 'border-blue-600');
+
+                if (link.getAttribute('href').includes(current)) {
+                    link.classList.add('text-blue-600', 'font-bold', 'border-blue-600');
+                }
+            });
+        });
+    </script>
+</body>
+
+</html>
