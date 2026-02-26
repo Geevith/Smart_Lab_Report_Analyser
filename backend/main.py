@@ -130,11 +130,18 @@ from starlette.exceptions import HTTPException as StarletteHTTPException
 
 @app.exception_handler(Exception)
 async def global_exception_handler(request: Request, exc: Exception):
-    """Handle all unhandled exceptions and return JSON"""
+    """Handle all unhandled exceptions and return JSON (excluding HTTPExceptions)"""
+    # HTTPExceptions should be handled by http_exception_handler below
+    from fastapi import HTTPException as FastAPIHTTPException
+    if isinstance(exc, (FastAPIHTTPException, StarletteHTTPException)):
+        return await http_exception_handler(request, exc)
+    import traceback
+    log.error("Unhandled exception for %s %s: %s\n%s",
+              request.method, request.url.path, str(exc), traceback.format_exc())
     return JSONResponse(
         status_code=500,
         content={
-            "detail": "Internal server error. Please try again later.",
+            "detail": f"Internal server error: {type(exc).__name__}: {str(exc)}",
             "success": False
         }
     )
@@ -406,6 +413,13 @@ async def login(login_data: UserLogin, request: Request, response: Response):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail=str(e)
+        )
+    except Exception as e:
+        import traceback
+        log.error("Login endpoint crashed: %s\n%s", str(e), traceback.format_exc())
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Login failed: {type(e).__name__}: {str(e)}"
         )
 
 
