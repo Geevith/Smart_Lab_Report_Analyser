@@ -20,31 +20,22 @@ log = logging.getLogger(__name__)
 # ────────────────────────────────────────────────────────────────────────────
 
 _gemini_client = None
-_gemini_model = None
 
 def _get_gemini_model():
-    """Lazy-initialize the Gemini model."""
-    global _gemini_client, _gemini_model
-    if _gemini_model is not None:
-        return _gemini_model
+    """Lazy-initialize the Gemini client using the new google-genai SDK."""
+    global _gemini_client
+    if _gemini_client is not None:
+        return _gemini_client
 
     api_key = os.getenv("GEMINI_API_KEY", "").strip()
     if not api_key:
         return None
 
     try:
-        import google.generativeai as genai
-        genai.configure(api_key=api_key)
-        _gemini_model = genai.GenerativeModel(
-            model_name="gemini-1.5-flash",
-            generation_config={
-                "temperature": 0.2,       # Low temperature for factual accuracy
-                "top_p": 0.95,
-                "response_mime_type": "application/json",  # Force JSON output
-            }
-        )
-        log.info("Gemini model initialized successfully")
-        return _gemini_model
+        from google import genai
+        _gemini_client = genai.Client(api_key=api_key)
+        log.info("Gemini client initialized successfully (google-genai SDK)")
+        return _gemini_client
     except Exception as e:
         log.warning(f"Failed to initialize Gemini: {e}")
         return None
@@ -140,13 +131,23 @@ def analyze_with_ai(report_text: str, report_type_label: str = "Medical Report")
         return _no_api_fallback(report_text, report_type_label)
 
     try:
+        from google.genai import types
         prompt = _build_prompt(report_text, report_type_label)
-        response = model.generate_content(prompt)
+        response = model.models.generate_content(
+            model="gemini-1.5-flash",
+            contents=prompt,
+            config=types.GenerateContentConfig(
+                temperature=0.2,
+                top_p=0.95,
+                response_mime_type="application/json",
+            ),
+        )
         raw_json = response.text.strip()
 
         # Clean response if Gemini wraps in markdown code blocks
         if raw_json.startswith("```"):
-            raw_json = raw_json.split("```")[1]
+            parts = raw_json.split("```")
+            raw_json = parts[1] if len(parts) > 1 else raw_json
             if raw_json.startswith("json"):
                 raw_json = raw_json[4:]
         raw_json = raw_json.strip()
