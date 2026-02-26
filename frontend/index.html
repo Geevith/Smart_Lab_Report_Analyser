@@ -5,6 +5,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Smart Lab Report Analyser</title>
+    <meta name="description"
+        content="Smart Lab Report Analyser - The future of personalized health analysis. Transforming raw data into clarity through advanced medical AI technology.">
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -22,68 +24,80 @@
 
 <body class="landing-page">
 
+    <!-- Ambient Background Glows -->
+    <div class="ambient-glow glow-1"></div>
+    <div class="ambient-glow glow-2"></div>
+    <div class="ambient-glow glow-3"></div>
+
     <!-- Navigation -->
     <nav class="landing-nav">
         <a href="#" class="brand-logo">
-            <span class="material-icons-round" style="color:#3B82F6">analytics</span>
-            Smart Lab.
+            <span class="material-icons-round" style="color:#3B82F6; font-size:1.5rem;">analytics</span>
+            <span class="brand-text">Smart Lab.</span>
         </a>
 
         <div class="nav-links">
-            <a href="documentation_ui.html" class="nav-link">How it Works</a>
-            <a href="login.html" class="nav-link">Login</a>
-            <a href="register.html" class="btn-pill">Sign Up</a>
+            <a href="documentation_ui.html" class="btn-login">How it Works</a>
+            <a href="login.html" class="btn-login" style="margin-left:0.5rem;">Login</a>
+            <a href="register.html" class="btn-primary"
+                style="padding:0.5rem 1.25rem; border-radius:9999px; margin-left:0.5rem;">Sign Up</a>
         </div>
     </nav>
 
-    <!-- Main Hero Split -->
-    <main class="hero-wrapper">
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <h1 class="hero-title">
+            Smart Lab<br>
+            <span>Intelligence.</span>
+        </h1>
 
-        <!-- LEFT: Content -->
-        <div class="hero-content">
-            <h1 class="hero-title">
-                Smart Lab<br>
-                Intelligence.
-            </h1>
+        <p class="hero-subtitle">
+            The future of personalized health analysis. Transforming raw data into clarity through
+            advanced medical AI technology.
+        </p>
 
-            <p class="hero-description">
-                The future of personalized health analysis. Transforming raw data into clarity through
-                advanced medical AI technology.
-            </p>
-
-            <div style="display: flex; gap: 1rem; align-items: center; margin-bottom: 3rem;">
-                <a href="register.html" class="btn-pill" style="font-size: 1rem; padding: 1rem 2.5rem;">Get Started</a>
-                <a href="documentation_ui.html"
-                    style="font-size: 0.9rem; color: #64748B; margin-left:1rem; text-decoration: none; display: flex; align-items: center; gap: 4px;">
-                    See how it works <span>→</span>
-                </a>
-            </div>
-
-            <!-- Poetic/Mission Block -->
-            <div style="margin-top: 4rem;">
-                <h4 style="margin:0 0 0.5rem; color:#0F172A;">Intelligent Adaptive Assistant</h4>
-                <p style="font-size: 0.9rem; color:#64748B; max-width: 400px;">
-                    Empowering users with real-time insights, smart diagnostics, and self-evolving solutions.
-                    <br><br>
-                    <em>"We hope to improve your daily life."</em>
-                </p>
-            </div>
+        <div class="cta-group">
+            <a href="register.html" class="btn-primary">
+                <span class="material-icons-round" style="font-size:1.1rem;">rocket_launch</span>
+                Get Started
+            </a>
+            <a href="documentation_ui.html" class="btn-secondary">
+                See how it works →
+            </a>
         </div>
 
-        <!-- RIGHT: Visuals -->
-        <div class="hero-visuals">
-            <!-- Background Glow -->
-            <div class="visual-circle-bg"></div>
+        <!-- Feature Cards -->
+        <div class="features-section reveal">
+            <div class="features-grid">
+                <div class="glass-card">
+                    <div class="card-icon">
+                        <span class="material-icons-round">biotech</span>
+                    </div>
+                    <div class="card-title">AI-Powered Analysis</div>
+                    <p class="card-desc">Instantly interpret blood tests, CT, MRI, pathology and more using cutting-edge
+                        AI models.</p>
+                </div>
+                <div class="glass-card">
+                    <div class="card-icon">
+                        <span class="material-icons-round">insights</span>
+                    </div>
+                    <div class="card-title">Personalized Insights</div>
+                    <p class="card-desc">Get health insights tailored to your profile, history, and individual health
+                        patterns.</p>
+                </div>
+                <div class="glass-card">
+                    <div class="card-icon">
+                        <span class="material-icons-round">security</span>
+                    </div>
+                    <div class="card-title">Secure & Private</div>
+                    <p class="card-desc">Your health data is protected with enterprise-grade security and kept
+                        completely private.</p>
+                </div>
+            </div>
+        </div>
+    </section>
 
-            <!-- Abstract "Brain/Core" Representation -->
-            <div class="visual-main-element"></div>
-
-
-
-
-
-    </main>
-
+    <script src="landing.js"></script>
 </body>
 
 </html>
