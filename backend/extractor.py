@@ -1,20 +1,74 @@
 import pdfplumber
-import pytesseract
-from PIL import Image
 import os
-from typing import Dict, List, Tuple
+import logging
+from typing import Dict
 
+log = logging.getLogger(__name__)
+
+# ─────────────────────────────────────────────────────────────
+# Gemini Vision OCR (primary fallback when Tesseract unavailable)
+# ─────────────────────────────────────────────────────────────
+
+def _extract_text_with_gemini_vision(file_path: str) -> str:
+    """
+    Use Gemini Vision (multimodal) to extract all text from an image.
+    This is the primary fallback when Tesseract OCR is not installed.
+    Returns extracted text string, or empty string on failure.
+    """
+    api_key = os.getenv("GEMINI_API_KEY", "").strip()
+    if not api_key:
+        log.warning("Gemini Vision fallback skipped: GEMINI_API_KEY not set")
+        return ""
+
+    try:
+        from google import genai
+        from google.genai import types
+        from PIL import Image as PILImage
+        import base64
+        import io
+
+        client = genai.Client(api_key=api_key)
+
+        # Load and convert image to bytes
+        img = PILImage.open(file_path)
+        # Convert to RGB if needed (handles RGBA, palette images etc.)
+        if img.mode not in ("RGB", "L"):
+            img = img.convert("RGB")
+
+        buf = io.BytesIO()
+        img.save(buf, format="JPEG", quality=95)
+        img_bytes = buf.getvalue()
+
+        prompt = (
+            "You are an OCR system. Extract ALL text from this medical document image EXACTLY as it appears. "
+            "Preserve the structure, headings, bullet points, and all values. "
+            "Do NOT summarize or interpret — just transcribe every word visible in the image. "
+            "Output ONLY the raw extracted text with no extra commentary."
+        )
+
+        response = client.models.generate_content(
+            model="gemini-1.5-flash",
+            contents=[
+                types.Part.from_bytes(data=img_bytes, mime_type="image/jpeg"),
+                prompt,
+            ],
+        )
+        extracted = response.text.strip()
+        log.info("Gemini Vision OCR extracted %d characters", len(extracted))
+        return extracted
+
+    except Exception as e:
+        log.error("Gemini Vision OCR failed: %s", e)
+        return ""
+
+
+# ─────────────────────────────────────────────────────────────
+# PDF Extraction
+# ─────────────────────────────────────────────────────────────
 
 def extract_from_pdf(file_path: str) -> Dict:
     """
     Extracts text from a PDF file with multi-page support and quality tracking.
-    
-    Returns:
-        Dictionary with:
-        - 'text': Combined text from all pages
-        - 'pages': List of page texts
-        - 'page_count': Number of pages processed
-        - 'errors': List of error messages for failed pages
     """
     result = {
         'text': '',
@@ -22,11 +76,11 @@ def extract_from_pdf(file_path: str) -> Dict:
         'page_count': 0,
         'errors': []
     }
-    
+
     try:
         with pdfplumber.open(file_path) as pdf:
             result['page_count'] = len(pdf.pages)
-            
+
             for i, page in enumerate(pdf.pages, 1):
                 try:
                     extracted = page.extract_text()
@@ -34,7 +88,7 @@ def extract_from_pdf(file_path: str) -> Dict:
                         page_text = extracted.strip()
                         result['pages'].append({
                             'page_number': i,
-                  'text': page_text,
+                            'text': page_text,
                             'char_count': len(page_text),
                             'success': True
                         })
@@ -49,7 +103,6 @@ def extract_from_pdf(file_path: str) -> Dict:
                         })
                         result['errors'].append(f"Page {i}: No text extracted")
                 except Exception as e:
-                    error_msg = f"Page {i}: {str(e)}"
                     result['pages'].append({
                         'page_number': i,
                         'text': '',
@@ -57,26 +110,27 @@ def extract_from_pdf(file_path: str) -> Dict:
                         'success': False,
                         'error': str(e)
                     })
-                    result['errors'].append(error_msg)
-                    print(f"Error extracting PDF page {i}: {e}")
-                    
+                    result['errors'].append(f"Page {i}: {str(e)}")
+                    log.error("Error extracting PDF page %d: %s", i, e)
+
     except Exception as e:
         result['errors'].append(f"PDF opening error: {str(e)}")
-        print(f"Error opening PDF: {e}")
-        
+        log.error("Error opening PDF: %s", e)
+
     return result
 
 
+# ─────────────────────────────────────────────────────────────
+# Image Extraction (Tesseract → Gemini Vision fallback)
+# ─────────────────────────────────────────────────────────────
+
 def extract_from_image(file_path: str, rotation: int = 0) -> Dict:
     """
-    Extracts text from an image file using pytesseract with optional rotation.
-    
-    Args:
-        file_path: Path to image file
-        rotation: Rotation angle in degrees (0, 90, 180, 270)
-        
-    Returns:
-        Dictionary with text and metadata
+    Extracts text from an image file.
+
+    Strategy:
+      1. Try pytesseract (fast, local OCR)
+      2. If Tesseract not installed or returns empty → fall back to Gemini Vision
     """
     result = {
         'text': '',
@@ -85,75 +139,74 @@ def extract_from_image(file_path: str, rotation: int = 0) -> Dict:
         'errors': [],
         'rotation_applied': rotation
     }
-    
+
+    text = ""
+    source_used = "none"
+
+    # ── Step 1: Try Tesseract ───────────────────────────────
     try:
+        import pytesseract
+        from PIL import Image
+
         image = Image.open(file_path)
-        
-        # Apply rotation if specified
         if rotation in [90, 180, 270]:
-            image = image.rotate(-rotation, expand=True)  # Negative for clockwise
-        
-        # Extract text
-        text = pytesseract.image_to_string(image)
-        
-        result['text'] = text
-        result['pages'].append({
-            'page_number': 1,
-            'text': text,
-            'char_count': len(text),
-            'success': True
-        })
-        
-    except Exception as e:
-        error_msg = f"Image extraction error: {str(e)}"
-        result['errors'].append(error_msg)
-        result['pages'].append({
-            'page_number': 1,
-            'text': '',
-            'char_count': 0,
-            'success': False,
-            'error': str(e)
-        })
-        print(f"Error extracting Image: {e}")
-        
+            image = image.rotate(-rotation, expand=True)
+
+        text = pytesseract.image_to_string(image).strip()
+        if text:
+            source_used = "tesseract"
+            log.info("Tesseract extracted %d characters", len(text))
+        else:
+            log.warning("Tesseract returned empty text, trying Gemini Vision")
+
+    except Exception as tesseract_err:
+        log.warning("Tesseract unavailable (%s), falling back to Gemini Vision", tesseract_err)
+
+    # ── Step 2: Gemini Vision fallback ─────────────────────
+    if not text:
+        text = _extract_text_with_gemini_vision(file_path)
+        if text:
+            source_used = "gemini_vision"
+        else:
+            result['errors'].append("Both Tesseract and Gemini Vision failed to extract text")
+
+    # ── Build result ────────────────────────────────────────
+    result['text'] = text
+    result['pages'].append({
+        'page_number': 1,
+        'text': text,
+        'char_count': len(text),
+        'success': bool(text),
+        'source': source_used
+    })
+
+    if not text:
+        result['pages'][0]['error'] = "No text could be extracted"
+
     return result
 
 
+# ─────────────────────────────────────────────────────────────
+# Public API
+# ─────────────────────────────────────────────────────────────
+
 def extract_text(file_path: str, rotation: int = 0) -> str:
-    """
-    Legacy function: Determines file type and extracts text (simple version).
-    
-    Maintained for backward compatibility.
-    """
+    """Legacy function — maintained for backward compatibility."""
     if file_path.lower().endswith('.pdf'):
-        result = extract_from_pdf(file_path)
-        return result['text']
-    elif file_path.lower().endswith(('.png', '.jpg', '.jpeg', '.tiff', '.bmp')):
-        result = extract_from_image(file_path, rotation)
-        return result['text']
-    else:
-        return "Unsupported file format."
+        return extract_from_pdf(file_path)['text']
+    elif file_path.lower().endswith(('.png', '.jpg', '.jpeg', '.tiff', '.bmp', '.webp')):
+        return extract_from_image(file_path, rotation)['text']
+    return "Unsupported file format."
 
 
 def extract_text_enhanced(file_path: str, rotation: int = 0) -> Dict:
     """
     Enhanced extraction with full metadata and error recovery.
-    
-    Args:
-        file_path: Path to file
-        rotation: Rotation angle for images (0, 90, 180, 270)
-        
-    Returns:
-        Dictionary with:
-        - text: Combined text
-        - pages: Per-page details
-        - page_count: Number of pages
-        - errors: List of errors
-        - success_rate: Percentage of successfully processed pages
+    Falls back to Gemini Vision if Tesseract fails.
     """
     if file_path.lower().endswith('.pdf'):
         result = extract_from_pdf(file_path)
-    elif file_path.lower().endswith(('.png', '.jpg', '.jpeg', '.tiff', '.bmp')):
+    elif file_path.lower().endswith(('.png', '.jpg', '.jpeg', '.tiff', '.bmp', '.webp')):
         result = extract_from_image(file_path, rotation)
     else:
         return {
@@ -163,10 +216,9 @@ def extract_text_enhanced(file_path: str, rotation: int = 0) -> Dict:
             'errors': ['Unsupported file format'],
             'success_rate': 0.0
         }
-    
-    # Calculate success rate
+
     successful_pages = sum(1 for p in result['pages'] if p.get('success', False))
     total_pages = result['page_count']
     result['success_rate'] = (successful_pages / total_pages * 100) if total_pages > 0 else 0
-    
+
     return result
