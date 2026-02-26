@@ -71,4 +71,4 @@ def verify_csrf(
 
 def generate_csrf_token() -> str:
     """Generate a cryptographically random CSRF token."""
-    return secrets.token_hex(settings.csrf_token_bytes)
+    return secrets.token_hex(32)
