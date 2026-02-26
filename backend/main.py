@@ -230,6 +230,43 @@ def health_check():
     return {"status": "healthy"}
 
 
+@app.get("/health/db")
+def health_check_db():
+    """Database connectivity check — shows which env vars are set and if DB connects."""
+    db_host = os.getenv("DB_HOST", "")
+    db_name = os.getenv("DB_NAME", "postgres")
+    db_user = os.getenv("DB_USER", "")
+    db_pass = "SET" if os.getenv("DB_PASS") else "MISSING"
+    db_port = os.getenv("DB_PORT", "5432")
+    gemini_key = "SET" if os.getenv("GEMINI_API_KEY") else "MISSING"
+
+    env_status = {
+        "DB_HOST": db_host if db_host else "MISSING",
+        "DB_NAME": db_name,
+        "DB_USER": db_user if db_user else "MISSING",
+        "DB_PASS": db_pass,
+        "DB_PORT": db_port,
+        "GEMINI_API_KEY": gemini_key,
+    }
+
+    # Try a real DB connection
+    try:
+        from .database import get_db_connection
+        conn = get_db_connection()
+        conn.close()
+        db_ok = True
+        db_error = None
+    except Exception as e:
+        db_ok = False
+        db_error = str(e)
+
+    return {
+        "db_connected": db_ok,
+        "db_error": db_error,
+        "env": env_status,
+    }
+
+
 # ============================================================================
 # Authentication Endpoints
 # ============================================================================
