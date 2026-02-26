@@ -22,44 +22,36 @@ def _extract_text_with_gemini_vision(file_path: str) -> str:
 
     try:
         from google import genai
-        from google.genai import types
         from PIL import Image as PILImage
-        import base64
-        import io
 
         client = genai.Client(api_key=api_key)
 
-        # Load and convert image to bytes
+        # Open and normalise image (PIL Image can be passed directly to google-genai)
         img = PILImage.open(file_path)
-        # Convert to RGB if needed (handles RGBA, palette images etc.)
         if img.mode not in ("RGB", "L"):
             img = img.convert("RGB")
 
-        buf = io.BytesIO()
-        img.save(buf, format="JPEG", quality=95)
-        img_bytes = buf.getvalue()
-
         prompt = (
             "You are an OCR system. Extract ALL text from this medical document image EXACTLY as it appears. "
-            "Preserve the structure, headings, bullet points, and all values. "
-            "Do NOT summarize or interpret — just transcribe every word visible in the image. "
+            "Preserve the structure, headings, bullet points, patient details, and all numeric values. "
+            "Do NOT summarize or interpret — just transcribe every word and number visible in the image. "
             "Output ONLY the raw extracted text with no extra commentary."
         )
 
+        # Pass PIL Image directly — this is the correct format for google-genai SDK
         response = client.models.generate_content(
             model="gemini-1.5-flash",
-            contents=[
-                types.Part.from_bytes(data=img_bytes, mime_type="image/jpeg"),
-                prompt,
-            ],
+            contents=[prompt, img],
         )
         extracted = response.text.strip()
         log.info("Gemini Vision OCR extracted %d characters", len(extracted))
         return extracted
 
     except Exception as e:
-        log.error("Gemini Vision OCR failed: %s", e)
+        import traceback
+        log.error("Gemini Vision OCR failed: %s\n%s", e, traceback.format_exc())
         return ""
+
 
 
 # ─────────────────────────────────────────────────────────────
