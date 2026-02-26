@@ -19,6 +19,8 @@ pandas
 numpy
 scipy
 supabase>=2.0.0
-google-generativeai
+google-genai
 python-dotenv
 slowapi
+psycopg2-binary
+email-validator
