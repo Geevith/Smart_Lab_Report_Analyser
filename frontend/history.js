@@ -109,6 +109,7 @@ async function loadHistory() {
 
     try {
         const searchVal = document.getElementById('searchInput')?.value?.trim() || '';
+        const params = new URLSearchParams();
         if (searchVal) params.set('search', searchVal);
         if (currentFilter === 'favorites') params.set('favorite', 'true');
         if (currentFilter === 'attention') params.set('status', 'attention');
