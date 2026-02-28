@@ -302,27 +302,19 @@ function createProfileDropdown(navElement, user) {
     container.appendChild(dropdown);
     navElement.appendChild(container);
 
-    // Attach event delegation for logout (handled at document level or container level)
-    // We'll use a document-level listener for simplicity and reliability with dynamic elements
-    if (!window.logoutListenerAttached) {
-        document.addEventListener('click', async (e) => {
-            const logoutBtn = e.target.closest('#logoutBtn');
-            if (logoutBtn) {
-                e.preventDefault();
-                e.stopPropagation();
+    // Attach event listener directly to logout button if it exists
+    const logoutBtn = dropdown.querySelector('#logoutBtn');
+    if (logoutBtn) {
+        logoutBtn.addEventListener('click', async (e) => {
+            e.preventDefault();
 
-                // Find the dropdown and close it (optional, but good UX)
-                const dropdown = logoutBtn.closest('.absolute');
-                if (dropdown) {
-                    dropdown.classList.add('opacity-0', 'scale-95', 'pointer-events-none');
-                }
+            // Close the dropdown
+            toggleDropdown(false);
 
-                if (confirm('Are you sure you want to logout?')) {
-                    await handleLogout();
-                }
+            if (confirm('Are you sure you want to logout?')) {
+                await handleLogout();
             }
         });
-        window.logoutListenerAttached = true;
     }
 }
 

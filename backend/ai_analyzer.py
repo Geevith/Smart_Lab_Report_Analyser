@@ -126,15 +126,18 @@ def analyze_with_ai(report_text: str, report_type_label: str = "Medical Report")
     """
     model = _get_gemini_model()
 
-    if model is None:
+    client = _get_gemini_model()
+
+    if client is None:
         log.warning("Gemini API not available — returning structured fallback")
         return _no_api_fallback(report_text, report_type_label)
 
     try:
         from google.genai import types
         prompt = _build_prompt(report_text, report_type_label)
-        response = model.models.generate_content(
-            model="gemini-1.5-flash",
+        # Use gemini-2.5-flash as it is fast and capable enough for structured extraction
+        response = client.models.generate_content(
+            model="gemini-2.5-flash",
             contents=prompt,
             config=types.GenerateContentConfig(
                 temperature=0.2,

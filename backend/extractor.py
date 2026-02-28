@@ -40,7 +40,7 @@ def _extract_text_with_gemini_vision(file_path: str) -> str:
 
         # Pass PIL Image directly — this is the correct format for google-genai SDK
         response = client.models.generate_content(
-            model="gemini-1.5-flash",
+            model="gemini-2.5-flash",
             contents=[prompt, img],
         )
         extracted = response.text.strip()
