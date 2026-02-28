@@ -1,7 +1,7 @@
 import os
 import io
 import uuid
-import hashlib
+import re
 from datetime import datetime
 from reportlab.lib import colors
 from reportlab.lib.pagesizes import A4
@@ -10,812 +10,336 @@ from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from reportlab.lib.enums import TA_LEFT, TA_CENTER, TA_RIGHT, TA_JUSTIFY
 from reportlab.platypus import (
     SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle, 
-    Image, PageBreak, Flowable, HRFlowable
+    PageBreak, Flowable, HRFlowable, CondPageBreak, KeepTogether
 )
-from reportlab.graphics.shapes import Drawing, Rect, Circle, Line
-from reportlab.graphics.charts.textlabels import Label
+from reportlab.pdfgen import canvas
 
 # --- CONSTANTS & CONFIG ---
+REPORT_VERSION = "5.0.0"
+CLINIC_NAME = "Central Reference Laboratory"
+CLINIC_ADDRESS = "123 Medical Plaza, Suite 400 | City, ST 12345"
+CLINIC_CONTACT = "Ph: (555) 123-4567 | Fax: (555) 123-4568 | www.centralreflab.com"
 
-REPORT_VERSION = "4.0.0"
-ENGINE_NAME = "Nexus Clinical Systems"
-
-# Color Palette (extracted from HTML/Tailwind config)
+# Clinical Color Palette
 COLORS = {
-    'primary': colors.HexColor('#0f172a'),      # slate-900
-    'secondary': colors.HexColor('#334155'),    # slate-700
-    'accent_blue': colors.HexColor('#3b82f6'),  # blue-500
-    'slate_500': colors.HexColor('#64748b'),
-    'slate_400': colors.HexColor('#94a3b8'),
-    'slate_300': colors.HexColor('#cbd5e1'),
-    'slate_200': colors.HexColor('#e2e8f0'),
-    'slate_100': colors.HexColor('#f1f5f9'),
-    'slate_50': colors.HexColor('#f8fafc'),
+    'navy': colors.HexColor('#1a365d'),       # Deep blue for headers/borders
+    'text': colors.HexColor('#333333'),       # Dark gray for regular text
+    'gray_light': colors.HexColor('#f3f4f6'), # Light gray for alternating rows
+    'gray_border': colors.HexColor('#e5e7eb'),# Border gray
+    'gray_dark': colors.HexColor('#4b5563'),  # Subheadings
+    'red_critical': colors.HexColor('#dc2626'),# Red for High/Critical
+    'blue_low': colors.HexColor('#2563eb'),   # Blue for Low
+    'green_normal': colors.HexColor('#15803d'),# Green for Normal
     'white': colors.white,
-    'amber': colors.HexColor('#d97706'),
-    'maroon': colors.HexColor('#7f1d1d'),
-    'red_600': colors.HexColor('#dc2626'),
-    'green_700': colors.HexColor('#15803d'),
 }
-
-# --- CUSTOM FLOWABLES ---
-
-class RangeVisualizer(Flowable):
-    """Draws the bar chart visualizer for Page 4."""
-    def __init__(self, value, ref_min, ref_max, width=100, height=12):
-        Flowable.__init__(self)
-        self.value = value
-        self.ref_min = ref_min
-        self.ref_max = ref_max
-        self.width = width
-        self.height = height
-
-    def draw(self):
-        # Track background
-        self.canv.setFillColor(colors.HexColor('#e2e8f0')) # slate-200
-        self.canv.rect(0, self.height/2 - 1, self.width, 2, stroke=0, fill=1)
-        
-        # Range bar (gray)
-        # Assume full width is 0 to (max*1.5) or logic?
-        # Simplified: left 20%, width 60% represent the "Normal" range
-        range_start = self.width * 0.2
-        range_width = self.width * 0.6
-        self.canv.setFillColor(colors.HexColor('#94a3b8')) # slate-400
-        self.canv.rect(range_start, self.height/2 - 1, range_width, 2, stroke=0, fill=1)
-        
-        # Determine position of value
-        # Simple clamp logic for visual
-        try:
-            val = float(self.value)
-            mn = float(self.ref_min)
-            mx = float(self.ref_max)
-            span = mx - mn
-            if span == 0: span = 1
-            
-            # Normalize value relative to range (0.2 to 0.8 is range)
-            pct = (val - mn) / span
-            # Map 0..1 to 0.2..0.8
-            pos_pct = 0.2 + (pct * 0.6)
-            
-            # Clamp for out of bounds
-            if val < mn: pos_pct = 0.1
-            if val > mx: pos_pct = 0.9
-            
-            # Marker
-            marker_x = self.width * pos_pct
-            marker_color = COLORS['secondary']
-            if val < mn or val > mx:
-                marker_color = COLORS['amber'] # Or maroon depending on severity
-            if val > mx * 1.5: marker_color = COLORS['maroon']
-
-            self.canv.setFillColor(marker_color)
-            self.canv.circle(marker_x, self.height/2, 3, stroke=0, fill=1)
-            
-        except:
-            pass
 
 # --- STYLES ---
 
-def get_styles():
+def get_clinical_styles():
     styles = getSampleStyleSheet()
     
-    # Base
-    styles.add(ParagraphStyle(name='Normal_Slate', parent=styles['Normal'], fontName='Helvetica', fontSize=10, textColor=COLORS['secondary']))
+    # Base Document Style
+    styles.add(ParagraphStyle(name='Clinical_Normal', fontName='Helvetica', fontSize=9, textColor=COLORS['text'], leading=12))
+    styles.add(ParagraphStyle(name='Clinical_Bold', fontName='Helvetica-Bold', fontSize=9, textColor=COLORS['text'], leading=12))
     
-    # Page 1: Cover
-    styles.add(ParagraphStyle(name='CoverTitle', fontName='Helvetica-Bold', fontSize=32, leading=34, textColor=COLORS['primary'], spaceAfter=10))
-    styles.add(ParagraphStyle(name='CoverSub', fontName='Helvetica', fontSize=10, textColor=COLORS['slate_400'], textTransform='uppercase', tracking=2))
-    styles.add(ParagraphStyle(name='CoverLabel', fontName='Helvetica-Bold', fontSize=8, textColor=COLORS['slate_400'], textTransform='uppercase', tracking=1))
-    styles.add(ParagraphStyle(name='CoverValue', fontName='Helvetica', fontSize=12, textColor=COLORS['primary'], leading=14))
+    # Headers
+    styles.add(ParagraphStyle(name='Section_Header', fontName='Helvetica-Bold', fontSize=12, textColor=COLORS['navy'], spaceAfter=6, spaceBefore=12))
+    styles.add(ParagraphStyle(name='Sub_Header', fontName='Helvetica-Bold', fontSize=10, textColor=COLORS['gray_dark'], spaceAfter=4))
     
-    # Page 2: Exec Summary
-    styles.add(ParagraphStyle(name='SectionHeader', fontName='Helvetica-Bold', fontSize=18, textColor=COLORS['primary'], spaceAfter=5))
-    styles.add(ParagraphStyle(name='MetricLabel', fontName='Helvetica', fontSize=8, textColor=COLORS['slate_400'], textTransform='uppercase', alignment=TA_CENTER))
-    styles.add(ParagraphStyle(name='MetricValue', fontName='Helvetica', fontSize=20, textColor=COLORS['primary'], alignment=TA_CENTER))
-    styles.add(ParagraphStyle(name='MetricValueRed', parent=styles['MetricValue'], textColor=COLORS['red_600']))
-    styles.add(ParagraphStyle(name='Prose', fontName='Times-Roman', fontSize=11, leading=16, textColor=COLORS['secondary'], alignment=TA_JUSTIFY))
+    # Demographics
+    styles.add(ParagraphStyle(name='Demo_Label', fontName='Helvetica-Bold', fontSize=8, textColor=COLORS['gray_dark']))
+    styles.add(ParagraphStyle(name='Demo_Value', fontName='Helvetica', fontSize=9, textColor=COLORS['text']))
     
-    # Grid Headers
-    styles.add(ParagraphStyle(name='GridHeader', fontName='Helvetica-Bold', fontSize=8, textColor=COLORS['primary'], textTransform='uppercase', alignment=TA_LEFT))
-    styles.add(ParagraphStyle(name='GridCell', fontName='Helvetica', fontSize=9, textColor=COLORS['secondary']))
+    # Table Grid
+    styles.add(ParagraphStyle(name='TH', fontName='Helvetica-Bold', fontSize=9, textColor=COLORS['white'], alignment=TA_CENTER))
+    styles.add(ParagraphStyle(name='TD', fontName='Helvetica', fontSize=9, textColor=COLORS['text'], alignment=TA_CENTER))
+    styles.add(ParagraphStyle(name='TD_Left', fontName='Helvetica', fontSize=9, textColor=COLORS['text'], alignment=TA_LEFT))
+    styles.add(ParagraphStyle(name='TD_Flag_H', fontName='Helvetica-Bold', fontSize=9, textColor=COLORS['red_critical'], alignment=TA_CENTER))
+    styles.add(ParagraphStyle(name='TD_Flag_L', fontName='Helvetica-Bold', fontSize=9, textColor=COLORS['blue_low'], alignment=TA_CENTER))
+    styles.add(ParagraphStyle(name='TD_Flag_C', fontName='Helvetica-Bold', fontSize=9, textColor=COLORS['red_critical'], alignment=TA_CENTER, backColor=colors.HexColor('#fee2e2')))
     
+    # Physician Notes
+    styles.add(ParagraphStyle(name='Note_Text', fontName='Times-Roman', fontSize=10, leading=14, textColor=COLORS['text'], alignment=TA_JUSTIFY))
+    styles.add(ParagraphStyle(name='Note_Item_Title', fontName='Helvetica-Bold', fontSize=10, textColor=COLORS['navy'], spaceBefore=8, spaceAfter=2))
+    styles.add(ParagraphStyle(name='Note_Item_Text', fontName='Times-Roman', fontSize=10, leading=14, textColor=COLORS['text'], leftIndent=10))
+
     return styles
 
-# --- PAGE GENERATORS ---
-
-def create_cover_page(styles, report_id, now):
-    elements = []
-    
-    # Spacer to center vertical
-    elements.append(Spacer(1, 2*inch))
-    
-    # Icon Hub (Placeholder)
-    elements.append(Paragraph("<font size=40 color='#94a3b8'><b>☍</b></font>", ParagraphStyle('IconC', alignment=TA_CENTER)))
-    elements.append(Spacer(1, 20))
-    
-    # Title
-    elements.append(Paragraph("LABORATORY DATA<br/>SUMMARY REPORT", 
-                              ParagraphStyle('TitleC', parent=styles['CoverTitle'], alignment=TA_CENTER)))
-    
-    elements.append(HRFlowable(width="10%", thickness=2, color=COLORS['primary'], spaceBefore=20, spaceAfter=20, hAlign='CENTER'))
-    
-    elements.append(Paragraph("HIGH-PRECISION CLINICAL INTELLIGENCE", 
-                              ParagraphStyle('SubC', fontName='Helvetica-Bold', fontSize=9, textColor=COLORS['slate_400'], alignment=TA_CENTER, tracking=3)))
-    
-    elements.append(Spacer(1, 1.5*inch))
-    
-    # Metadata Grid (2x2)
-    # Using simple Paragraphs instead of nested tables to avoid crashes
-    
-    def meta_cell(label, value):
-        return f"<font size=7 color='#94a3b8'><b>{label.upper()}</b></font><br/><font size=11 color='#0f172a'>{value}</font>"
-        
-    r1c1 = meta_cell("Report Token", report_id)
-    r1c2 = meta_cell("Exported On", now.strftime("%b %d, %Y | %H:%M"))
-    r2c1 = meta_cell("Data Category", "Aggregate Molecular Metrics")
-    r2c2 = meta_cell("Clearance Level", "Level 4 — Restricted")
-    
-    # Flat table
-    data = [
-        [Paragraph(r1c1, styles['Normal']), Paragraph(r1c2, styles['Normal'])],
-        [Paragraph(r2c1, styles['Normal']), Paragraph(r2c2, styles['Normal'])]
-    ]
-    
-    t = Table(data, colWidths=[3*inch, 3*inch], rowHeights=[40, 40])
-    t.setStyle(TableStyle([
-        ('VALIGN', (0,0), (-1,-1), 'TOP'),
-        ('GRID', (0,0), (-1,-1), 0, colors.white), # Invisible grid
-    ]))
-    elements.append(t)
-    
-    elements.append(PageBreak())
-    return elements
-
-def create_exec_summary(styles, analysis_data, insights_data, user_info=None):
-    """
-    Create executive summary page with actual user data
-    
-    Args:
-        styles: ReportLab styles dictionary
-        analysis_data: Dict of {param_name: {value, unit, status, ...}}
-        insights_data: Dict containing insights and metadata  
-        user_info: Optional dict with patient demographics
-    """
-    elements = []
-    
-    # Calculate actual statistics from analysis_data
-    total_params = len(analysis_data) if analysis_data else 0
-    
-    normal_params = sum(
-        1 for p in analysis_data.values() 
-        if isinstance(p, dict) and p.get('status') == 'Normal'
-    ) if analysis_data else 0
-    
-    abnormal_params = sum(
-        1 for p in analysis_data.values() 
-        if isinstance(p, dict) and p.get('status') in ['High', 'Low']
-    ) if analysis_data else 0
-    
-    critical_params = sum(
-        1 for p in analysis_data.values() 
-        if isinstance(p, dict) and p.get('status') == 'Critical'
-    ) if analysis_data else 0
-    
-    # Count systems with variations
-    systems_with_issues = 0
-    if insights_data and isinstance(insights_data, dict):
-        systems_impact = insights_data.get('systems_impact')
-        if systems_impact:
-            systems_with_issues = sum(
-                1 for s in systems_impact.values() 
-                if isinstance(s, dict) and s.get('abnormal_count', 0) > 0
-            )
-    
-    # Extract patient info
-    patient_name = 'Patient'
-    patient_id = 'N/A'
-    if user_info and isinstance(user_info, dict):
-        patient_name = user_info.get('full_name', 'Patient')
-        patient_id = user_info.get('id', 'N/A')
-    
-    # Header
-    elements.append(Paragraph("<b>Executive Summary</b>", styles['SectionHeader']))
-    elements.append(Paragraph("CLINICAL RECORD", ParagraphStyle('Sub', fontSize=7, textColor=COLORS['slate_400'])))
-    elements.append(HRFlowable(width="100%", thickness=0.5, color=COLORS['slate_200'], spaceBefore=5, spaceAfter=15))
-    
-    # Stats helper function
-    def stat_cell(label, value, color_hex='#0f172a'):
-        return f"<font size=7 color='#94a3b8'>{label}</font><br/><font size=16 color='{color_hex}'>{value}</font>"
-    
-    # Create stats row with actual data
-    row = [
-        Paragraph(stat_cell("TOTAL PARAMETERS", str(total_params)), styles['MetricLabel']),
-        Paragraph(stat_cell("WITHIN RANGE", str(normal_params)), styles['MetricLabel']),
-        Paragraph(stat_cell("OUTSIDE RANGE", str(abnormal_params + critical_params), "#dc2626"), styles['MetricLabel']),
-        Paragraph(stat_cell("SYSTEM VARIATIONS", str(systems_with_issues)), styles['MetricLabel']),
-    ]
-    
-    t = Table([row], colWidths=[1.8*inch]*4)
-    t.setStyle(TableStyle([
-        ('ALIGN', (0,0), (-1,-1), 'CENTER'),
-        ('VALIGN', (0,0), (-1,-1), 'MIDDLE'),
-        ('LINEBEFORE', (1,0), (1,-1), 1, COLORS['slate_200']),
-        ('LINEBEFORE', (2,0), (2,-1), 1, COLORS['slate_200']),
-        ('LINEBEFORE', (3,0), (3,-1), 1, COLORS['slate_200']),
-    ]))
-    elements.append(t)
-    elements.append(HRFlowable(width="100%", thickness=0.5, color=COLORS['slate_200'], spaceBefore=15, spaceAfter=25))
-    
-    # Report Overview
-    elements.append(Paragraph("<b>Report Overview</b>", ParagraphStyle('H3', fontName='Helvetica-Bold', fontSize=10)))
-    elements.append(Spacer(1, 8))
-    
-    text1 = "Upon comprehensive review of the clinical diagnostics, the patient’s lipid profile exhibits markedly elevated Low-Density Lipoprotein (LDL) levels, correlating with a necessity for cardiovascular risk assessment. Concurrently, liver enzymatic panels demonstrate results within the physiological normative range, indicating preserved hepatic integrity."
-    text2 = "Glycated hemoglobin (HbA1c) values suggest an alignment with pre-diabetic monitoring thresholds. Renal filtration markers remain stable, demonstrating no significant longitudinal deviation from established baseline parameters."
-    
-    elements.append(Paragraph(text1, styles['Prose']))
-    elements.append(Spacer(1, 10))
-    elements.append(Paragraph(text2, styles['Prose']))
-    
-    elements.append(Spacer(1, 40))
-    
-    # Notice
-    elements.append(Paragraph("<b>Notice of Interpretation</b>", ParagraphStyle('H4', fontSize=9, textColor=COLORS['primary'])))
-    notice = "This report is intended for clinical review by licensed healthcare providers. Deviations from the reference range do not independently constitute a clinical diagnosis. All laboratory findings must be synthesized with the patient’s clinical presentation and medical history."
-    elements.append(Paragraph(notice, ParagraphStyle('Notice', parent=styles['Prose'], fontName='Times-Italic', fontSize=9, textColor=COLORS['slate_500'], leftIndent=10)))
-    
-    elements.append(PageBreak())
-    return elements
-
-def create_systems_impact(styles, systems_impact_data):
-    """
-    Create systems overview page with actual data
-    
-    Args:
-        styles: ReportLab styles dictionary
-        systems_impact_data: Dict from compute_systems_impact() in format:
-            {system_name: {status, abnormal_count, total_count, abnormal_parameters, ...}}
-    """
-    elements = []
-    elements.append(Paragraph("<b>Systems Impact Overview</b>", styles['SectionHeader']))
-    elements.append(HRFlowable(width="100%", color=COLORS['slate_200'], thickness=1, spaceAfter=20))
-    
-    # Deviation Map (Placeholder)
-    # Rectangle with text
-    elements.append(Paragraph("<i>[Anatomical Chart Representation - Systems Overview]</i>", 
-                              ParagraphStyle('Placeholder', alignment=TA_CENTER, textColor=COLORS['slate_400'])))
-    elements.append(Spacer(1, 20))
-    
-    # Table
-    headers = ["System Name", "Status", "Count", "Parameters"]
-    data = [
-        [Paragraph("<b>SYSTEM NAME</b>", styles['GridHeader']), Paragraph("<b>STATUS</b>", styles['GridHeader']), 
-         Paragraph("<b>COUNT</b>", styles['GridHeader']), Paragraph("<b>PARAMETERS</b>", styles['GridHeader'])]
-    ]
-    
-    # Generate rows from actual data
-    rows_data = []
-
-    if not systems_impact_data or len(systems_impact_data) == 0:
-        # No data available - show placeholder
-        rows_data = [
-            ("No Data Available", "NORMAL", "0", "-", COLORS['slate_200'])
-        ]
-    else:
-        # Sort systems by severity: Critical first, then by abnormal count
-        sorted_systems = sorted(
-            systems_impact_data.items(),
-            key=lambda x: (
-                -1 if x[1].get('critical', False) else 0,  # Critical first
-                -x[1].get('abnormal_count', 0)  # Then by abnormal count descending
-            )
-        )
-        
-        for system_name, system_data in sorted_systems:
-            if not isinstance(system_data, dict):
-                continue
-                
-            status = system_data.get('status', 'Normal')
-            abnormal_count = system_data.get('abnormal_count', 0)
-            total_count = system_data.get('total_count', 0)
-            status_key = system_data.get('status_key', 'normal')
-            
-            # Build parameter list (max 4 parameter names)
-            abnormal_params = system_data.get('abnormal_parameters', [])
-            param_names = []
-            for p in abnormal_params[:4]:
-                if isinstance(p, dict):
-                    param_names.append(p.get('name', ''))
-            
-            param_display = ', '.join(param_names) if param_names else "-"
-            if len(abnormal_params) > 4:
-                param_display += f" +{len(abnormal_params) - 4} more"
-            
-            # Determine display status and color
-            if status_key == 'critical':
-                badge_color = COLORS['primary']  # Maroon/red
-                status_display = "HIGH"
-            elif status_key == 'multiple':
-                badge_color = COLORS['amber']
-                status_display = "MODERATE"
-            elif status_key == 'minor':
-                badge_color = COLORS['amber']
-                status_display = "MINOR"
-            else:  # normal
-                badge_color = COLORS['slate_200']
-                status_display = "NORMAL"
-            
-            rows_data.append((
-                system_name,
-                status_display,
-                f"{abnormal_count}/{total_count}",
-                param_display,
-                badge_color
-            ))
-    
-    for sys, stat, count, params, badge_col in rows_data:
-        # Badge logic
-        bg_col = badge_col
-        txt_col = colors.white if badge_col != COLORS['slate_200'] else COLORS['slate_400']
-        if badge_col == COLORS['slate_200']: bg_col = COLORS['slate_100']
-        
-        stat_cell = f"<font color='{txt_col.hexval()}'><b> &nbsp; {stat} &nbsp; </b></font>"
-        # Using built-in Paragraph backcolor is tricky inside Table sometimes, so we rely on TableStyle for cell background?
-        # No, we can just use text.
-        
-        # Simplified: Just Text for now to avoid crash
-        r = [
-            Paragraph(sys, styles['GridCell']),
-            Paragraph(f"<b>{stat}</b>", ParagraphStyle('Stat', fontSize=8, textColor=badge_col)),
-            Paragraph(count, ParagraphStyle('Count', alignment=TA_CENTER, fontSize=9)),
-            Paragraph(params, styles['GridCell'])
-        ]
-        data.append(r)
-        
-    t = Table(data, colWidths=[2*inch, 1.2*inch, 0.8*inch, 3*inch])
-    t.setStyle(TableStyle([
-        ('LINEBELOW', (0,0), (-1,0), 1, COLORS['slate_200']),
-        ('LINEBELOW', (0,1), (-1,-1), 0.5, COLORS['slate_100']),
-        ('VALIGN', (0,0), (-1,-1), 'MIDDLE'),
-        ('TOPPADDING', (0,0), (-1,-1), 8),
-        ('BOTTOMPADDING', (0,0), (-1,-1), 8),
-    ]))
-    elements.append(t)
-    
-    elements.append(Spacer(1, 30))
-    elements.append(Paragraph("<b>Observations</b>", styles['GridHeader']))
-    elements.append(HRFlowable(width="100%", thickness=0.5, color=COLORS['slate_200']))
-    elements.append(Paragraph("High variance detected in neurotransmitter panel suggests potential HPA axis dysregulation requiring immediate clinical correlation. Secondary markers in the digestive system indicate a possible gut-brain axis involvement pattern.", styles['Prose']))
-    
-    elements.append(PageBreak())
-    return elements
+# --- HELPER PARSERS ---
 
 def parse_reference_range(range_str):
-    """
-    Extract min and max from range string like '13.0 - 17.0 g/dL'
-    
-    Returns:
-        tuple: (min_val, max_val) or (None, None) if unparseable
-    """
-    import re
-    if not range_str:
-        return None, None
-        
-    # Match patterns like "13.0 - 17.0" or "70-100"
+    if not range_str: return None, None
     match = re.search(r'([\d.]+)\s*[-–]\s*([\d.]+)', range_str)
     if match:
-        try:
-            return float(match.group(1)), float(match.group(2))
-        except ValueError:
-            return None, None
+        try: return float(match.group(1)), float(match.group(2))
+        except: return None, None
     return None, None
 
 def _get_system_for_param(param_name):
-    """Map parameter to physiological system for categorization"""
-    # Import here to avoid circular imports
     try:
         from backend.systems_impact import SYSTEM_GROUPINGS
-        
         for system, params in SYSTEM_GROUPINGS.items():
-            if param_name in params:
-                return system
-        return "General"
-    except ImportError:
-        # Fallback if import fails
-        return "General"
+            if param_name in params: return system
+    except: pass
+    return "General"
 
-def create_parameter_breakdown(styles, analysis_data):
-    elements = []
-    # Header
-    elements.append(Paragraph("<b>Clinical Parameter Breakdown</b>", styles['SectionHeader']))
-    elements.append(Paragraph("METABOLIC ASSESSMENT REPORT", ParagraphStyle('Sub', fontSize=8, textColor=COLORS['slate_500'], textTransform='uppercase')))
-    elements.append(Spacer(1, 20))
+# --- PAGE LAYOUT TEMPLATE ---
+
+class ClinicalPageTemplate(object):
+    def __init__(self, report_id, user_info, now):
+        self.report_id = report_id
+        self.user_info = user_info or {}
+        self.now = now
+        
+    def draw_header(self, canvas, doc):
+        canvas.saveState()
+        # Top Header line
+        canvas.setStrokeColor(COLORS['navy'])
+        canvas.setLineWidth(2)
+        canvas.line(doc.leftMargin, A4[1] - 40, A4[0] - doc.rightMargin, A4[1] - 40)
+        
+        # Clinic Info (Left)
+        canvas.setFont("Helvetica-Bold", 14)
+        canvas.setFillColor(COLORS['navy'])
+        canvas.drawString(doc.leftMargin, A4[1] - 30, CLINIC_NAME)
+        
+        canvas.setFont("Helvetica", 8)
+        canvas.setFillColor(COLORS['gray_dark'])
+        canvas.drawString(doc.leftMargin, A4[1] - 42, CLINIC_ADDRESS)
+        canvas.drawString(doc.leftMargin, A4[1] - 52, CLINIC_CONTACT)
+        
+        # Report Title (Right)
+        canvas.setFont("Helvetica-Bold", 16)
+        canvas.setFillColor(COLORS['navy'])
+        canvas.drawRightString(A4[0] - doc.rightMargin, A4[1] - 30, "LABORATORY REPORT")
+        
+        canvas.setFont("Helvetica", 9)
+        canvas.setFillColor(COLORS['text'])
+        canvas.drawRightString(A4[0] - doc.rightMargin, A4[1] - 44, f"Accession / Report ID: {self.report_id}")
+        canvas.drawRightString(A4[0] - doc.rightMargin, A4[1] - 56, f"Report Date: {self.now.strftime('%b %d, %Y %H:%M')}")
+        
+        canvas.restoreState()
+
+    def draw_footer(self, canvas, doc):
+        canvas.saveState()
+        # Bottom Footer line
+        canvas.setStrokeColor(COLORS['navy'])
+        canvas.setLineWidth(1)
+        canvas.line(doc.leftMargin, 50, A4[0] - doc.rightMargin, 50)
+        
+        canvas.setFont("Helvetica", 8)
+        canvas.setFillColor(COLORS['gray_dark'])
+        disclaimer = "This report is generated for clinical review. Pathologist validation is required before interpreting the diagnostic findings."
+        canvas.drawString(doc.leftMargin, 38, disclaimer)
+        
+        canvas.setFont("Helvetica-Bold", 9)
+        canvas.drawRightString(A4[0] - doc.rightMargin, 38, f"Page {doc.page}")
+        canvas.restoreState()
+
+    def on_page(self, canvas, doc):
+        self.draw_header(canvas, doc)
+        self.draw_footer(canvas, doc)
+
+
+# --- GENERATORS ---
+
+def create_demographics_block(styles, user_info, now, report_id):
+    patient_name = user_info.get('full_name', 'UNKNOWN PATIENT').upper() if user_info else 'UNKNOWN PATIENT'
+    dob = user_info.get('date_of_birth', 'Not Provided') if user_info else 'Not Provided'
+    gender = user_info.get('gender', 'Not Provided') if user_info else 'Not Provided'
+    patient_id = user_info.get('id', 'N/A')[:8] if user_info and 'id' in user_info else 'N/A'
     
-    # Table Header
-    h_style = styles['GridHeader']
+    # Constructing a clean demographics box
+    data = [
+        [Paragraph(f"<b>PATIENT NAME:</b> {patient_name}", styles['Clinical_Normal']),
+         Paragraph(f"<b>MRN / PATIENT ID:</b> {patient_id}", styles['Clinical_Normal']),
+         Paragraph(f"<b>COLLECTED:</b> {now.strftime('%b %d, %Y')}", styles['Clinical_Normal'])],
+         
+        [Paragraph(f"<b>DOB / AGE:</b> {dob}", styles['Clinical_Normal']),
+         Paragraph(f"<b>GENDER:</b> {gender}", styles['Clinical_Normal']),
+         Paragraph(f"<b>PROVIDER:</b> Referring Physician", styles['Clinical_Normal'])]
+    ]
+    
+    table = Table(data, colWidths=[2.5*inch, 2.5*inch, 2.2*inch], rowHeights=[20, 20])
+    table.setStyle(TableStyle([
+        ('BOX', (0,0), (-1,-1), 1, COLORS['navy']),
+        ('BACKGROUND', (0,0), (-1,-1), COLORS['white']),
+        ('VALIGN', (0,0), (-1,-1), 'MIDDLE'),
+        ('LEFTPADDING', (0,0), (-1,-1), 10),
+        ('RIGHTPADDING', (0,0), (-1,-1), 10),
+    ]))
+    
+    # Spacer handles the header offset
+    return [Spacer(1, 10), table, Spacer(1, 15)]
+
+def create_results_table(styles, analysis_data):
+    elements = []
+    elements.append(Paragraph("Laboratory Results", styles['Section_Header']))
+    
     headers = [
-        Paragraph("PARAMETER ANALYTES", h_style),
-        Paragraph("RESULT", h_style),
-        Paragraph("UNIT", h_style),
-        Paragraph("REFERENCE", h_style),
-        Paragraph("INTERPRETATION", h_style),
-        Paragraph("SYSTEM", h_style)
+        Paragraph("Test Name", styles['TH']),
+        Paragraph("Result", styles['TH']),
+        Paragraph("Flag", styles['TH']),
+        Paragraph("Units", styles['TH']),
+        Paragraph("Reference Range", styles['TH']),
+        Paragraph("System", styles['TH'])
     ]
     
     data = [headers]
-    row_style = styles['GridCell']  # Define row style for reuse
     
-    # Sort parameters by status priority: Critical > High/Low > Normal
     def status_priority(item):
-        """Determine sort order based on status"""
         _, param_data = item
-        if not isinstance(param_data, dict):
-            return 999
-            
+        if not isinstance(param_data, dict): return 999
         status = param_data.get('status', 'Normal')
-        if status == 'Critical':
-            return 0
-        if status in ['High', 'Low']:
-            return 1
-        if status == 'Normal':
-            return 2
+        if status == 'Critical': return 0
+        if status in ['High', 'Low']: return 1
+        if status == 'Normal': return 2
         return 3
     
-    # Sort and limit to top 15 most important parameters (to fit on page)
-    if analysis_data:
-        sorted_params = sorted(analysis_data.items(), key=status_priority)
-        limited_params = sorted_params[:15]
-    else:
-        limited_params = []
+    sorted_params = sorted(analysis_data.items(), key=status_priority) if analysis_data else []
     
-    # Generate rows for each parameter
-    for param_name, param_data in limited_params:
-        if not isinstance(param_data, dict):
-            continue
+    row_shading = []
+    
+    for idx, (param_name, param_data) in enumerate(sorted_params):
+        if not isinstance(param_data, dict): continue
         
-        # Extract data
         value = param_data.get('value', 'N/A')
         unit = param_data.get('unit', '')
         status = param_data.get('status', 'Normal')
         range_str = param_data.get('range', '')
         
-        # Parse reference range for visualization
-        ref_min, ref_max = parse_reference_range(range_str)
-        
-        # Determine colors and status text based on status
+        # Formatting Flags
+        flag_p = ""
         if status == 'Critical':
-            value_color = COLORS['maroon']
-            status_color = COLORS['maroon']
-            status_text = "Critical"
+            flag_p = Paragraph("<b>*CRIT*</b>", styles['TD_Flag_C'])
         elif status == 'High':
-            value_color = COLORS['amber']
-            status_color = COLORS['amber']
-            status_text = "Above Range"
+            flag_p = Paragraph("<b>H</b>", styles['TD_Flag_H'])
         elif status == 'Low':
-            value_color = COLORS['amber']
-            status_color = COLORS['amber']
-            status_text = "Below Range"
-        else:  # Normal
-            value_color = COLORS['secondary']
-            status_color = COLORS['green_700']
-            status_text = "Normal"
-        
-        # Create value style
-        value_style = ParagraphStyle(
-            'ValueStyle',
-            fontName='Helvetica-Bold',
-            fontSize=10,
-            textColor=value_color
-        )
-        
-        # Create status style
-        status_style = ParagraphStyle(
-            'StatusStyle',
-            fontSize=8,
-            fontName='Helvetica-Bold',
-            textColor=status_color
-        )
-        
-        # Format value (handle float/int)
-        if isinstance(value, (int, float)):
-            value_display = f"{value:.2f}" if isinstance(value, float) else str(value)
+            flag_p = Paragraph("<b>L</b>", styles['TD_Flag_L'])
         else:
-            value_display = str(value)
-        
-        # Create row
+            flag_p = Paragraph("", styles['TD'])
+            
+        # Value display
+        if isinstance(value, (int, float)):
+            val_str = f"{value:.2f}" if isinstance(value, float) else str(value)
+        else:
+            val_str = str(value)
+            
+        value_p = Paragraph(val_str, styles['TD'])
+        if status != 'Normal':
+            value_p = Paragraph(f"<b>{val_str}</b>", styles['TD_Flag_H'] if status == 'High' else (styles['TD_Flag_L'] if status == 'Low' else styles['TD_Flag_C']))
+            
         row = [
-            Paragraph(f"<b>{param_name}</b>", row_style),
-            Paragraph(f"<b>{value_display}</b>", value_style),
-            Paragraph(unit, row_style),
-            # Range visualizer (use existing RangeVisualizer or simple spacer)
-            RangeVisualizer(
-                float(value) if isinstance(value, (int, float)) else 0,
-                ref_min if ref_min else 0,
-                ref_max if ref_max else 100,
-                width=80
-            ) if ref_min and ref_max else Spacer(1, 10),
-            Paragraph(f"<b>{status_text}</b>", status_style),
-            Paragraph(_get_system_for_param(param_name), row_style)
+            Paragraph(param_name, styles['TD_Left']),
+            value_p,
+            flag_p,
+            Paragraph(unit, styles['TD']),
+            Paragraph(range_str, styles['TD']),
+            Paragraph(_get_system_for_param(param_name), styles['TD'])
         ]
-        
         data.append(row)
+        
+        # Alternating row color
+        if idx % 2 != 0:
+            row_shading.append(('BACKGROUND', (0, idx+1), (-1, idx+1), COLORS['gray_light']))
+            
+    if len(data) == 1:
+        data.append([Paragraph("No parameters analyzed", styles['TD_Left']), "", "", "", "", ""])
     
-    # If no parameters, add placeholder
-    if len(data) == 1:  # Only headers
-        placeholder_row = [
-            Paragraph("<i>No parameters analyzed</i>", row_style),
-            Paragraph("", row_style),
-            Paragraph("", row_style),
-            Spacer(1, 10),
-            Paragraph("", row_style),
-            Paragraph("", row_style)
-        ]
-        data.append(placeholder_row)
+    col_widths = [2.2*inch, 0.8*inch, 0.7*inch, 0.8*inch, 1.4*inch, 1.3*inch]
+    t = Table(data, colWidths=col_widths, repeatRows=1)
     
-    t = Table(data, colWidths=[2*inch, 0.8*inch, 0.6*inch, 1.5*inch, 1.2*inch, 1*inch])
-    t.setStyle(TableStyle([
-        ('LINEBELOW', (0,0), (-1,-1), 0.5, COLORS['slate_100']),
+    t_style = [
+        ('BACKGROUND', (0,0), (-1,0), COLORS['navy']),
+        ('TEXTCOLOR', (0,0), (-1,0), COLORS['white']),
+        ('ALIGN', (0,0), (-1,-1), 'CENTER'),
         ('VALIGN', (0,0), (-1,-1), 'MIDDLE'),
-        ('TOPPADDING', (0,0), (-1,-1), 10),
-        ('BOTTOMPADDING', (0,0), (-1,-1), 10),
-    ]))
-    elements.append(t)
-    
-    elements.append(PageBreak())
-    return elements
-
-def create_insights_page(styles, insights_data):
-    """
-    Create insights page with actual generated insights
-    
-    Args:
-        styles: ReportLab styles dictionary
-        insights_data: Dict containing:
-            - detailed_insights: List of {parameter, status, insight, severity, ...}
-            - summary: Optional summary stats
-    """
-    elements = []
-    
-    # Page header
-    elements.append(Paragraph("<b>Insights & Observations</b>", styles['SectionHeader']))
-    elements.append(HRFlowable(width="100%", thickness=2, color=COLORS['primary'], spaceAfter=20))
-    
-    # Extract insights from data
-    detailed_insights = []
-    if insights_data and isinstance(insights_data, dict):
-        detailed_insights = insights_data.get('detailed_insights', [])
-    
-    if not detailed_insights or len(detailed_insights) == 0:
-        # No abnormalities - show positive message
-        elements.append(Spacer(1, 30))
-        elements.append(Paragraph(
-            "<i>No significant variations detected in analyzed parameters. All values within expected ranges.</i>",
-            ParagraphStyle(
-                'NoInsights',
-                alignment=TA_CENTER,
-                textColor=COLORS['slate_400'],
-                fontSize=11,
-                fontName='Helvetica-Oblique'
-            )
-        ))
-        elements.append(Spacer(1, 30))
-    else:
-        # Display up to 5 most important insights
-        max_insights = min(5, len(detailed_insights))
-        
-        for idx, insight in enumerate(detailed_insights[:max_insights]):
-            if not isinstance(insight, dict):
-                continue
-                
-            parameter = insight.get('parameter', 'Unknown Parameter')
-            insight_text = insight.get('insight', 'No insight available.')
-            status = insight.get('status', 'Normal')
-            severity = insight.get('severity', 'MEDIUM')
-            confidence = insight.get('confidence_score', 60)
-            
-            # Create insight header
-            header_style = ParagraphStyle(
-                'InsightHeader',
-                fontName='Helvetica-Bold',
-                fontSize=10,
-                textColor=COLORS['secondary'],
-                spaceAfter=6
-            )
-            
-            elements.append(Paragraph(
-                f"<b>{parameter.upper()} - {status.upper()}</b>",
-                header_style
-            ))
-            
-            # Insight body text
-            elements.append(Paragraph(insight_text, styles['Prose']))
-            
-            # Metadata footer
-            metadata_style = ParagraphStyle(
-                'InsightMeta',
-                fontSize=7,
-                textColor=COLORS['slate_400'],
-                spaceAfter=10
-            )
-            
-            elements.append(Paragraph(
-                f"<font color='#64748b'>Severity: {severity} | Confidence: {confidence}%</font>",
-                metadata_style
-            ))
-            
-            # Add separator between insights (except last one)
-            if idx < max_insights - 1:
-                elements.append(HRFlowable(
-                    width="100%",
-                    thickness=0.5,
-                    color=COLORS['slate_200'],
-                    spaceBefore=10,
-                    spaceAfter=10
-                ))
-        
-        # If more than 5 insights, add note
-        if len(detailed_insights) > 5:
-            elements.append(Spacer(1, 10))
-            elements.append(Paragraph(
-                f"<i>+ {len(detailed_insights) - 5} additional observations not shown. View full report online.</i>",
-                ParagraphStyle(
-                    'MoreInsights',
-                    textColor=COLORS['slate_400'],
-                    fontSize=8,
-                    alignment=TA_CENTER,
-                    fontName='Helvetica-Oblique'
-                )
-            ))
-    
-    # Add disclaimer section (keep existing)
-    elements.append(Spacer(1, 50))
-    elements.append(Paragraph("<b>Institutional Medical Disclaimer</b>", ParagraphStyle('H4', fontSize=11)))
-    elements.append(Paragraph(
-        "The observations provided herein are generated by automated diagnostic systems and are intended for professional clinical review only. "
-        "These insights are NOT to be considered as a final diagnosis, treatment protocol, or medical advice.",
-        styles['Prose']
-    ))
-    
-    elements.append(PageBreak())
-    return elements
-
-def create_disclaimer_page(styles, report_id, source_filename, user_info=None):
-    elements = []
-    
-    # Header
-    elements.append(Paragraph("CLINICAL ANALYSIS REPORT", 
-                              ParagraphStyle('CTitle', fontName='Helvetica-Bold', fontSize=24)))
-    elements.append(Paragraph("TRACEABILITY MONOGRAPH // FINAL RECORD",
-                              ParagraphStyle('CSub', fontSize=9, textColor=COLORS['slate_500'], textTransform='uppercase')))
-    elements.append(Spacer(1, 20))
-    
-    # Extract patient info or use defaults
-    patient_name = 'N/A'
-    patient_dob = 'N/A'
-    gender = 'N/A'
-    
-    if user_info and isinstance(user_info, dict):
-        patient_name = user_info.get('full_name', 'N/A')
-        patient_dob = user_info.get('date_of_birth', 'N/A')
-        gender = user_info.get('gender', 'N/A')
-    
-    # Info with actual user data
-    from datetime import datetime
-    now = datetime.now()
-    
-    info = [
-        ["Patient Name", patient_name],
-        ["Date of Birth", patient_dob],
-        ["Gender", gender],
-        ["Report Date", now.strftime("%b %d, %Y")],
-        ["Reference ID", report_id]
-    ]
-    # layout as 4 cols
-    # We use the previous safe flattened Table method (list of list of paragraphs? No, just list of paragraphs in a row)
-    
-    r1 = []
-    for label, val in info:
-        txt = f"<font size=7 color='#94a3b8'><b>{label.upper()}</b></font><br/><b>{val}</b>"
-        r1.append(Paragraph(txt, styles['Normal']))
-    
-    t = Table([r1], colWidths=[1.5*inch, 1.3*inch, 0.9*inch, 1.4*inch, 1.4*inch])
-    t.setStyle(TableStyle([
-        ('LINEABOVE', (0,0), (-1,0), 1, COLORS['primary']),
-        ('LINEBELOW', (0,0), (-1,0), 1, COLORS['primary']),
-        ('TOPPADDING', (0,0), (-1,-1), 10),
-        ('BOTTOMPADDING', (0,0), (-1,-1), 10),
-    ]))
-    elements.append(t)
-    elements.append(Spacer(1, 30))
-    
-    # Disclaimers
-    # 01 | Legal
-    elements.append(Paragraph("<b>01 | Legal Disclaimers & Limitations</b>", ParagraphStyle('DHead', fontName='Helvetica-Bold', fontSize=10)))
-    elements.append(Spacer(1, 10))
-    
-    disclaimer_txt = """
-    <b>1. NON-DIAGNOSTIC INFORMATION.</b> This report is generated for informational purposes only.
-    <br/><br/>
-    <b>2. AUTOMATED EXTRACTION.</b> Data extracted using LabFlow OCR/LLM pipeline v2.4.
-    <br/><br/>
-    <b>4. PRIVACY.</b> Contains PHI. Handle according to HIPAA.
-    """
-    elements.append(Paragraph(disclaimer_txt, ParagraphStyle('DText', fontSize=9, leading=12, alignment=TA_JUSTIFY, textColor=COLORS['secondary'])))
-    
-    elements.append(Spacer(1, 20))
-    
-    # Audit
-    elements.append(Paragraph("<b>02 | Audit Metadata</b>", ParagraphStyle('DHead', fontName='Helvetica-Bold', fontSize=10)))
-    elements.append(Spacer(1, 10))
-    
-    # Flattened Audit Grid
-    # Row 1
-    def aud(label, val):
-        return f"<font size=7 color='#94a3b8'><b>{label.upper()}</b></font><br/><font size=9 fontName='Courier'>{val}</font>"
-        
-    ar1 = [Paragraph(aud("Global Session ID", "ses_8f92-a1b2"), styles['Normal']),
-           Paragraph(aud("Data Source", "LabCorp_Integration"), styles['Normal'])]
-    ar2 = [Paragraph(aud("Processing Node", "US-EAST-2"), styles['Normal']),
-           Paragraph(aud("Timestamp", datetime.now().isoformat()), styles['Normal'])]
-           
-    at = Table([ar1, ar2], colWidths=[3*inch, 3*inch])
-    at.setStyle(TableStyle([
-        ('VALIGN', (0,0), (-1,-1), 'TOP'),
+        ('INNERGRID', (0,0), (-1,-1), 0.25, COLORS['gray_border']),
+        ('BOX', (0,0), (-1,-1), 1, COLORS['navy']),
         ('TOPPADDING', (0,0), (-1,-1), 6),
-    ]))
-    elements.append(at)
+        ('BOTTOMPADDING', (0,0), (-1,-1), 6),
+    ]
+    t_style.extend(row_shading)
+    t.setStyle(TableStyle(t_style))
+    
+    elements.append(t)
+    return elements
+
+def create_physician_notes(styles, insights_data, systems_impact):
+    elements = []
+    
+    elements.append(CondPageBreak(2*inch))
+    
+    elements.append(Spacer(1, 20))
+    elements.append(Paragraph("Clinical Interpretations & Pathologist Notes", styles['Section_Header']))
+    elements.append(HRFlowable(width="100%", thickness=1, color=COLORS['navy'], spaceAfter=15))
+    
+    sys_impacts = []
+    if systems_impact and isinstance(systems_impact, dict):
+        for sys_name, sys_info in systems_impact.items():
+            if isinstance(sys_info, dict) and sys_info.get('abnormal_count', 0) > 0:
+                sys_impacts.append(f"{sys_name} ({sys_info.get('abnormal_count')} anomalies)")
+                
+    if sys_impacts:
+        intro_text = f"Primary system anomalies detected in: {', '.join(sys_impacts)}. Clinical correlation is advised based on the following parameter deviations."
+        elements.append(Paragraph(intro_text, styles['Note_Text']))
+    else:
+        elements.append(Paragraph("Systemic parameters appear to be within normal physiological ranges. No overt systemic anomalies detected in the analyzed panel.", styles['Note_Text']))
+        
+    elements.append(Spacer(1, 15))
+    
+    detailed_insights = insights_data.get('detailed_insights', []) if insights_data is not None and isinstance(insights_data, dict) else []
+    
+    if detailed_insights:
+        elements.append(Paragraph("Specific Parameter Observations:", styles['Sub_Header']))
+        for insight in detailed_insights[:10]:
+            if not isinstance(insight, dict): continue
+            
+            param = insight.get('parameter', 'Unknown')
+            status = insight.get('status', 'Abnormal')
+            text = insight.get('insight', '')
+            
+            p_title = Paragraph(f"{param.upper()} | Flag: {status.upper()}", styles['Note_Item_Title'])
+            p_text = Paragraph(text, styles['Note_Item_Text'])
+            elements.append(KeepTogether([p_title, p_text]))
+    else:
+        elements.append(Paragraph("No specific abnormal parameter observations to report.", styles['Note_Item_Text']))
+        
+    elements.append(Spacer(1, 40))
+    elements.append(HRFlowable(width="30%", thickness=1, color=COLORS['gray_dark'], hAlign='LEFT', spaceAfter=5))
+    elements.append(Paragraph("<i>Electronically authenticated by Nexus Clinical Systems</i>", ParagraphStyle('Auth', fontName='Times-Italic', fontSize=9, textColor=COLORS['text'])))
     
     return elements
 
-# --- MAIN GENERATOR ---
-
-class NumberedPageTemplate(object):
-    def __init__(self, report_id):
-        self.report_id = report_id
-    
-    def on_page(self, canvas, doc):
-        canvas.saveState()
-        canvas.setFont('Helvetica', 8)
-        canvas.setFillColor(COLORS['slate_300'])
-        canvas.drawString(10*mm, 10*mm, f"Report ID: {self.report_id}")
-        canvas.drawRightString(200*mm, 10*mm, f"Page {doc.page}")
-        canvas.restoreState()
+# --- MAIN GENERATOR POINT ---
 
 def generate_pdf(analysis_data, insights_data, systems_impact=None, source_filename="report.pdf", user_info=None):
     buffer = io.BytesIO()
-    doc = SimpleDocTemplate(buffer, pagesize=A4, rightMargin=15*mm, leftMargin=15*mm, topMargin=15*mm, bottomMargin=20*mm)
     
-    styles = get_styles()
-    report_id = f"LFC-{uuid.uuid4().hex[:6].upper()}"
+    doc = SimpleDocTemplate(
+        buffer, 
+        pagesize=A4, 
+        rightMargin=0.5*inch, 
+        leftMargin=0.5*inch, 
+        topMargin=1.5*inch, 
+        bottomMargin=1.0*inch
+    )
+    
+    styles = get_clinical_styles()
+    report_id = f"RLP-{uuid.uuid4().hex[:8].upper()}"
     now = datetime.now()
     
     story = []
     
-    # 1. Cover
-    story.extend(create_cover_page(styles, report_id, now))
+    story.extend(create_demographics_block(styles, user_info, now, report_id))
+    story.extend(create_results_table(styles, analysis_data))
+    story.extend(create_physician_notes(styles, insights_data, systems_impact))
     
-    # 2. Exec Summary
-    story.extend(create_exec_summary(styles, analysis_data, insights_data, user_info))
-    
-    # 3. Systems Impact
-    story.extend(create_systems_impact(styles, systems_impact))
-    
-    # 4. Parameters
-    story.extend(create_parameter_breakdown(styles, analysis_data))
-    
-    # 5. Insights
-    story.extend(create_insights_page(styles, insights_data))
-    
-    # 6. Disclaimers
-    story.extend(create_disclaimer_page(styles, report_id, source_filename, user_info))
-    
-    # Build
-    # Setup page numbering
-    template = NumberedPageTemplate(report_id)
+    template = ClinicalPageTemplate(report_id, user_info, now)
     doc.build(story, onFirstPage=template.on_page, onLaterPages=template.on_page)
     
     buffer.seek(0)
     return buffer
 
 def get_report_filename(report_id="REPORT"):
-    return f"SmartLab_{report_id}_{datetime.now().strftime('%Y%m%d')}.pdf"
+    return f"ClinicalReport_{report_id}_{datetime.now().strftime('%Y%m%d')}.pdf"

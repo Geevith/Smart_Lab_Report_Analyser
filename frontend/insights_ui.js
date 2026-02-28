@@ -7,7 +7,7 @@ const themeToggle = document.getElementById('themeToggle');
 const newAnalysisBtn = document.getElementById('newAnalysisBtn');
 const previousReportBtn = document.getElementById('previousReportBtn');
 const printBtn = document.getElementById('printBtn');
-const archiveBtn = document.getElementById('archiveBtn');
+const saveReportBtn = document.getElementById('saveReportBtn');
 const exportBtn = document.getElementById('exportBtn');
 
 // Container for dynamic insights
@@ -176,14 +176,61 @@ if (printBtn) {
 }
 
 // ==========================================
-// ARCHIVE DATA BUTTON
+// SAVE REPORT BUTTON
 // ==========================================
 
-if (archiveBtn) {
-    archiveBtn.addEventListener('click', () => {
-        // Feature not implemented in backend
-        showNotification('Archive feature coming soon', 'info');
-        console.log('Archive data requested');
+const saveReportBtn = document.getElementById('saveReportBtn');
+
+if (saveReportBtn) {
+    saveReportBtn.addEventListener('click', async () => {
+        saveReportBtn.disabled = true;
+        const originalContent = saveReportBtn.innerHTML;
+        saveReportBtn.innerHTML = '<span class="animate-spin w-5 h-5 border-2 border-primary border-t-transparent rounded-full"></span> Saving...';
+
+        try {
+            const reportId = sessionStorage.getItem('currentReportId');
+            if (!reportId) {
+                throw new Error("Report ID not found. Cannot save insights.");
+            }
+
+            const analysisInsights = JSON.parse(sessionStorage.getItem('analysisInsights') || '{}');
+            const analysisSummary = JSON.parse(sessionStorage.getItem('analysisSummary') || '{}');
+            const systemsImpact = JSON.parse(sessionStorage.getItem('systemsImpact') || '{}');
+            const uploadedFile = JSON.parse(sessionStorage.getItem('uploadedFile') || '{}');
+
+            const payload = {
+                insights: analysisInsights,
+                summary: analysisSummary,
+                systems_impact: systemsImpact,
+                filename: uploadedFile.name || 'document'
+            };
+
+            const response = await fetch(`${API_BASE_URL}/report/${reportId}/save-insights`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(payload),
+                credentials: 'include'
+            });
+
+            if (!response.ok) {
+                throw new Error(`Failed to save report: ${response.statusText}`);
+            }
+
+            showNotification('Report insights saved successfully!', 'success');
+
+            // Change button visual to saved state
+            saveReportBtn.innerHTML = '<span class="material-icons-round text-xl relative top-[1px]">bookmark</span> Saved';
+            saveReportBtn.classList.add('bg-teal-50', 'dark:bg-teal-900/40', 'border-transparent');
+            saveReportBtn.classList.remove('hover:bg-teal-50', 'dark:hover:bg-teal-900/20');
+
+        } catch (error) {
+            console.error('Save report error:', error);
+            showNotification(error.message || 'Failed to save report', 'error');
+            saveReportBtn.disabled = false;
+            saveReportBtn.innerHTML = originalContent;
+        }
     });
 }
 

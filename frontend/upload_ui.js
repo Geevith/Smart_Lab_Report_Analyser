@@ -426,6 +426,11 @@ async function handleAnalyze() {
         sessionStorage.setItem('analysisSummary', JSON.stringify(data.summary));
         sessionStorage.setItem('analysisInsights', JSON.stringify(data.insights));
         sessionStorage.setItem('systemsImpact', JSON.stringify(data.systems_impact));
+        
+        if (data.report_id) {
+            sessionStorage.setItem('currentReportId', data.report_id);
+        }
+        
         sessionStorage.setItem('currentStep', 'verify');
 
         // Complete Progress

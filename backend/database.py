@@ -254,6 +254,25 @@ def delete_report(user_id, report_id):
         cursor.close()
         conn.close()
 
+def save_report_insights(user_id, report_id, insights_json):
+    """Save the AI insights JSON to a report."""
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    try:
+        cursor.execute('''
+            UPDATE reports SET insights_json = %s, updated_at = CURRENT_TIMESTAMP
+            WHERE id = %s AND user_id = %s
+        ''', (json.dumps(insights_json), report_id, user_id))
+        conn.commit()
+        return cursor.rowcount > 0
+    except Exception as e:
+        conn.rollback()
+        print(f"Error saving insights: {e}")
+        return False
+    finally:
+        cursor.close()
+        conn.close()
+
 
 def toggle_favorite(user_id, report_id):
     """Toggle the is_favorite status of a report. Returns the new value."""

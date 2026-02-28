@@ -853,6 +853,7 @@ async def analyze_file(
         systems_impact = compute_systems_impact(parameters_list)
         
         # Save to database
+        report_id = None
         try:
             report_id = save_report(
                 user_id=user_id,
@@ -886,6 +887,7 @@ async def analyze_file(
             "report_type_label": report_type_label,
             "report_type_icon": report_type_icon,
             "ai_metadata": ai_metadata,
+            "report_id": report_id,
         }
         
     finally:
@@ -955,6 +957,19 @@ async def update_notes_endpoint(
     if not success:
         raise HTTPException(status_code=404, detail="Report not found or unauthorized")
     return {"success": True, "message": "Notes updated"}
+
+@app.post("/report/{report_id}/save-insights")
+async def save_report_insights_endpoint(
+    report_id: int,
+    data: dict,
+    current_user: dict = Depends(get_current_user)
+):
+    """Save detailed insights JSON for a report."""
+    from .database import save_report_insights
+    success = save_report_insights(current_user['id'], report_id, data)
+    if not success:
+        raise HTTPException(status_code=404, detail="Report not found or unauthorized")
+    return {"success": True, "message": "Report saved successfully"}
 
 @app.get("/report/{report_id}")
 async def get_report_details(
