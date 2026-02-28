@@ -8,7 +8,6 @@ const newAnalysisBtn = document.getElementById('newAnalysisBtn');
 const previousReportBtn = document.getElementById('previousReportBtn');
 const printBtn = document.getElementById('printBtn');
 const saveReportBtn = document.getElementById('saveReportBtn');
-const exportBtn = document.getElementById('exportBtn');
 
 // Container for dynamic insights
 const parameterDetailsContainer = document.getElementById('parameterDetails');
@@ -179,7 +178,7 @@ if (printBtn) {
 // SAVE REPORT BUTTON
 // ==========================================
 
-const saveReportBtn = document.getElementById('saveReportBtn');
+// const saveReportBtn = document.getElementById('saveReportBtn'); // Already declared at top
 
 if (saveReportBtn) {
     saveReportBtn.addEventListener('click', async () => {
@@ -235,82 +234,90 @@ if (saveReportBtn) {
 }
 
 // ==========================================
-// EXPORT LOG BUTTON
+// EXPORT BUTTONS
 // ==========================================
 
-if (exportBtn) {
-    exportBtn.addEventListener('click', async () => {
-        try {
-            const analysisResults = sessionStorage.getItem('analysisResults');
-            const analysisSummary = sessionStorage.getItem('analysisSummary');
+const exportPdfBtn = document.getElementById('exportPdfBtn');
+const exportExcelBtn = document.getElementById('exportExcelBtn');
+const exportCsvBtn = document.getElementById('exportCsvBtn');
 
-            if (!analysisResults) {
-                showNotification('No data to export', 'error');
-                return;
-            }
+async function exportReport(format) {
+    try {
+        const analysisResults = sessionStorage.getItem('analysisResults');
+        const analysisSummary = sessionStorage.getItem('analysisSummary');
 
-            const parameters = JSON.parse(analysisResults);
-            const summary = JSON.parse(analysisSummary || '{}');
-
-            // Reconstruct analysis object for backend
-            const analysis = {};
-            parameters.forEach(p => {
-                analysis[p.name] = {
-                    value: p.value,
-                    unit: p.unit,
-                    range: p.range,
-                    status: p.status
-                };
-            });
-            // Get systems impact and insights from sessionStorage
-            const systemsImpactStr = sessionStorage.getItem('systemsImpact');
-            const insightsStr = sessionStorage.getItem('analysisInsights');
-            const uploadedFileStr = sessionStorage.getItem('uploadedFile');
-
-            const systemsImpact = systemsImpactStr ? JSON.parse(systemsImpactStr) : {};
-            const insights = insightsStr ? JSON.parse(insightsStr) : { summary: summary };
-            const uploadedFile = uploadedFileStr ? JSON.parse(uploadedFileStr) : {};
-
-            const payload = {
-                analysis: analysis,
-                insights: insights,
-                systems_impact: systemsImpact,
-                filename: uploadedFile.name || 'Uploaded Report'
-            };
-
-            const response = await fetch(`${API_BASE_URL}/generate_report`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload)
-            });
-
-            if (!response.ok) throw new Error('PDF generation failed');
-
-            // Get filename from Content-Disposition header or use default
-            const contentDisposition = response.headers.get('Content-Disposition');
-            let filename = 'lab-summary-report.pdf';
-            if (contentDisposition) {
-                const match = contentDisposition.match(/filename="?([^"]+)"?/);
-                if (match) filename = match[1];
-            }
-
-            const blob = await response.blob();
-            const url = window.URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = filename;
-            document.body.appendChild(a);
-            a.click();
-            window.URL.revokeObjectURL(url);
-            document.body.removeChild(a);
-
-            showNotification('Report exported successfully!', 'success');
-        } catch (error) {
-            console.error('Export error:', error);
-            showNotification('Failed to export report', 'error');
+        if (!analysisResults) {
+            showNotification('No data to export', 'error');
+            return;
         }
-    });
+
+        const parameters = JSON.parse(analysisResults);
+        const summary = JSON.parse(analysisSummary || '{}');
+
+        // Reconstruct analysis object for backend
+        const analysis = {};
+        parameters.forEach(p => {
+            analysis[p.name] = {
+                value: p.value,
+                unit: p.unit,
+                range: p.range,
+                status: p.status
+            };
+        });
+
+        // Get systems impact and insights from sessionStorage
+        const systemsImpactStr = sessionStorage.getItem('systemsImpact');
+        const insightsStr = sessionStorage.getItem('analysisInsights');
+        const uploadedFileStr = sessionStorage.getItem('uploadedFile');
+
+        const systemsImpact = systemsImpactStr ? JSON.parse(systemsImpactStr) : {};
+        const insights = insightsStr ? JSON.parse(insightsStr) : { summary: summary };
+        const uploadedFile = uploadedFileStr ? JSON.parse(uploadedFileStr) : {};
+
+        const payload = {
+            analysis: analysis,
+            insights: insights,
+            systems_impact: systemsImpact,
+            filename: uploadedFile.name || 'Uploaded Report'
+        };
+
+        const response = await fetch(`${API_BASE_URL}/api/export/${format}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload),
+            credentials: 'include'
+        });
+
+        if (!response.ok) throw new Error(`${format.toUpperCase()} generation failed`);
+
+        // Get filename from Content-Disposition header or use default
+        const contentDisposition = response.headers.get('Content-Disposition');
+        let filename = `lab-summary-report.${format === 'excel' ? 'xlsx' : format}`;
+        if (contentDisposition) {
+            const match = contentDisposition.match(/filename="?([^"]+)"?/);
+            if (match) filename = match[1];
+        }
+
+        const blob = await response.blob();
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        window.URL.revokeObjectURL(url);
+        document.body.removeChild(a);
+
+        showNotification(`${format.toUpperCase()} exported successfully!`, 'success');
+    } catch (error) {
+        console.error('Export error:', error);
+        showNotification(`Failed to export ${format.toUpperCase()}`, 'error');
+    }
 }
+
+if (exportPdfBtn) exportPdfBtn.addEventListener('click', () => exportReport('pdf'));
+if (exportExcelBtn) exportExcelBtn.addEventListener('click', () => exportReport('excel'));
+if (exportCsvBtn) exportCsvBtn.addEventListener('click', () => exportReport('csv'));
 
 // ==========================================
 // CIRCULAR PROGRESS ANIMATION

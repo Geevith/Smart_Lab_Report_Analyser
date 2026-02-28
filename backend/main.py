@@ -1095,7 +1095,7 @@ async def get_parameter_history_endpoint(
 async def export_report_endpoint(
     format_type: str,
     data: dict,
-    current_user: dict = Depends(get_current_user)
+    current_user: Optional[dict] = Depends(get_current_user_optional)
 ):
     """
     Export report in multiple formats: excel, csv, hl7, pdf
@@ -1114,12 +1114,14 @@ async def export_report_endpoint(
     systems_impact = data.get("systems_impact", {})
     source_filename = data.get("filename", "report")
     
-    user_info = {
-        'full_name': current_user.get('full_name', 'Patient'),
-        'date_of_birth': current_user.get('date_of_birth', 'N/A'),
-        'gender': current_user.get('gender', 'N/A'),
-        'email': current_user.get('email', 'N/A')
-    }
+    user_info = None
+    if current_user:
+        user_info = {
+            'full_name': current_user.get('full_name', 'Patient'),
+            'date_of_birth': current_user.get('date_of_birth', 'N/A'),
+            'gender': current_user.get('gender', 'N/A'),
+            'email': current_user.get('email', 'N/A')
+        }
     
     try:
         if format_type == 'excel':
@@ -1158,7 +1160,8 @@ async def export_report_endpoint(
         }
         
         # Log export activity
-        log_activity(current_user['id'], f"export_{format_type}", "report", None, get_client_ip(Request) if Request else None)
+        if current_user:
+            log_activity(current_user['id'], f"export_{format_type}", "report", None, get_client_ip(Request) if Request else None)
         
         return Response(content=content, media_type=media_type, headers=headers)
         
