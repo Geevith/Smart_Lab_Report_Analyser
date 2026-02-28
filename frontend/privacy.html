@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Privacy Policy — Smart Lab Report Analyser</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: #F9FAFB;
+            color: #111827;
+            line-height: 1.75;
+        }
+
+        header {
+            background: white;
+            border-bottom: 1px solid #E5E7EB;
+            padding: 18px 48px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            position: sticky;
+            top: 0;
+            z-index: 50;
+        }
+
+        .brand-icon {
+            width: 34px;
+            height: 34px;
+            background: #000;
+            color: white;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 14px;
+        }
+
+        header span {
+            font-weight: 700;
+            font-size: 18px;
+        }
+
+        .badge {
+            margin-left: auto;
+            background: #ECFDF5;
+            color: #065F46;
+            font-size: 12px;
+            font-weight: 600;
+            padding: 4px 12px;
+            border-radius: 20px;
+        }
+
+        main {
+            max-width: 780px;
+            margin: 48px auto;
+            padding: 0 24px 80px;
+        }
+
+        .page-title {
+            font-size: 36px;
+            font-weight: 800;
+            margin-bottom: 6px;
+        }
+
+        .page-meta {
+            color: #6B7280;
+            font-size: 14px;
+            margin-bottom: 40px;
+            padding-bottom: 32px;
+            border-bottom: 1px solid #E5E7EB;
+        }
+
+        h2 {
+            font-size: 20px;
+            font-weight: 700;
+            margin: 36px 0 12px;
+            color: #1F2937;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        h2::before {
+            content: '';
+            display: inline-block;
+            width: 4px;
+            height: 20px;
+            background: #10B981;
+            border-radius: 2px;
+        }
+
+        p {
+            color: #374151;
+            margin-bottom: 14px;
+        }
+
+        ul {
+            margin: 10px 0 14px 20px;
+            color: #374151;
+        }
+
+        ul li {
+            margin-bottom: 6px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 16px 0 24px;
+            font-size: 14px;
+        }
+
+        th {
+            background: #F3F4F6;
+            text-align: left;
+            padding: 10px 14px;
+            font-weight: 600;
+            color: #374151;
+            border: 1px solid #E5E7EB;
+        }
+
+        td {
+            padding: 10px 14px;
+            border: 1px solid #E5E7EB;
+            color: #4B5563;
+            vertical-align: top;
+        }
+
+        .highlight-box {
+            background: #F0FDF4;
+            border-left: 4px solid #10B981;
+            border-radius: 8px;
+            padding: 16px 20px;
+            margin: 24px 0;
+            color: #064E3B;
+            font-size: 14px;
+        }
+
+        .rights-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin: 16px 0 24px;
+        }
+
+        .right-card {
+            background: white;
+            border: 1px solid #E5E7EB;
+            border-radius: 10px;
+            padding: 14px 16px;
+        }
+
+        .right-card strong {
+            font-size: 14px;
+            color: #111827;
+            display: block;
+            margin-bottom: 4px;
+        }
+
+        .right-card span {
+            font-size: 13px;
+            color: #6B7280;
+        }
+
+        .contact-box {
+            background: #EFF6FF;
+            border-radius: 12px;
+            padding: 24px;
+            margin-top: 40px;
+            border: 1px solid #BFDBFE;
+        }
+
+        .contact-box h3 {
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: #1D4ED8;
+        }
+
+        .contact-box p {
+            margin: 0;
+            color: #1E40AF;
+            font-size: 14px;
+        }
+
+        a {
+            color: #0055FF;
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        footer {
+            text-align: center;
+            padding: 24px;
+            font-size: 13px;
+            color: #9CA3AF;
+        }
+
+        @media (max-width: 600px) {
+            .rights-grid {
+                grid-template-columns: 1fr;
+            }
+
+            header {
+                padding: 14px 20px;
+            }
+
+            main {
+                margin: 24px auto;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="brand-icon">SL</div>
+        <span>Smart Lab</span>
+        <span class="badge">Privacy</span>
+    </header>
+
+    <main>
+        <h1 class="page-title">Privacy Policy</h1>
+        <p class="page-meta">Last updated: February 2026 &nbsp;·&nbsp; Your privacy matters to us</p>
+
+        <div class="highlight-box">
+            🔒 <strong>Our commitment:</strong> We are committed to protecting your health data. We do not sell your
+            personal information to third parties, ever.
+        </div>
+
+        <h2>1. Who We Are</h2>
+        <p>Smart Lab Report Analyser ("we", "us", or "our") is a health intelligence platform that enables users to
+            upload and analyse medical lab reports using AI. This Privacy Policy explains how we collect, use, store,
+            and protect your information.</p>
+
+        <h2>2. Information We Collect</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Category</th>
+                    <th>Data Collected</th>
+                    <th>Purpose</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>Account Info</strong></td>
+                    <td>Username, email, password (hashed), full name, gender, date of birth, age, ethnicity (optional)
+                    </td>
+                    <td>Account creation, personalised analysis, age/gender-specific reference ranges</td>
+                </tr>
+                <tr>
+                    <td><strong>Health Reports</strong></td>
+                    <td>Uploaded files, extracted text, analysis results, parameters</td>
+                    <td>Core analysis service, historical tracking</td>
+                </tr>
+                <tr>
+                    <td><strong>Usage Data</strong></td>
+                    <td>Login timestamps, actions performed, IP address, browser type</td>
+                    <td>Security monitoring, audit trail, service improvement</td>
+                </tr>
+                <tr>
+                    <td><strong>Session Data</strong></td>
+                    <td>Session tokens (stored as HTTP-only cookies)</td>
+                    <td>Authentication and session management</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h2>3. How We Use Your Information</h2>
+        <p>We use your information to:</p>
+        <ul>
+            <li>Provide, operate, and improve the Smart Lab service</li>
+            <li>Generate personalised lab report analysis using your age, gender, and ethnicity where relevant to
+                reference ranges</li>
+            <li>Maintain your report history and enable longitudinal health tracking</li>
+            <li>Send important security and account notifications</li>
+            <li>Detect and prevent fraud and unauthorised activity</li>
+            <li>Comply with legal obligations</li>
+        </ul>
+        <p>We do <strong>not</strong> use your health data for advertising, profiling, or any commercial purposes
+            unrelated to the service.</p>
+
+        <h2>4. Data Sharing</h2>
+        <p>We do not sell, rent, or trade your personal information. We may share data only in these limited
+            circumstances:</p>
+        <ul>
+            <li><strong>Service Providers:</strong> Trusted infrastructure partners (e.g., database hosting via
+                Supabase/PostgreSQL, deployment via Render) under strict data processing agreements</li>
+            <li><strong>AI Models:</strong> If you upload a narrative report (CT, MRI, etc.), the extracted text may be
+                sent to the Google Gemini API for analysis. No personally identifiable information is transmitted as
+                part of the analysis prompt</li>
+            <li><strong>Legal Requirements:</strong> If required by law, court order, or regulatory authority</li>
+        </ul>
+
+        <h2>5. Data Security</h2>
+        <p>We implement industry-standard security measures to protect your information:</p>
+        <ul>
+            <li>Passwords are hashed using bcrypt — we never store plain-text passwords</li>
+            <li>Sessions use secure, HTTP-only cookies with CSRF protection</li>
+            <li>All data is transmitted over encrypted HTTPS connections</li>
+            <li>Database access is restricted and monitored</li>
+            <li>Uploaded files are processed temporarily and deleted after analysis</li>
+        </ul>
+
+        <h2>6. Your Rights</h2>
+        <p>Depending on your jurisdiction, you may have the following rights regarding your personal data:</p>
+        <div class="rights-grid">
+            <div class="right-card">
+                <strong>🔍 Access</strong>
+                <span>Request a copy of the personal data we hold about you</span>
+            </div>
+            <div class="right-card">
+                <strong>✏️ Correction</strong>
+                <span>Update inaccurate or incomplete personal data</span>
+            </div>
+            <div class="right-card">
+                <strong>🗑️ Deletion</strong>
+                <span>Request deletion of your account and associated data</span>
+            </div>
+            <div class="right-card">
+                <strong>📦 Portability</strong>
+                <span>Export your report data in standard formats (CSV, Excel)</span>
+            </div>
+            <div class="right-card">
+                <strong>🚫 Objection</strong>
+                <span>Object to or restrict certain processing of your data</span>
+            </div>
+            <div class="right-card">
+                <strong>↩️ Withdraw Consent</strong>
+                <span>Withdraw your consent for data processing at any time</span>
+            </div>
+        </div>
+        <p>To exercise any of these rights, please contact us at <a
+                href="mailto:support@smartlab.app">support@smartlab.app</a>.</p>
+
+        <h2>7. Data Retention</h2>
+        <p>We retain your account data and reports for as long as your account is active. If you delete your account, we
+            will permanently delete your personal data and health reports within 30 days. Anonymised, aggregated usage
+            statistics may be retained for service improvement.</p>
+
+        <h2>8. Cookies</h2>
+        <p>We use only essential cookies necessary for the operation of the Service:</p>
+        <ul>
+            <li><strong>session_token</strong> – An HTTP-only, secure cookie used for authentication</li>
+            <li><strong>csrf_token</strong> – A CSRF protection token to prevent cross-site request forgery</li>
+        </ul>
+        <p>We do not use tracking, advertising, or analytics cookies.</p>
+
+        <h2>9. Children's Privacy</h2>
+        <p>The Service is not intended for individuals under 18 years of age. We do not knowingly collect personal data
+            from minors. If we become aware that a minor has registered, we will promptly delete their account.</p>
+
+        <h2>10. Changes to This Policy</h2>
+        <p>We may update this Privacy Policy from time to time. If we make material changes, we will provide notice
+            within the application or via email. The date at the top of this page reflects the most recent update.</p>
+
+        <div class="contact-box">
+            <h3>📬 Data Protection Enquiries</h3>
+            <p>For any privacy-related questions or to exercise your data rights, please contact us at <a
+                    href="mailto:support@smartlab.app">support@smartlab.app</a>. We aim to respond within 30 days.</p>
+        </div>
+    </main>
+
+    <footer>
+        &copy; 2026 Smart Lab Report Analyser · <a href="terms.html">Terms of Service</a> · <a href="register.html">Back
+            to Sign Up</a>
+    </footer>
+</body>
+
+</html>
