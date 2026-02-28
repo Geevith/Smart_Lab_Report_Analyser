@@ -535,9 +535,15 @@ def get_user_by_username(username):
         ''', (username,))
         user = cursor.fetchone()
         if user:
-            # Convert datetime objects to strings if needed by frontend, or keep as is.
-            # Usually pydantic handles datetime.
-            return dict(user)
+            user = dict(user)
+            # Convert date/datetime objects to ISO strings for JSON serialization
+            if user.get('date_of_birth') is not None:
+                user['date_of_birth'] = str(user['date_of_birth'])
+            if user.get('created_at') is not None:
+                user['created_at'] = str(user['created_at'])
+            if user.get('last_login') is not None:
+                user['last_login'] = str(user['last_login'])
+            return user
         return None
     finally:
         conn.close()
@@ -555,7 +561,15 @@ def get_user_by_email(email):
         ''', (email,))
         user = cursor.fetchone()
         if user:
-            return dict(user)
+            user = dict(user)
+            # Convert date/datetime objects to ISO strings for JSON serialization
+            if user.get('date_of_birth') is not None:
+                user['date_of_birth'] = str(user['date_of_birth'])
+            if user.get('created_at') is not None:
+                user['created_at'] = str(user['created_at'])
+            if user.get('last_login') is not None:
+                user['last_login'] = str(user['last_login'])
+            return user
         return None
     finally:
         conn.close()
@@ -573,7 +587,15 @@ def get_user_by_id(user_id):
         ''', (user_id,))
         user = cursor.fetchone()
         if user:
-            return dict(user)
+            user = dict(user)
+            # Convert date/datetime objects to ISO strings for JSON serialization
+            if user.get('date_of_birth') is not None:
+                user['date_of_birth'] = str(user['date_of_birth'])
+            if user.get('created_at') is not None:
+                user['created_at'] = str(user['created_at'])
+            if user.get('last_login') is not None:
+                user['last_login'] = str(user['last_login'])
+            return user
         return None
     finally:
         conn.close()
