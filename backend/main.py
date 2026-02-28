@@ -287,11 +287,12 @@ async def register(user_data: UserRegister, request: Request):
     Returns success message (does not auto-login)
     """
     # Check if user already exists
+    # NOTE: email and username are stored in lowercase — must normalize before lookup
     from .database import get_user_by_email, get_user_by_username
     
-    existing_user = get_user_by_email(user_data.email)
+    existing_user = get_user_by_email(user_data.email.lower())
     if not existing_user:
-        existing_user = get_user_by_username(user_data.username)
+        existing_user = get_user_by_username(user_data.username.lower())
         
     if existing_user:
         # If user exists, try to verify password for auto-login
