@@ -1,13 +1,17 @@
 <!DOCTYPE html>
 <html lang="en" class="scroll-smooth">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Smart Lab — Clinical Intelligence Platform</title>
-    <meta name="description" content="Upload any medical lab report and receive a comprehensive, AI-powered breakdown — severity flags, trend analysis, and system-level insights, delivered in seconds.">
+    <meta name="description"
+        content="Upload any medical lab report and receive a comprehensive, AI-powered breakdown — severity flags, trend analysis, and system-level insights, delivered in seconds.">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap"
+        rel="stylesheet">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
     <link rel="stylesheet" href="clinical_design_system.css">
     <style>
@@ -26,9 +30,15 @@
             --border-bright: rgba(20, 184, 166, 0.35);
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-        html { background: var(--obsidian); }
+        html {
+            background: var(--obsidian);
+        }
 
         body {
             font-family: 'DM Sans', sans-serif;
@@ -62,6 +72,7 @@
             z-index: 0;
             animation: drift1 20s ease-in-out infinite;
         }
+
         .glow-2 {
             position: fixed;
             bottom: -20%;
@@ -73,13 +84,37 @@
             z-index: 0;
             animation: drift2 25s ease-in-out infinite;
         }
-        @keyframes drift1 { 0%,100% { transform: translate(0,0) } 50% { transform: translate(40px,-40px) } }
-        @keyframes drift2 { 0%,100% { transform: translate(0,0) } 50% { transform: translate(-30px,30px) } }
+
+        @keyframes drift1 {
+
+            0%,
+            100% {
+                transform: translate(0, 0)
+            }
+
+            50% {
+                transform: translate(40px, -40px)
+            }
+        }
+
+        @keyframes drift2 {
+
+            0%,
+            100% {
+                transform: translate(0, 0)
+            }
+
+            50% {
+                transform: translate(-30px, 30px)
+            }
+        }
 
         /* ─── NAV ─── */
         nav {
             position: fixed;
-            top: 0; left: 0; right: 0;
+            top: 0;
+            left: 0;
+            right: 0;
             z-index: 100;
             border-bottom: 1px solid rgba(20, 184, 166, 0.1);
             background: rgba(5, 10, 18, 0.85);
@@ -124,7 +159,9 @@
             letter-spacing: -0.02em;
         }
 
-        .brand-name span { color: var(--teal-primary); }
+        .brand-name span {
+            color: var(--teal-primary);
+        }
 
         .nav-links {
             display: flex;
@@ -139,7 +176,10 @@
             font-weight: 500;
             transition: color 0.2s;
         }
-        .nav-link:hover { color: var(--text-primary); }
+
+        .nav-link:hover {
+            color: var(--text-primary);
+        }
 
         .btn-ghost {
             color: var(--text-secondary);
@@ -151,7 +191,11 @@
             border-radius: 8px;
             transition: all 0.2s;
         }
-        .btn-ghost:hover { border-color: var(--border-bright); color: var(--text-primary); }
+
+        .btn-ghost:hover {
+            border-color: var(--border-bright);
+            color: var(--text-primary);
+        }
 
         .btn-primary-sm {
             display: inline-flex;
@@ -167,7 +211,11 @@
             transition: all 0.2s;
             box-shadow: 0 0 16px rgba(20, 184, 166, 0.3);
         }
-        .btn-primary-sm:hover { background: var(--teal-bright); box-shadow: 0 0 24px rgba(20, 184, 166, 0.5); }
+
+        .btn-primary-sm:hover {
+            background: var(--teal-bright);
+            box-shadow: 0 0 24px rgba(20, 184, 166, 0.5);
+        }
 
         /* ─── HERO ─── */
         .hero {
@@ -206,7 +254,17 @@
             animation: blink 2s ease-in-out infinite;
         }
 
-        @keyframes blink { 0%,100% { opacity:1 } 50% { opacity:0.3 } }
+        @keyframes blink {
+
+            0%,
+            100% {
+                opacity: 1
+            }
+
+            50% {
+                opacity: 0.3
+            }
+        }
 
         .hero-title {
             font-family: 'DM Serif Display', serif;
@@ -258,13 +316,19 @@
             content: '';
             position: absolute;
             inset: 0;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
             transform: translateX(-100%);
             transition: transform 0.6s ease;
         }
 
-        .btn-cta:hover::after { transform: translateX(100%); }
-        .btn-cta:hover { box-shadow: 0 0 50px rgba(20, 184, 166, 0.5); transform: translateY(-1px); }
+        .btn-cta:hover::after {
+            transform: translateX(100%);
+        }
+
+        .btn-cta:hover {
+            box-shadow: 0 0 50px rgba(20, 184, 166, 0.5);
+            transform: translateY(-1px);
+        }
 
         .btn-secondary {
             display: inline-flex;
@@ -276,7 +340,10 @@
             font-weight: 500;
             transition: color 0.2s;
         }
-        .btn-secondary:hover { color: var(--text-primary); }
+
+        .btn-secondary:hover {
+            color: var(--text-primary);
+        }
 
         /* Trust Badges */
         .trust-row {
@@ -294,7 +361,10 @@
             color: var(--text-muted);
         }
 
-        .trust-badge .material-icons-round { font-size: 14px; color: var(--teal-primary); }
+        .trust-badge .material-icons-round {
+            font-size: 14px;
+            color: var(--teal-primary);
+        }
 
         /* ─── Hero Visual (Right Panel) ─── */
         .hero-visual {
@@ -315,9 +385,11 @@
         .mock-card::before {
             content: '';
             position: absolute;
-            top: 0; left: 0; right: 0;
+            top: 0;
+            left: 0;
+            right: 0;
             height: 1px;
-            background: linear-gradient(90deg, transparent, rgba(20,184,166,0.4), transparent);
+            background: linear-gradient(90deg, transparent, rgba(20, 184, 166, 0.4), transparent);
         }
 
         .mock-header {
@@ -327,11 +399,16 @@
             margin-bottom: 20px;
         }
 
-        .mock-title-group { display: flex; align-items: center; gap: 10px; }
+        .mock-title-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
         .mock-icon {
             width: 36px;
             height: 36px;
-            background: linear-gradient(135deg, rgba(13,148,136,0.2), rgba(20,184,166,0.1));
+            background: linear-gradient(135deg, rgba(13, 148, 136, 0.2), rgba(20, 184, 166, 0.1));
             border: 1px solid var(--border-bright);
             border-radius: 8px;
             display: flex;
@@ -341,7 +418,12 @@
             font-size: 18px;
         }
 
-        .mock-subtitle { font-size: 0.65rem; font-family: 'JetBrains Mono', monospace; color: var(--text-muted); margin-top: 2px; }
+        .mock-subtitle {
+            font-size: 0.65rem;
+            font-family: 'JetBrains Mono', monospace;
+            color: var(--text-muted);
+            margin-top: 2px;
+        }
 
         /* KPI mini row */
         .kpi-row {
@@ -353,7 +435,7 @@
 
         .kpi-mini {
             background: rgba(15, 23, 42, 0.6);
-            border: 1px solid rgba(20,184,166,0.08);
+            border: 1px solid rgba(20, 184, 166, 0.08);
             border-radius: 12px;
             padding: 12px;
             text-align: center;
@@ -367,10 +449,20 @@
             margin-bottom: 4px;
         }
 
-        .kpi-label { font-size: 0.6rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-muted); font-weight: 600; }
+        .kpi-label {
+            font-size: 0.6rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--text-muted);
+            font-weight: 600;
+        }
 
         /* Parameter list */
-        .param-list { display: flex; flex-direction: column; gap: 10px; }
+        .param-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
 
         .param-row {
             display: flex;
@@ -379,24 +471,57 @@
             padding: 10px 14px;
             background: rgba(15, 23, 42, 0.5);
             border-radius: 10px;
-            border: 1px solid rgba(20,184,166,0.06);
+            border: 1px solid rgba(20, 184, 166, 0.06);
             animation: slideInParam 0.5s ease forwards;
             opacity: 0;
         }
 
-        .param-row:nth-child(1) { animation-delay: 0.1s; }
-        .param-row:nth-child(2) { animation-delay: 0.25s; }
-        .param-row:nth-child(3) { animation-delay: 0.4s; }
-        .param-row:nth-child(4) { animation-delay: 0.55s; }
-
-        @keyframes slideInParam {
-            from { opacity: 0; transform: translateX(20px); }
-            to { opacity: 1; transform: translateX(0); }
+        .param-row:nth-child(1) {
+            animation-delay: 0.1s;
         }
 
-        .param-name { font-size: 0.8rem; font-weight: 500; color: var(--text-secondary); }
-        .param-value { font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; color: var(--text-primary); font-weight: 600; }
-        .param-right { display: flex; align-items: center; gap: 8px; }
+        .param-row:nth-child(2) {
+            animation-delay: 0.25s;
+        }
+
+        .param-row:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+
+        .param-row:nth-child(4) {
+            animation-delay: 0.55s;
+        }
+
+        @keyframes slideInParam {
+            from {
+                opacity: 0;
+                transform: translateX(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .param-name {
+            font-size: 0.8rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+        }
+
+        .param-value {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.8rem;
+            color: var(--text-primary);
+            font-weight: 600;
+        }
+
+        .param-right {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
 
         /* Floating Decorative Cards */
         .float-card {
@@ -423,11 +548,44 @@
             animation: float2 5s ease-in-out infinite;
         }
 
-        @keyframes float1 { 0%,100% { transform: translateY(0) } 50% { transform: translateY(-8px) } }
-        @keyframes float2 { 0%,100% { transform: translateY(0) } 50% { transform: translateY(6px) } }
+        @keyframes float1 {
 
-        .float-card-label { font-size: 0.6rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-muted); margin-bottom: 4px; font-weight: 700; }
-        .float-card-value { font-family: 'DM Serif Display', serif; font-size: 1.1rem; color: var(--text-primary); }
+            0%,
+            100% {
+                transform: translateY(0)
+            }
+
+            50% {
+                transform: translateY(-8px)
+            }
+        }
+
+        @keyframes float2 {
+
+            0%,
+            100% {
+                transform: translateY(0)
+            }
+
+            50% {
+                transform: translateY(6px)
+            }
+        }
+
+        .float-card-label {
+            font-size: 0.6rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--text-muted);
+            margin-bottom: 4px;
+            font-weight: 700;
+        }
+
+        .float-card-value {
+            font-family: 'DM Serif Display', serif;
+            font-size: 1.1rem;
+            color: var(--text-primary);
+        }
 
         /* ─── FEATURES SECTION ─── */
         .features {
@@ -489,15 +647,23 @@
         .feature-card::before {
             content: '';
             position: absolute;
-            top: 0; left: 0; right: 0;
+            top: 0;
+            left: 0;
+            right: 0;
             height: 1px;
-            background: linear-gradient(90deg, transparent, rgba(20,184,166,0.3), transparent);
+            background: linear-gradient(90deg, transparent, rgba(20, 184, 166, 0.3), transparent);
             opacity: 0;
             transition: opacity 0.3s;
         }
 
-        .feature-card:hover { border-color: var(--border-bright); transform: translateY(-4px); }
-        .feature-card:hover::before { opacity: 1; }
+        .feature-card:hover {
+            border-color: var(--border-bright);
+            transform: translateY(-4px);
+        }
+
+        .feature-card:hover::before {
+            opacity: 1;
+        }
 
         .feature-icon-wrap {
             width: 48px;
@@ -510,9 +676,23 @@
             font-size: 22px;
         }
 
-        .icon-teal { background: rgba(20,184,166,0.1); border: 1px solid rgba(20,184,166,0.2); color: var(--teal-primary); }
-        .icon-blue { background: rgba(59,130,246,0.1); border: 1px solid rgba(59,130,246,0.2); color: #60A5FA; }
-        .icon-amber { background: rgba(245,158,11,0.1); border: 1px solid rgba(245,158,11,0.2); color: #FBBF24; }
+        .icon-teal {
+            background: rgba(20, 184, 166, 0.1);
+            border: 1px solid rgba(20, 184, 166, 0.2);
+            color: var(--teal-primary);
+        }
+
+        .icon-blue {
+            background: rgba(59, 130, 246, 0.1);
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            color: #60A5FA;
+        }
+
+        .icon-amber {
+            background: rgba(245, 158, 11, 0.1);
+            border: 1px solid rgba(245, 158, 11, 0.2);
+            color: #FBBF24;
+        }
 
         .feature-title {
             font-family: 'DM Serif Display', serif;
@@ -522,7 +702,11 @@
             letter-spacing: -0.02em;
         }
 
-        .feature-desc { font-size: 0.875rem; color: var(--text-secondary); line-height: 1.65; }
+        .feature-desc {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            line-height: 1.65;
+        }
 
         /* ─── PROCESS / STEPS ─── */
         .process {
@@ -581,11 +765,21 @@
             position: absolute;
             inset: -4px;
             border-radius: 50%;
-            border: 1px solid rgba(20,184,166,0.15);
+            border: 1px solid rgba(20, 184, 166, 0.15);
         }
 
-        .step-title { font-weight: 600; color: var(--text-primary); margin-bottom: 0.5rem; font-size: 0.9rem; }
-        .step-desc { font-size: 0.8rem; color: var(--text-muted); line-height: 1.6; }
+        .step-title {
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        .step-desc {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            line-height: 1.6;
+        }
 
         /* ─── STATS STRIP ─── */
         .stats-strip {
@@ -611,7 +805,9 @@
         .stats-inner::before {
             content: '';
             position: absolute;
-            top: 0; left: 0; right: 0;
+            top: 0;
+            left: 0;
+            right: 0;
             height: 1px;
             background: linear-gradient(90deg, transparent, var(--border-bright), transparent);
         }
@@ -622,7 +818,9 @@
             border-right: 1px solid var(--border);
         }
 
-        .stat-item:last-child { border-right: none; }
+        .stat-item:last-child {
+            border-right: none;
+        }
 
         .stat-num {
             font-family: 'DM Serif Display', serif;
@@ -632,7 +830,11 @@
             margin-bottom: 8px;
         }
 
-        .stat-label { font-size: 0.8rem; color: var(--text-muted); font-weight: 500; }
+        .stat-label {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
 
         /* ─── CTA SECTION ─── */
         .cta-section {
@@ -644,7 +846,7 @@
         }
 
         .cta-inner {
-            background: linear-gradient(135deg, rgba(13,148,136,0.15), rgba(20,184,166,0.05));
+            background: linear-gradient(135deg, rgba(13, 148, 136, 0.15), rgba(20, 184, 166, 0.05));
             border: 1px solid var(--border-bright);
             border-radius: 28px;
             padding: 64px;
@@ -660,7 +862,7 @@
             left: -50%;
             width: 200%;
             height: 200%;
-            background: radial-gradient(circle at center, rgba(20,184,166,0.06), transparent 60%);
+            background: radial-gradient(circle at center, rgba(20, 184, 166, 0.06), transparent 60%);
             pointer-events: none;
         }
 
@@ -694,11 +896,32 @@
             justify-content: space-between;
         }
 
-        .footer-left { display: flex; align-items: center; gap: 12px; }
-        .footer-copy { font-size: 0.8rem; color: var(--text-muted); }
-        .footer-links { display: flex; gap: 1.5rem; }
-        .footer-link { font-size: 0.8rem; color: var(--text-muted); text-decoration: none; transition: color 0.2s; }
-        .footer-link:hover { color: var(--text-secondary); }
+        .footer-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .footer-copy {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        .footer-links {
+            display: flex;
+            gap: 1.5rem;
+        }
+
+        .footer-link {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        .footer-link:hover {
+            color: var(--text-secondary);
+        }
 
         /* ─── DIVIDER LINE ─── */
         .section-divider {
@@ -721,363 +944,441 @@
             transform: translateY(0);
         }
 
-        .reveal-delay-1 { transition-delay: 0.1s; }
-        .reveal-delay-2 { transition-delay: 0.2s; }
-        .reveal-delay-3 { transition-delay: 0.3s; }
+        .reveal-delay-1 {
+            transition-delay: 0.1s;
+        }
+
+        .reveal-delay-2 {
+            transition-delay: 0.2s;
+        }
+
+        .reveal-delay-3 {
+            transition-delay: 0.3s;
+        }
 
         /* ─── RESPONSIVE ─── */
         @media (max-width: 1024px) {
-            .hero { grid-template-columns: 1fr; padding: 130px 2rem 60px; gap: 60px; }
-            .float-card-1, .float-card-2 { display: none; }
-            .features-grid { grid-template-columns: 1fr 1fr; }
-            .steps-row { grid-template-columns: 1fr 1fr; gap: 24px; }
-            .steps-row::before { display: none; }
-            .stats-inner { grid-template-columns: 1fr 1fr; }
-            .stat-item:nth-child(2), .stat-item:nth-child(4) { border-right: none; }
-            .stat-item:nth-child(1), .stat-item:nth-child(2) { border-bottom: 1px solid var(--border); padding-bottom: 32px; margin-bottom: 32px; }
+            .hero {
+                grid-template-columns: 1fr;
+                padding: 130px 2rem 60px;
+                gap: 60px;
+            }
+
+            .float-card-1,
+            .float-card-2 {
+                display: none;
+            }
+
+            .features-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .steps-row {
+                grid-template-columns: 1fr 1fr;
+                gap: 24px;
+            }
+
+            .steps-row::before {
+                display: none;
+            }
+
+            .stats-inner {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .stat-item:nth-child(2),
+            .stat-item:nth-child(4) {
+                border-right: none;
+            }
+
+            .stat-item:nth-child(1),
+            .stat-item:nth-child(2) {
+                border-bottom: 1px solid var(--border);
+                padding-bottom: 32px;
+                margin-bottom: 32px;
+            }
         }
 
         @media (max-width: 640px) {
-            .nav-links .btn-ghost { display: none; }
-            .features-grid { grid-template-columns: 1fr; }
-            .kpi-row { grid-template-columns: repeat(3, 1fr); }
-            .cta-inner { padding: 40px 24px; }
-            .cta-title { font-size: 1.8rem; }
-            .footer-inner { flex-direction: column; gap: 20px; text-align: center; }
-            .stats-inner { grid-template-columns: 1fr 1fr; padding: 32px 24px; }
+            .nav-links .btn-ghost {
+                display: none;
+            }
+
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .kpi-row {
+                grid-template-columns: repeat(3, 1fr);
+            }
+
+            .cta-inner {
+                padding: 40px 24px;
+            }
+
+            .cta-title {
+                font-size: 1.8rem;
+            }
+
+            .footer-inner {
+                flex-direction: column;
+                gap: 20px;
+                text-align: center;
+            }
+
+            .stats-inner {
+                grid-template-columns: 1fr 1fr;
+                padding: 32px 24px;
+            }
         }
     </style>
 </head>
+
 <body>
 
-<!-- Background -->
-<div class="grid-bg"></div>
-<div class="glow-1"></div>
-<div class="glow-2"></div>
+    <!-- Background -->
+    <div class="grid-bg"></div>
+    <div class="glow-1"></div>
+    <div class="glow-2"></div>
 
-<!-- Navigation -->
-<nav>
-    <div class="nav-inner">
-        <a href="#" class="brand">
-            <div class="brand-icon">
-                <span class="material-icons-round" style="font-size:20px">biotech</span>
-            </div>
-            <span class="brand-name">Smart<span> Lab</span></span>
-        </a>
-        <div class="nav-links">
-            <a href="documentation_ui.html" class="nav-link">How It Works</a>
-            <a href="history.html" class="nav-link">History</a>
-            <a href="login.html" class="btn-ghost">Login</a>
-            <a href="register.html" class="btn-primary-sm">
-                <span class="material-icons-round" style="font-size:16px">person_add</span>
-                Get Started
+    <!-- Navigation -->
+    <nav>
+        <div class="nav-inner">
+            <a href="#" class="brand">
+                <div class="brand-icon">
+                    <span class="material-icons-round" style="font-size:20px">biotech</span>
+                </div>
+                <span class="brand-name">Smart<span> Lab</span></span>
             </a>
-        </div>
-    </div>
-</nav>
-
-<!-- ─── HERO ─── -->
-<section class="hero">
-    <div class="hero-left">
-        <div class="eyebrow reveal">
-            <span class="eyebrow-dot"></span>
-            Clinical-Grade AI Analysis
-        </div>
-        <h1 class="hero-title reveal reveal-delay-1">
-            Your Lab Results,<br>
-            <em>Decoded.</em>
-        </h1>
-        <p class="hero-desc reveal reveal-delay-2">
-            Upload any medical lab report and receive a comprehensive, AI-powered breakdown — severity flags, trend analysis, and system-level insights, delivered in seconds.
-        </p>
-        <div class="hero-cta reveal reveal-delay-3">
-            <a href="upload_ui.html" class="btn-cta">
-                <span class="material-icons-round" style="font-size:18px">upload_file</span>
-                Analyze Your Report
-            </a>
-            <a href="documentation_ui.html" class="btn-secondary">
-                <span class="material-icons-round" style="font-size:16px">play_circle_outline</span>
-                See how it works
-            </a>
-        </div>
-        <div class="trust-row reveal">
-            <div class="trust-badge">
-                <span class="material-icons-round">security</span>
-                HIPAA Compliant
-            </div>
-            <div class="trust-badge">
-                <span class="material-icons-round">lock</span>
-                End-to-End Encrypted
-            </div>
-            <div class="trust-badge">
-                <span class="material-icons-round">speed</span>
-                30-Second Analysis
+            <div class="nav-links">
+                <a href="documentation_ui.html" class="nav-link">How It Works</a>
+                <a href="login.html" class="btn-ghost">Login</a>
+                <a href="register.html" class="btn-primary-sm">
+                    <span class="material-icons-round" style="font-size:16px">person_add</span>
+                    Get Started
+                </a>
             </div>
         </div>
-    </div>
+    </nav>
 
-    <!-- Hero Mockup -->
-    <div class="hero-visual reveal reveal-delay-1">
-        <div style="position:relative; padding: 40px 20px;">
-            <!-- Main Report Card -->
-            <div class="mock-card">
-                <div class="mock-header">
-                    <div class="mock-title-group">
-                        <div class="mock-icon">
-                            <span class="material-icons-round" style="font-size:18px">analytics</span>
-                        </div>
-                        <div>
-                            <div style="font-weight:600;font-size:0.85rem;color:var(--text-primary)">Comprehensive Metabolic Panel</div>
-                            <div class="mock-subtitle">REF #BIO-99210-X · 2 min ago</div>
-                        </div>
-                    </div>
-                    <span class="severity-badge severity-badge-normal">Complete</span>
-                </div>
-
-                <!-- KPI Row -->
-                <div class="kpi-row">
-                    <div class="kpi-mini">
-                        <div class="kpi-value" style="color:#60A5FA">55</div>
-                        <div class="kpi-label">Extracted</div>
-                    </div>
-                    <div class="kpi-mini">
-                        <div class="kpi-value" style="color:#34D399">44</div>
-                        <div class="kpi-label">Optimal</div>
-                    </div>
-                    <div class="kpi-mini">
-                        <div class="kpi-value" style="color:#F87171">11</div>
-                        <div class="kpi-label">Flagged</div>
-                    </div>
-                </div>
-
-                <!-- Parameters -->
-                <div class="param-list">
-                    <div class="param-row">
-                        <span class="param-name">Hemoglobin (HGB)</span>
-                        <div class="param-right">
-                            <span class="param-value">13.2 g/dL</span>
-                            <span class="severity-badge severity-badge-mild">Low</span>
-                        </div>
-                    </div>
-                    <div class="param-row">
-                        <span class="param-name">Glucose (FBS)</span>
-                        <div class="param-right">
-                            <span class="param-value">98 mg/dL</span>
-                            <span class="severity-badge severity-badge-normal">Normal</span>
-                        </div>
-                    </div>
-                    <div class="param-row">
-                        <span class="param-name">Creatinine</span>
-                        <div class="param-right">
-                            <span class="param-value">1.8 mg/dL</span>
-                            <span class="severity-badge severity-badge-critical">Critical</span>
-                        </div>
-                    </div>
-                    <div class="param-row">
-                        <span class="param-name">TSH</span>
-                        <div class="param-right">
-                            <span class="param-value">2.4 mIU/L</span>
-                            <span class="severity-badge severity-badge-normal">Normal</span>
-                        </div>
-                    </div>
-                </div>
+    <!-- ─── HERO ─── -->
+    <section class="hero">
+        <div class="hero-left">
+            <div class="eyebrow reveal">
+                <span class="eyebrow-dot"></span>
+                Clinical-Grade AI Analysis
             </div>
-
-            <!-- Floating Card 1: Analysis Depth -->
-            <div class="float-card float-card-1">
-                <div class="float-card-label">Analysis Depth</div>
-                <div class="float-card-value" style="color:var(--teal-primary)">98.4%</div>
-                <div style="margin-top:8px;height:3px;background:rgba(20,184,166,0.1);border-radius:3px;">
-                    <div style="height:100%;width:98%;background:linear-gradient(90deg,#0D9488,#14B8A6);border-radius:3px;"></div>
-                </div>
+            <h1 class="hero-title reveal reveal-delay-1">
+                Your Lab Results,<br>
+                <em>Decoded.</em>
+            </h1>
+            <p class="hero-desc reveal reveal-delay-2">
+                Upload any medical lab report and receive a comprehensive, AI-powered breakdown — severity flags, trend
+                analysis, and system-level insights, delivered in seconds.
+            </p>
+            <div class="hero-cta reveal reveal-delay-3">
+                <a href="upload_ui.html" class="btn-cta">
+                    <span class="material-icons-round" style="font-size:18px">upload_file</span>
+                    Analyze Your Report
+                </a>
+                <a href="documentation_ui.html" class="btn-secondary">
+                    <span class="material-icons-round" style="font-size:16px">play_circle_outline</span>
+                    See how it works
+                </a>
             </div>
-
-            <!-- Floating Card 2: Systems Impacted -->
-            <div class="float-card float-card-2">
-                <div class="float-card-label">Systems Impacted</div>
-                <div style="display:flex;gap:6px;margin-top:6px;flex-wrap:wrap;">
-                    <span class="trend-badge trend-worsening" style="font-size:0.55rem;">Renal</span>
-                    <span class="trend-badge trend-stable" style="font-size:0.55rem;">Cardiac</span>
-                    <span class="trend-badge trend-improving" style="font-size:0.55rem;">Thyroid</span>
+            <div class="trust-row reveal">
+                <div class="trust-badge">
+                    <span class="material-icons-round">security</span>
+                    HIPAA Compliant
+                </div>
+                <div class="trust-badge">
+                    <span class="material-icons-round">lock</span>
+                    End-to-End Encrypted
+                </div>
+                <div class="trust-badge">
+                    <span class="material-icons-round">speed</span>
+                    30-Second Analysis
                 </div>
             </div>
         </div>
-    </div>
-</section>
 
-<hr class="section-divider">
+        <!-- Hero Mockup -->
+        <div class="hero-visual reveal reveal-delay-1">
+            <div style="position:relative; padding: 40px 20px;">
+                <!-- Main Report Card -->
+                <div class="mock-card">
+                    <div class="mock-header">
+                        <div class="mock-title-group">
+                            <div class="mock-icon">
+                                <span class="material-icons-round" style="font-size:18px">analytics</span>
+                            </div>
+                            <div>
+                                <div style="font-weight:600;font-size:0.85rem;color:var(--text-primary)">Comprehensive
+                                    Metabolic Panel</div>
+                                <div class="mock-subtitle">REF #BIO-99210-X · 2 min ago</div>
+                            </div>
+                        </div>
+                        <span class="severity-badge severity-badge-normal">Complete</span>
+                    </div>
 
-<!-- ─── STATS ─── -->
-<section class="stats-strip">
-    <div style="height:60px"></div>
-    <div class="stats-inner reveal">
-        <div class="stat-item">
-            <div class="stat-num">40+</div>
-            <div class="stat-label">Lab Parameters Analyzed</div>
-        </div>
-        <div class="stat-item">
-            <div class="stat-num" style="color:#60A5FA">30s</div>
-            <div class="stat-label">Average Analysis Time</div>
-        </div>
-        <div class="stat-item">
-            <div class="stat-num" style="color:#34D399">98%</div>
-            <div class="stat-label">Extraction Accuracy</div>
-        </div>
-        <div class="stat-item">
-            <div class="stat-num" style="color:#FBBF24">100%</div>
-            <div class="stat-label">Encrypted & Private</div>
-        </div>
-    </div>
-</section>
+                    <!-- KPI Row -->
+                    <div class="kpi-row">
+                        <div class="kpi-mini">
+                            <div class="kpi-value" style="color:#60A5FA">55</div>
+                            <div class="kpi-label">Extracted</div>
+                        </div>
+                        <div class="kpi-mini">
+                            <div class="kpi-value" style="color:#34D399">44</div>
+                            <div class="kpi-label">Optimal</div>
+                        </div>
+                        <div class="kpi-mini">
+                            <div class="kpi-value" style="color:#F87171">11</div>
+                            <div class="kpi-label">Flagged</div>
+                        </div>
+                    </div>
 
-<!-- ─── FEATURES ─── -->
-<section class="features">
-    <div class="section-header">
-        <div class="section-label">What You Get</div>
-        <h2 class="section-title reveal">Medical Intelligence,<br>Built for Patients</h2>
-        <p class="section-sub reveal">Not just raw numbers — context, severity, and clarity that actually means something to you.</p>
-    </div>
+                    <!-- Parameters -->
+                    <div class="param-list">
+                        <div class="param-row">
+                            <span class="param-name">Hemoglobin (HGB)</span>
+                            <div class="param-right">
+                                <span class="param-value">13.2 g/dL</span>
+                                <span class="severity-badge severity-badge-mild">Low</span>
+                            </div>
+                        </div>
+                        <div class="param-row">
+                            <span class="param-name">Glucose (FBS)</span>
+                            <div class="param-right">
+                                <span class="param-value">98 mg/dL</span>
+                                <span class="severity-badge severity-badge-normal">Normal</span>
+                            </div>
+                        </div>
+                        <div class="param-row">
+                            <span class="param-name">Creatinine</span>
+                            <div class="param-right">
+                                <span class="param-value">1.8 mg/dL</span>
+                                <span class="severity-badge severity-badge-critical">Critical</span>
+                            </div>
+                        </div>
+                        <div class="param-row">
+                            <span class="param-name">TSH</span>
+                            <div class="param-right">
+                                <span class="param-value">2.4 mIU/L</span>
+                                <span class="severity-badge severity-badge-normal">Normal</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
-    <div class="features-grid">
-        <div class="feature-card reveal">
-            <div class="feature-icon-wrap icon-teal">
-                <span class="material-icons-round">document_scanner</span>
+                <!-- Floating Card 1: Analysis Depth -->
+                <div class="float-card float-card-1">
+                    <div class="float-card-label">Analysis Depth</div>
+                    <div class="float-card-value" style="color:var(--teal-primary)">98.4%</div>
+                    <div style="margin-top:8px;height:3px;background:rgba(20,184,166,0.1);border-radius:3px;">
+                        <div
+                            style="height:100%;width:98%;background:linear-gradient(90deg,#0D9488,#14B8A6);border-radius:3px;">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Floating Card 2: Systems Impacted -->
+                <div class="float-card float-card-2">
+                    <div class="float-card-label">Systems Impacted</div>
+                    <div style="display:flex;gap:6px;margin-top:6px;flex-wrap:wrap;">
+                        <span class="trend-badge trend-worsening" style="font-size:0.55rem;">Renal</span>
+                        <span class="trend-badge trend-stable" style="font-size:0.55rem;">Cardiac</span>
+                        <span class="trend-badge trend-improving" style="font-size:0.55rem;">Thyroid</span>
+                    </div>
+                </div>
             </div>
-            <h3 class="feature-title">Smart Extraction</h3>
-            <p class="feature-desc">AI-powered OCR precisely extracts values from any PDF or image lab report — even handwritten or poorly scanned documents.</p>
         </div>
+    </section>
 
-        <div class="feature-card reveal reveal-delay-1">
-            <div class="feature-icon-wrap icon-blue">
-                <span class="material-icons-round">monitor_heart</span>
+    <hr class="section-divider">
+
+    <!-- ─── STATS ─── -->
+    <section class="stats-strip">
+        <div style="height:60px"></div>
+        <div class="stats-inner reveal">
+            <div class="stat-item">
+                <div class="stat-num">40+</div>
+                <div class="stat-label">Lab Parameters Analyzed</div>
             </div>
-            <h3 class="feature-title">Severity Classification</h3>
-            <p class="feature-desc">Every parameter is classified as Normal, Mild, Moderate, or Critical using clinically validated reference ranges with confidence scoring.</p>
-        </div>
-
-        <div class="feature-card reveal reveal-delay-2">
-            <div class="feature-icon-wrap icon-amber">
-                <span class="material-icons-round">trending_up</span>
+            <div class="stat-item">
+                <div class="stat-num" style="color:#60A5FA">30s</div>
+                <div class="stat-label">Average Analysis Time</div>
             </div>
-            <h3 class="feature-title">Trend Comparison</h3>
-            <p class="feature-desc">Upload multiple reports over time and watch your health trends evolve. See what's improving, stabilizing, or needing attention.</p>
-        </div>
-
-        <div class="feature-card reveal">
-            <div class="feature-icon-wrap icon-teal">
-                <span class="material-icons-round">account_tree</span>
+            <div class="stat-item">
+                <div class="stat-num" style="color:#34D399">98%</div>
+                <div class="stat-label">Extraction Accuracy</div>
             </div>
-            <h3 class="feature-title">Systems Impact Map</h3>
-            <p class="feature-desc">An anatomical body map groups your results by organ system — kidney, liver, cardiovascular, thyroid — for at-a-glance clarity.</p>
-        </div>
-
-        <div class="feature-card reveal reveal-delay-1">
-            <div class="feature-icon-wrap icon-blue">
-                <span class="material-icons-round">history</span>
+            <div class="stat-item">
+                <div class="stat-num" style="color:#FBBF24">100%</div>
+                <div class="stat-label">Encrypted & Private</div>
             </div>
-            <h3 class="feature-title">Report History</h3>
-            <p class="feature-desc">Securely archive and retrieve any past report. Annotate with personal notes, mark favorites, and compare across time points.</p>
+        </div>
+    </section>
+
+    <!-- ─── FEATURES ─── -->
+    <section class="features">
+        <div class="section-header">
+            <div class="section-label">What You Get</div>
+            <h2 class="section-title reveal">Medical Intelligence,<br>Built for Patients</h2>
+            <p class="section-sub reveal">Not just raw numbers — context, severity, and clarity that actually means
+                something to you.</p>
         </div>
 
-        <div class="feature-card reveal reveal-delay-2">
-            <div class="feature-icon-wrap icon-amber">
-                <span class="material-icons-round">security</span>
+        <div class="features-grid">
+            <div class="feature-card reveal">
+                <div class="feature-icon-wrap icon-teal">
+                    <span class="material-icons-round">document_scanner</span>
+                </div>
+                <h3 class="feature-title">Smart Extraction</h3>
+                <p class="feature-desc">AI-powered OCR precisely extracts values from any PDF or image lab report — even
+                    handwritten or poorly scanned documents.</p>
             </div>
-            <h3 class="feature-title">Privacy First</h3>
-            <p class="feature-desc">All uploads are encrypted in transit and at rest. Your health data is never sold, shared, or used for advertising — ever.</p>
-        </div>
-    </div>
-</section>
 
-<!-- ─── PROCESS ─── -->
-<section class="process">
-    <div class="section-header">
-        <div class="section-label">How It Works</div>
-        <h2 class="section-title reveal">From Upload to Insight<br>in Four Steps</h2>
-    </div>
-
-    <div class="steps-row">
-        <div class="step reveal">
-            <div class="step-num">1</div>
-            <div class="step-title">Upload Your Report</div>
-            <div class="step-desc">Drop in any PDF or image from your lab visit. Scanned pages, digital exports — we handle all formats.</div>
-        </div>
-        <div class="step reveal reveal-delay-1">
-            <div class="step-num">2</div>
-            <div class="step-title">Quality Validation</div>
-            <div class="step-desc">Our AI performs a quality check — resolving orientation, OCR confidence, and extraction completeness before analysis begins.</div>
-        </div>
-        <div class="step reveal reveal-delay-2">
-            <div class="step-num">3</div>
-            <div class="step-title">Clinical Analysis</div>
-            <div class="step-desc">Each value is mapped against reference ranges, assigned a severity level, and grouped by body system with trend context.</div>
-        </div>
-        <div class="step reveal reveal-delay-3">
-            <div class="step-num">4</div>
-            <div class="step-title">Review Insights</div>
-            <div class="step-desc">Get a clear, structured report with actionable summaries. Export, archive, or compare with previous results instantly.</div>
-        </div>
-    </div>
-</section>
-
-<!-- ─── CTA ─── -->
-<section class="cta-section">
-    <div class="cta-inner reveal">
-        <span class="severity-badge severity-badge-normal" style="margin-bottom:1.5rem;display:inline-flex">
-            <span class="severity-dot severity-dot-normal"></span>
-            Free to Start
-        </span>
-        <h2 class="cta-title">Ready to Understand<br>Your Health?</h2>
-        <p class="cta-sub">Upload your first lab report in under a minute. No credit card required.</p>
-        <div style="display:flex;gap:1rem;justify-content:center;align-items:center;flex-wrap:wrap;">
-            <a href="register.html" class="btn-cta">
-                <span class="material-icons-round" style="font-size:18px">person_add</span>
-                Create Free Account
-            </a>
-            <a href="upload_ui.html" class="btn-secondary">
-                Try without signing in →
-            </a>
-        </div>
-    </div>
-</section>
-
-<!-- ─── FOOTER ─── -->
-<footer>
-    <div class="footer-inner">
-        <div class="footer-left">
-            <div class="brand-icon" style="width:32px;height:32px;font-size:16px">
-                <span class="material-icons-round" style="font-size:16px">biotech</span>
+            <div class="feature-card reveal reveal-delay-1">
+                <div class="feature-icon-wrap icon-blue">
+                    <span class="material-icons-round">monitor_heart</span>
+                </div>
+                <h3 class="feature-title">Severity Classification</h3>
+                <p class="feature-desc">Every parameter is classified as Normal, Mild, Moderate, or Critical using
+                    clinically validated reference ranges with confidence scoring.</p>
             </div>
-            <span class="footer-copy">© 2025 Smart Lab AI. All rights reserved.</span>
+
+            <div class="feature-card reveal reveal-delay-2">
+                <div class="feature-icon-wrap icon-amber">
+                    <span class="material-icons-round">trending_up</span>
+                </div>
+                <h3 class="feature-title">Trend Comparison</h3>
+                <p class="feature-desc">Upload multiple reports over time and watch your health trends evolve. See
+                    what's improving, stabilizing, or needing attention.</p>
+            </div>
+
+            <div class="feature-card reveal">
+                <div class="feature-icon-wrap icon-teal">
+                    <span class="material-icons-round">account_tree</span>
+                </div>
+                <h3 class="feature-title">Systems Impact Map</h3>
+                <p class="feature-desc">An anatomical body map groups your results by organ system — kidney, liver,
+                    cardiovascular, thyroid — for at-a-glance clarity.</p>
+            </div>
+
+            <div class="feature-card reveal reveal-delay-1">
+                <div class="feature-icon-wrap icon-blue">
+                    <span class="material-icons-round">history</span>
+                </div>
+                <h3 class="feature-title">Report History</h3>
+                <p class="feature-desc">Securely archive and retrieve any past report. Annotate with personal notes,
+                    mark favorites, and compare across time points.</p>
+            </div>
+
+            <div class="feature-card reveal reveal-delay-2">
+                <div class="feature-icon-wrap icon-amber">
+                    <span class="material-icons-round">security</span>
+                </div>
+                <h3 class="feature-title">Privacy First</h3>
+                <p class="feature-desc">All uploads are encrypted in transit and at rest. Your health data is never
+                    sold, shared, or used for advertising — ever.</p>
+            </div>
         </div>
-        <div class="footer-links">
-            <a href="documentation_ui.html" class="footer-link">Documentation</a>
-            <a href="#" class="footer-link">Privacy Policy</a>
-            <a href="#" class="footer-link">Terms of Service</a>
+    </section>
+
+    <!-- ─── PROCESS ─── -->
+    <section class="process">
+        <div class="section-header">
+            <div class="section-label">How It Works</div>
+            <h2 class="section-title reveal">From Upload to Insight<br>in Four Steps</h2>
         </div>
-    </div>
-</footer>
 
-<script src="config.js"></script>
-<script src="utils.js"></script>
-<script src="auth.js"></script>
-<script src="landing.js"></script>
-<script>
-// Intersection Observer for reveal animations
-const observer = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-        if (entry.isIntersecting) {
-            entry.target.classList.add('active');
-        }
-    });
-}, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+        <div class="steps-row">
+            <div class="step reveal">
+                <div class="step-num">1</div>
+                <div class="step-title">Upload Your Report</div>
+                <div class="step-desc">Drop in any PDF or image from your lab visit. Scanned pages, digital exports — we
+                    handle all formats.</div>
+            </div>
+            <div class="step reveal reveal-delay-1">
+                <div class="step-num">2</div>
+                <div class="step-title">Quality Validation</div>
+                <div class="step-desc">Our AI performs a quality check — resolving orientation, OCR confidence, and
+                    extraction completeness before analysis begins.</div>
+            </div>
+            <div class="step reveal reveal-delay-2">
+                <div class="step-num">3</div>
+                <div class="step-title">Clinical Analysis</div>
+                <div class="step-desc">Each value is mapped against reference ranges, assigned a severity level, and
+                    grouped by body system with trend context.</div>
+            </div>
+            <div class="step reveal reveal-delay-3">
+                <div class="step-num">4</div>
+                <div class="step-title">Review Insights</div>
+                <div class="step-desc">Get a clear, structured report with actionable summaries. Export, archive, or
+                    compare with previous results instantly.</div>
+            </div>
+        </div>
+    </section>
 
-document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+    <!-- ─── CTA ─── -->
+    <section class="cta-section">
+        <div class="cta-inner reveal">
+            <span class="severity-badge severity-badge-normal" style="margin-bottom:1.5rem;display:inline-flex">
+                <span class="severity-dot severity-dot-normal"></span>
+                Free to Start
+            </span>
+            <h2 class="cta-title">Ready to Understand<br>Your Health?</h2>
+            <p class="cta-sub">Upload your first lab report in under a minute. No credit card required.</p>
+            <div style="display:flex;gap:1rem;justify-content:center;align-items:center;flex-wrap:wrap;">
+                <a href="register.html" class="btn-cta">
+                    <span class="material-icons-round" style="font-size:18px">person_add</span>
+                    Create Free Account
+                </a>
+                <a href="upload_ui.html" class="btn-secondary">
+                    Try without signing in →
+                </a>
+            </div>
+        </div>
+    </section>
 
-// Activate hero elements immediately (they're above fold)
-document.querySelectorAll('.hero .reveal').forEach(el => {
-    setTimeout(() => el.classList.add('active'), 100);
-});
-</script>
+    <!-- ─── FOOTER ─── -->
+    <footer>
+        <div class="footer-inner">
+            <div class="footer-left">
+                <div class="brand-icon" style="width:32px;height:32px;font-size:16px">
+                    <span class="material-icons-round" style="font-size:16px">biotech</span>
+                </div>
+                <span class="footer-copy">© 2025 Smart Lab AI. All rights reserved.</span>
+            </div>
+            <div class="footer-links">
+                <a href="documentation_ui.html" class="footer-link">Documentation</a>
+                <a href="#" class="footer-link">Privacy Policy</a>
+                <a href="#" class="footer-link">Terms of Service</a>
+            </div>
+        </div>
+    </footer>
+
+    <script src="config.js"></script>
+    <script src="utils.js"></script>
+    <script src="auth.js"></script>
+    <script src="landing.js"></script>
+    <script>
+        // Intersection Observer for reveal animations
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('active');
+                }
+            });
+        }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+
+        document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+        // Activate hero elements immediately (they're above fold)
+        document.querySelectorAll('.hero .reveal').forEach(el => {
+            setTimeout(() => el.classList.add('active'), 100);
+        });
+    </script>
 </body>
+
 </html>
