@@ -236,11 +236,16 @@ def delete_report(user_id, report_id):
         cursor.execute('DELETE FROM historical_parameters WHERE report_id = %s AND user_id = %s', (report_id, user_id))
         
         # Delete from optional related tables (may not exist)
+        # IMPORTANT: Use savepoints so a failed DELETE on a missing table doesn't
+        # abort the whole psycopg2 transaction (psycopg2 puts the txn in an error
+        # state on any Exception, even if it is caught by Python).
         for table in ['parameter_flags', 'shareable_links']:
             try:
+                cursor.execute(f'SAVEPOINT delete_{table}')
                 cursor.execute(f'DELETE FROM {table} WHERE report_id = %s AND user_id = %s', (report_id, user_id))
+                cursor.execute(f'RELEASE SAVEPOINT delete_{table}')
             except Exception:
-                pass  # Table might not exist
+                cursor.execute(f'ROLLBACK TO SAVEPOINT delete_{table}')  # Restore clean txn state
         
         # Delete the report
         cursor.execute('DELETE FROM reports WHERE id = %s AND user_id = %s', (report_id, user_id))
