@@ -1095,6 +1095,7 @@ async def get_parameter_history_endpoint(
 async def export_report_endpoint(
     format_type: str,
     data: dict,
+    request: Request,
     current_user: Optional[dict] = Depends(get_current_user_optional)
 ):
     """
@@ -1161,7 +1162,7 @@ async def export_report_endpoint(
         
         # Log export activity
         if current_user:
-            log_activity(current_user['id'], f"export_{format_type}", "report", None, get_client_ip(Request) if Request else None)
+            log_activity(current_user['id'], f"export_{format_type}", "report", None, get_client_ip(request) if request else None)
         
         return Response(content=content, media_type=media_type, headers=headers)
         
