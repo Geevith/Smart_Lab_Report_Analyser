@@ -417,6 +417,24 @@
             color: #065F46;
         }
 
+        /* Autofill override */
+        input:-webkit-autofill,
+        input:-webkit-autofill:hover,
+        input:-webkit-autofill:focus,
+        input:-webkit-autofill:active {
+            -webkit-box-shadow: 0 0 0 1000px #F3F4F6 inset !important;
+            -webkit-text-fill-color: #1F2937 !important;
+            transition: background-color 5000s ease-in-out 0s;
+        }
+
+        .dark input:-webkit-autofill,
+        .dark input:-webkit-autofill:hover,
+        .dark input:-webkit-autofill:focus,
+        .dark input:-webkit-autofill:active {
+            -webkit-box-shadow: 0 0 0 1000px #1E293B inset !important;
+            -webkit-text-fill-color: #F8FAFC !important;
+        }
+
         /* Responsive */
         @media (max-width: 1000px) {
             .auth-container {
@@ -542,7 +560,7 @@
                             </svg>
                             <span class="floating-label">Email Address</span>
                             <input type="text" id="usernameOrEmail" class="custom-input" placeholder="user@example.com"
-                                required>
+                                required autocomplete="username">
                         </div>
                     </div>
 
@@ -555,7 +573,8 @@
                                 <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
                             </svg>
                             <span class="floating-label">Password</span>
-                            <input type="password" id="password" class="custom-input" placeholder="••••••••" required>
+                            <input type="password" id="password" class="custom-input" placeholder="••••••••" required
+                                autocomplete="current-password">
 
                             <div class="password-eye" id="togglePassword">
                                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"

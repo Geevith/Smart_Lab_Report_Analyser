@@ -383,6 +383,24 @@
             color: #065F46;
         }
 
+        /* Autofill override */
+        input:-webkit-autofill,
+        input:-webkit-autofill:hover,
+        input:-webkit-autofill:focus,
+        input:-webkit-autofill:active {
+            -webkit-box-shadow: 0 0 0 1000px #F3F4F6 inset !important;
+            -webkit-text-fill-color: #1F2937 !important;
+            transition: background-color 5000s ease-in-out 0s;
+        }
+
+        .dark input:-webkit-autofill,
+        .dark input:-webkit-autofill:hover,
+        .dark input:-webkit-autofill:focus,
+        .dark input:-webkit-autofill:active {
+            -webkit-box-shadow: 0 0 0 1000px #1E293B inset !important;
+            -webkit-text-fill-color: #F8FAFC !important;
+        }
+
         @media (max-width: 1000px) {
             .auth-container {
                 flex-direction: column;
@@ -468,7 +486,8 @@
                                 <circle cx="12" cy="7" r="4"></circle>
                             </svg>
                             <span class="floating-label">Username</span>
-                            <input type="text" id="username" class="custom-input" placeholder="johndoe" required>
+                            <input type="text" id="username" class="custom-input" placeholder="johndoe" required
+                                autocomplete="username">
                         </div>
                     </div>
 
@@ -482,7 +501,8 @@
                                 <polyline points="22,6 12,13 2,6"></polyline>
                             </svg>
                             <span class="floating-label">Email Address</span>
-                            <input type="email" id="email" class="custom-input" placeholder="john@example.com" required>
+                            <input type="email" id="email" class="custom-input" placeholder="john@example.com" required
+                                autocomplete="email">
                         </div>
                     </div>
 
@@ -497,7 +517,7 @@
                                 </svg>
                                 <span class="floating-label">Password</span>
                                 <input type="password" id="password" class="custom-input" style="padding-right: 48px"
-                                    placeholder="••••••" required>
+                                    placeholder="••••••" required autocomplete="new-password">
                                 <button type="button" class="password-eye" id="togglePassword"
                                     aria-label="Show/hide password" title="Show/hide password">
                                     <svg id="eyeIconPassword" width="18" height="18" viewBox="0 0 24 24" fill="none"
@@ -518,7 +538,8 @@
                                 </svg>
                                 <span class="floating-label">Confirm</span>
                                 <input type="password" id="confirmPassword" class="custom-input"
-                                    style="padding-right: 48px" placeholder="••••••" required>
+                                    style="padding-right: 48px" placeholder="••••••" required
+                                    autocomplete="new-password">
                                 <button type="button" class="password-eye" id="toggleConfirm"
                                     aria-label="Show/hide confirm password" title="Show/hide password">
                                     <svg id="eyeIconConfirm" width="18" height="18" viewBox="0 0 24 24" fill="none"
@@ -538,7 +559,7 @@
                             <div class="input-wrapper">
                                 <span class="floating-label">Full Name</span>
                                 <input type="text" id="fullName" class="custom-input" style="padding-left: 20px"
-                                    placeholder="John Doe">
+                                    placeholder="John Doe" autocomplete="name">
                             </div>
                         </div>
                         <div class="input-group">
@@ -559,7 +580,8 @@
                         <div class="input-group">
                             <div class="input-wrapper">
                                 <span class="floating-label">Date of Birth</span>
-                                <input type="date" id="dateOfBirth" class="custom-input" style="padding-left: 20px">
+                                <input type="date" id="dateOfBirth" class="custom-input" style="padding-left: 20px"
+                                    autocomplete="bday">
                             </div>
                         </div>
                         <div class="input-group">
@@ -657,7 +679,15 @@
         const dobInput = document.getElementById('dateOfBirth');
         const ageInput = document.getElementById('age');
 
-        dobInput.addEventListener('change', () => {
+        // Set max attribute to today
+        const todayStr = new Date().toISOString().split('T')[0];
+        dobInput.setAttribute('max', todayStr);
+
+        function calculateAge() {
+            if (!dobInput.value) {
+                ageInput.value = '';
+                return;
+            }
             const dob = new Date(dobInput.value);
             const today = new Date();
             let age = today.getFullYear() - dob.getFullYear();
@@ -668,7 +698,24 @@
             }
 
             ageInput.value = age >= 0 ? age : '';
-        });
+        }
+
+        dobInput.addEventListener('change', calculateAge);
+        dobInput.addEventListener('input', calculateAge);
+
+        function checkPasswordMatch() {
+            if (confirmInput.value) {
+                if (passwordInput.value !== confirmInput.value) {
+                    confirmInput.style.boxShadow = '0 0 0 2px #EF4444'; // Red
+                } else {
+                    confirmInput.style.boxShadow = '0 0 0 2px #10B981'; // Green
+                }
+            } else {
+                confirmInput.style.boxShadow = '';
+            }
+        }
+        passwordInput.addEventListener('input', checkPasswordMatch);
+        confirmInput.addEventListener('input', checkPasswordMatch);
 
         // Hiding inputs (Passwords)
         [passwordInput, confirmInput].forEach(input => {

@@ -426,11 +426,11 @@ async function handleAnalyze() {
         sessionStorage.setItem('analysisSummary', JSON.stringify(data.summary));
         sessionStorage.setItem('analysisInsights', JSON.stringify(data.insights));
         sessionStorage.setItem('systemsImpact', JSON.stringify(data.systems_impact));
-        
+
         if (data.report_id) {
             sessionStorage.setItem('currentReportId', data.report_id);
         }
-        
+
         sessionStorage.setItem('currentStep', 'verify');
 
         // Complete Progress
@@ -606,11 +606,30 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Initialize authentication (check user status but don't force redirect)
     if (typeof initAuth === 'function') {
         try {
-            await initAuth({
+            const user = await initAuth({
                 requireAuthentication: false, // Allow guests to see landing/upload
                 displayUser: true,
                 navElementId: 'navActions'
             });
+
+            if (!user) {
+                // Show guest banner
+                const bannerContainer = document.createElement('div');
+                bannerContainer.className = 'w-full max-w-4xl mx-auto mb-6 px-4 shrink-0 relative z-10';
+                bannerContainer.innerHTML = `
+                    <div class="bg-blue-50 border-l-4 border-primary p-4 rounded-r-lg shadow-sm flex items-start gap-4">
+                        <span class="material-icons-round text-primary mt-0.5">info</span>
+                        <div>
+                            <h3 class="text-sm font-bold text-blue-900">Demo Mode Active</h3>
+                            <p class="text-sm text-blue-700 mt-1">You are viewing the application as a guest. You can upload and preview reports, but <a href="login.html?redirect=upload_ui.html" class="font-bold underline hover:text-blue-900">logging in</a> is required to run AI analysis.</p>
+                        </div>
+                    </div>
+                `;
+                const mainEl = document.querySelector('main');
+                if (mainEl && mainEl.firstChild) {
+                    mainEl.insertBefore(bannerContainer, mainEl.firstChild);
+                }
+            }
         } catch (error) {
             console.error('Auth initialization failed:', error);
         }
