@@ -32,7 +32,10 @@ def assess_image(image_path: str) -> Dict:
         Dictionary with quality scores and suggestions
     """
     try:
-        img = Image.open(image_path)
+        import io
+        with open(image_path, 'rb') as f:
+            img_data = f.read()
+        img = Image.open(io.BytesIO(img_data))
         
         # Convert to RGB if needed
         if img.mode != 'RGB':
@@ -59,7 +62,7 @@ def assess_image(image_path: str) -> Dict:
         
         # Generate suggestions
         suggestions = suggest_improvements(quality, img)
-        
+            
         return {
             "resolution_score": quality.resolution_score,
             "contrast_score": quality.contrast_score,

@@ -26,26 +26,30 @@ def _extract_text_with_gemini_vision(file_path: str) -> str:
 
         client = genai.Client(api_key=api_key)
 
+        import io
+        with open(file_path, 'rb') as f:
+            img_data = f.read()
+        
         # Open and normalise image (PIL Image can be passed directly to google-genai)
-        img = PILImage.open(file_path)
-        if img.mode not in ("RGB", "L"):
-            img = img.convert("RGB")
+        with PILImage.open(io.BytesIO(img_data)) as img:
+            if img.mode not in ("RGB", "L"):
+                img = img.convert("RGB")
 
-        prompt = (
-            "You are an OCR system. Extract ALL text from this medical document image EXACTLY as it appears. "
-            "Preserve the structure, headings, bullet points, patient details, and all numeric values. "
-            "Do NOT summarize or interpret — just transcribe every word and number visible in the image. "
-            "Output ONLY the raw extracted text with no extra commentary."
-        )
+            prompt = (
+                "You are an OCR system. Extract ALL text from this medical document image EXACTLY as it appears. "
+                "Preserve the structure, headings, bullet points, patient details, and all numeric values. "
+                "Do NOT summarize or interpret — just transcribe every word and number visible in the image. "
+                "Output ONLY the raw extracted text with no extra commentary."
+            )
 
-        # Pass PIL Image directly — this is the correct format for google-genai SDK
-        response = client.models.generate_content(
-            model="gemini-2.5-flash",
-            contents=[prompt, img],
-        )
-        extracted = response.text.strip()
-        log.info("Gemini Vision OCR extracted %d characters", len(extracted))
-        return extracted
+            # Pass PIL Image directly — this is the correct format for google-genai SDK
+            response = client.models.generate_content(
+                model="gemini-2.5-flash",
+                contents=[prompt, img],
+            )
+            extracted = response.text.strip()
+            log.info("Gemini Vision OCR extracted %d characters", len(extracted))
+            return extracted
 
     except Exception as e:
         import traceback
@@ -139,12 +143,16 @@ def extract_from_image(file_path: str, rotation: int = 0) -> Dict:
     try:
         import pytesseract
         from PIL import Image
+        import io
 
-        image = Image.open(file_path)
-        if rotation in [90, 180, 270]:
-            image = image.rotate(-rotation, expand=True)
+        with open(file_path, 'rb') as f:
+            img_data = f.read()
 
-        text = pytesseract.image_to_string(image).strip()
+        with Image.open(io.BytesIO(img_data)) as image:
+            if rotation in [90, 180, 270]:
+                image = image.rotate(-rotation, expand=True)
+
+            text = pytesseract.image_to_string(image).strip()
         if text:
             source_used = "tesseract"
             log.info("Tesseract extracted %d characters", len(text))
