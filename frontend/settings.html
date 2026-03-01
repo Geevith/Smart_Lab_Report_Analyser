@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html class="light" lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Settings - MedLab Analyzer</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+    <link rel="stylesheet" href="clinical_design_system.css">
+    <script src="https://cdn.tailwindcss.com?plugins=forms,typography"></script>
+    <script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        primary: "#0D9488", // Medical Teal
+                        charcoal: "#1F2937",
+                        "background-light": "#F9FAFB",
+                        "background-dark": "#020617",
+                    },
+                    fontFamily: {
+                        display: ["Inter", "sans-serif"],
+                    },
+                    borderRadius: {
+                        DEFAULT: "0.75rem",
+                        "xl": "1rem",
+                        "2xl": "1.5rem",
+                    }
+                },
+            },
+        };
+    </script>
+</head>
+
+<body class="bg-background-light dark:bg-background-dark text-charcoal dark:text-gray-100 min-h-screen flex flex-col">
+    <!-- Header -->
+    <header
+        class="border-b border-gray-200 dark:border-slate-700/50 bg-white/50 dark:bg-slate-900/95 backdrop-blur-md sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 bg-primary rounded-xl flex items-center justify-center text-white">
+                    <span class="material-icons-round">settings</span>
+                </div>
+                <div>
+                    <h1 class="text-xl font-bold tracking-tight text-gray-900 dark:text-white">Account <span
+                            class="text-primary">Settings</span></h1>
+                </div>
+            </div>
+            <nav class="hidden md:flex items-center gap-8 text-sm font-medium text-gray-600 dark:text-gray-300">
+                <a href="upload_ui.html" class="hover:text-primary transition-colors flex items-center gap-1">
+                    <span class="material-icons-round text-lg">add_circle_outline</span> New Analysis
+                </a>
+                <a href="history.html?v=1" class="hover:text-primary transition-colors flex items-center gap-1">
+                    <span class="material-icons-round text-lg">history</span> My History
+                </a>
+                <!-- User Info Display -->
+                <div id="userInfo" class="hidden"></div>
+                <div id="navActions" class="flex items-center gap-2"></div>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="flex-grow flex justify-center p-6">
+        <div class="max-w-3xl w-full py-8 space-y-8">
+            <h2 class="text-3xl font-extrabold tracking-tight text-gray-900 dark:text-white mb-2">Settings & Privacy
+            </h2>
+            <p class="text-gray-600 dark:text-gray-400 mb-8">Manage your account preferences, appearance, and personal
+                data.</p>
+
+            <!-- Appearance Settings -->
+            <section
+                class="bg-white dark:bg-slate-900/60 p-8 rounded-3xl shadow-sm border border-gray-100 dark:border-slate-700/30">
+                <div class="flex items-center gap-3 mb-6">
+                    <div
+                        class="w-10 h-10 bg-indigo-100 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 rounded-xl flex items-center justify-center">
+                        <span class="material-icons-round">palette</span>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-900 dark:text-white">Appearance</h3>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4" id="themeSelector">
+                    <!-- Light -->
+                    <button data-theme="light"
+                        class="theme-btn relative p-4 rounded-xl border-2 border-gray-200 dark:border-slate-700 hover:border-indigo-500 dark:hover:border-indigo-500 transition-all text-left bg-gray-50 dark:bg-slate-800">
+                        <div class="flex justify-between items-center mb-3">
+                            <span class="material-icons-round text-yellow-500">light_mode</span>
+                            <span
+                                class="material-icons-round text-indigo-600 dark:text-indigo-400 check-icon hidden">check_circle</span>
+                        </div>
+                        <h4 class="font-semibold text-gray-900 dark:text-white">Light Mode</h4>
+                        <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Clean and bright</p>
+                    </button>
+                    <!-- Dark -->
+                    <button data-theme="dark"
+                        class="theme-btn relative p-4 rounded-xl border-2 border-gray-200 dark:border-slate-700 hover:border-indigo-500 dark:hover:border-indigo-500 transition-all text-left bg-gray-900 text-white">
+                        <div class="flex justify-between items-center mb-3">
+                            <span class="material-icons-round text-blue-400">dark_mode</span>
+                            <span class="material-icons-round text-indigo-400 check-icon hidden">check_circle</span>
+                        </div>
+                        <h4 class="font-semibold text-white">Dark Mode</h4>
+                        <p class="text-xs text-gray-400 mt-1">Easy on the eyes</p>
+                    </button>
+                    <!-- System -->
+                    <button data-theme="system"
+                        class="theme-btn relative p-4 rounded-xl border-2 border-gray-200 dark:border-slate-700 hover:border-indigo-500 dark:hover:border-indigo-500 transition-all text-left bg-gradient-to-br from-gray-100 to-gray-800">
+                        <div class="flex justify-between items-center mb-3">
+                            <span class="material-icons-round text-gray-600 dark:text-gray-300">desktop_windows</span>
+                            <span
+                                class="material-icons-round text-white check-icon hidden drop-shadow-md">check_circle</span>
+                        </div>
+                        <h4 class="font-semibold text-gray-900 dark:text-white drop-shadow-sm">System Match</h4>
+                        <p class="text-xs text-gray-800 dark:text-gray-200 mt-1 drop-shadow-sm">Follows device settings
+                        </p>
+                    </button>
+                </div>
+            </section>
+
+            <!-- Data & Privacy Settings -->
+            <section
+                class="bg-white dark:bg-slate-900/60 p-8 rounded-3xl shadow-sm border border-gray-100 dark:border-slate-700/30">
+                <div class="flex items-center gap-3 mb-6">
+                    <div
+                        class="w-10 h-10 bg-teal-100 dark:bg-teal-900/30 text-teal-600 dark:text-teal-400 rounded-xl flex items-center justify-center">
+                        <span class="material-icons-round">privacy_tip</span>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-900 dark:text-white">Data & Privacy</h3>
+                </div>
+
+                <div class="space-y-6">
+                    <div
+                        class="flex flex-col md:flex-row md:items-center justify-between gap-4 p-5 bg-gray-50 dark:bg-slate-800/50 rounded-2xl border border-gray-100 dark:border-slate-700/50">
+                        <div>
+                            <h4 class="font-bold text-gray-900 dark:text-white flex items-center gap-2">
+                                Export Data (GDPR/HIPAA)
+                                <span
+                                    class="px-2 py-0.5 bg-teal-100 dark:bg-teal-900 text-teal-700 dark:text-teal-300 text-[10px] rounded uppercase font-bold tracking-wider">Json</span>
+                            </h4>
+                            <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Download a machine-readable copy of
+                                your personal data, reports, and lab parameters.</p>
+                        </div>
+                        <button id="exportDataBtn"
+                            class="shrink-0 flex items-center justify-center gap-2 px-6 py-2.5 bg-white dark:bg-slate-700 border border-gray-200 dark:border-slate-600 hover:border-teal-500 dark:hover:border-teal-400 rounded-xl font-medium text-gray-700 dark:text-white shadow-sm transition-all hover:shadow-md">
+                            <span class="material-icons-round text-teal-600 dark:text-teal-400">cloud_download</span>
+                            Export JSON
+                        </button>
+                    </div>
+
+                    <div
+                        class="flex flex-col md:flex-row md:items-center justify-between gap-4 p-5 bg-red-50/50 dark:bg-red-900/10 rounded-2xl border border-red-100 dark:border-red-900/30">
+                        <div>
+                            <h4 class="font-bold text-red-600 dark:text-red-400 flex items-center gap-2">
+                                Delete Account
+                            </h4>
+                            <p class="text-sm text-red-500/80 dark:text-red-300/80 mt-1">Permanently delete your
+                                account, clinical reports, parameters, and all associated data. This action is
+                                irreversible.</p>
+                        </div>
+                        <button id="deleteAccountTargetBtn"
+                            class="shrink-0 flex items-center justify-center gap-2 px-6 py-2.5 bg-red-600 hover:bg-red-700 text-white rounded-xl font-medium shadow-sm transition-all shadow-red-500/20 hover:shadow-red-500/40">
+                            <span class="material-icons-round text-white/80">delete_forever</span>
+                            Delete Account
+                        </button>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- Delete Confirmation Modal -->
+    <div id="deleteModal"
+        class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white dark:bg-slate-900 rounded-3xl shadow-2xl max-w-md w-full border border-red-200 dark:border-red-900/50 overflow-hidden transform scale-95 opacity-0 transition-all duration-300"
+            id="deleteModalContent">
+            <div class="p-8 text-center">
+                <div
+                    class="w-20 h-20 bg-red-100 dark:bg-red-900/30 rounded-full flex items-center justify-center mx-auto mb-6">
+                    <span class="material-icons-round text-4xl text-red-600 dark:text-red-400">warning_amber</span>
+                </div>
+                <h3 class="text-2xl font-bold text-gray-900 dark:text-white mb-2">Are you absolutely sure?</h3>
+                <p class="text-gray-600 dark:text-gray-400 text-sm mb-6 leading-relaxed">
+                    This action <strong class="text-red-600 dark:text-red-400">cannot be undone</strong>. This will
+                    permanently delete your account, clinical records, historical lab parameters, and all personal data.
+                </p>
+                <div
+                    class="bg-red-50 dark:bg-red-900/20 text-left p-4 rounded-xl border border-red-100 dark:border-red-900/30 mb-8">
+                    <label
+                        class="text-xs font-bold text-red-800 dark:text-red-300 uppercase tracking-wider mb-2 block">To
+                        confirm, type "DELETE"</label>
+                    <input type="text" id="deleteConfirmInput"
+                        class="w-full bg-white dark:bg-slate-800 border border-red-200 dark:border-red-800 rounded-lg px-4 py-3 text-gray-900 dark:text-white font-mono focus:outline-none focus:ring-2 focus:ring-red-500/50"
+                        placeholder="DELETE">
+                </div>
+                <div class="flex gap-4">
+                    <button id="cancelDeleteBtn"
+                        class="flex-1 px-6 py-3 bg-gray-100 dark:bg-slate-800 text-gray-700 dark:text-gray-300 font-bold rounded-xl hover:bg-gray-200 dark:hover:bg-slate-700 transition-colors">
+                        Cancel
+                    </button>
+                    <button id="confirmDeleteBtn" disabled
+                        class="flex-1 px-6 py-3 bg-red-600 text-white font-bold rounded-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed hover:bg-red-700 shadow-lg shadow-red-500/20">
+                        Permanently Delete
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="p-8 border-t border-gray-100 dark:border-slate-800 text-center">
+        <p class="text-sm text-gray-500 dark:text-gray-400">
+            © 2024 MedLab AI Intelligence. All Rights Reserved.
+        </p>
+    </footer>
+
+    <script src="config.js"></script>
+    <script src="utils.js"></script>
+    <script src="auth.js?v=4"></script>
+    <script src="settings.js"></script>
+</body>
+
+</html>

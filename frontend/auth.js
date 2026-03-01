@@ -6,6 +6,92 @@
 // API_BASE_URL is defined in config.js (loaded before this script)
 
 /**
+ * Apply the user's theme preference to the document
+ * @param {string} theme - 'light', 'dark', or 'system'
+ */
+function applyTheme(theme) {
+    if (!theme) return;
+
+    // Check if there is already a local override (e.g. from a toggle button)
+    const localTheme = localStorage.getItem('theme');
+
+    // We prioritize local theme if it exists, otherwise use the DB value
+    const activeTheme = localTheme || theme;
+
+    const isSystemDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    if (activeTheme === 'dark' || (activeTheme === 'system' && isSystemDark) || theme === 'dark') {
+        document.documentElement.classList.add('dark');
+    } else {
+        document.documentElement.classList.remove('dark');
+    }
+}
+
+/**
+ * Initialize auto-logout after 15 minutes of inactivity
+ */
+function initAutoLogout() {
+    // Only run if not already running to avoid duplicate listeners
+    if (window._autoLogoutInitialized) return;
+    window._autoLogoutInitialized = true;
+
+    const INACTIVITY_LIMIT_MS = 15 * 60 * 1000; // 15 mins
+    const WARNING_TIME_MS = 14 * 60 * 1000; // 14 mins
+
+    let inactivityTimer;
+    let warningTimer;
+    let warningModalOpen = false;
+
+    function resetTimers() {
+        if (warningModalOpen) return; // Don't reset if showing warning
+
+        clearTimeout(inactivityTimer);
+        clearTimeout(warningTimer);
+
+        warningTimer = setTimeout(showWarning, WARNING_TIME_MS);
+        inactivityTimer = setTimeout(triggerLogout, INACTIVITY_LIMIT_MS);
+    }
+
+    function showWarning() {
+        warningModalOpen = true;
+        const modal = document.createElement('div');
+        modal.id = 'inactivityWarningModal';
+        modal.className = 'fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4 backdrop-blur-sm transition-opacity duration-300';
+        modal.innerHTML = `
+            <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-xl max-w-sm w-full p-6 text-center transform transition-all scale-100">
+                <div class="w-16 h-16 bg-red-100 dark:bg-red-900/30 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <span class="material-icons-round text-3xl text-red-600 dark:text-red-400">timer</span>
+                </div>
+                <h3 class="text-xl font-bold text-slate-800 dark:text-white mb-2">Session Expiring Soon</h3>
+                <p class="text-slate-600 dark:text-slate-300 mb-6 text-sm">For your security, you will be logged out automatically in 1 minute due to inactivity.</p>
+                <button id="stayLoggedInBtn" class="w-full bg-teal-600 hover:bg-teal-700 text-white font-bold py-3 px-4 rounded-xl transition-all shadow-md hover:shadow-lg focus:ring-4 focus:ring-teal-500/30">
+                    Stay Logged In
+                </button>
+            </div>
+        `;
+        document.body.appendChild(modal);
+
+        document.getElementById('stayLoggedInBtn').addEventListener('click', () => {
+            document.body.removeChild(modal);
+            warningModalOpen = false;
+            resetTimers();
+        });
+    }
+
+    async function triggerLogout() {
+        // Clear session and redirect independently of API response
+        await handleLogout();
+    }
+
+    // Attach listeners
+    ['mousemove', 'keydown', 'scroll', 'click'].forEach(evt => {
+        window.addEventListener(evt, resetTimers, { passive: true });
+    });
+
+    // Start timer
+    resetTimers();
+}
+
+/**
  * Check if user is authenticated
  * @returns {Promise<Object|null>} User object if authenticated, null otherwise
  */
@@ -263,6 +349,12 @@ function createProfileDropdown(navElement, user) {
                 <p class="text-sm font-bold text-gray-900 dark:text-white truncate">${name}</p>
                 <p class="text-xs text-gray-500 dark:text-gray-400 truncate">${email}</p>
             </div>
+            <div class="p-1 border-b border-gray-100 dark:border-slate-700/50">
+                <a href="settings.html" class="w-full flex items-center gap-2 px-3 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-slate-700/50 rounded-lg transition-colors text-left">
+                    <span class="material-icons-round text-lg">settings</span>
+                    Settings & Privacy
+                </a>
+            </div>
             <div class="p-1">
                 <button id="logoutBtn" class="w-full flex items-center gap-2 px-3 py-2 text-sm text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors text-left">
                     <span class="material-icons-round text-lg">logout</span>
@@ -346,6 +438,14 @@ async function initAuth(options = {}) {
             // If we have a user OR we want to show guest dropdown
             createProfileDropdown(navElement, user);
         }
+    }
+
+    // Initialize Global User Settings if logged in
+    if (user) {
+        if (user.theme) {
+            applyTheme(user.theme);
+        }
+        initAutoLogout();
     }
 
     return user;

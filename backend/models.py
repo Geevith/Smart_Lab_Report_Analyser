@@ -66,6 +66,7 @@ class UserResponse(BaseModel):
     gender: Optional[str] = None
     age: Optional[int] = None
     ethnicity: Optional[str] = None
+    theme: Optional[str] = "light"
     created_at: Optional[datetime] = None
     last_login: Optional[datetime] = None
 
@@ -77,6 +78,7 @@ class UserUpdate(BaseModel):
     gender: Optional[str] = None
     age: Optional[int] = None
     ethnicity: Optional[str] = None
+    theme: Optional[str] = None
     phone: Optional[str] = None
 
 

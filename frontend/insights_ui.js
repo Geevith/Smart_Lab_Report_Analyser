@@ -92,7 +92,15 @@ async function loadHistory() {
         const history = await response.json();
 
         if (history.length === 0) {
-            listContainer.innerHTML = '<p class="text-center text-slate-500 py-4">No previous reports found.</p>';
+            listContainer.innerHTML = `
+                <div class="flex flex-col items-center justify-center py-8 text-center">
+                    <div class="w-16 h-16 bg-slate-100 dark:bg-slate-800 rounded-full flex items-center justify-center mb-4">
+                        <span class="material-icons-round text-3xl text-slate-400 dark:text-slate-500">history_toggle_off</span>
+                    </div>
+                    <p class="text-slate-600 dark:text-slate-300 font-semibold mb-1">No Previous Reports</p>
+                    <p class="text-xs text-slate-500 dark:text-slate-400">Upload more reports to see comparisons.</p>
+                </div>
+            `;
             return;
         }
 
@@ -129,7 +137,20 @@ async function compareWithReport(reportId, filename, date) {
         const response = await fetch(`${API_BASE_URL}/report/${reportId}`);
         if (!response.ok) throw new Error('Failed to fetch report details');
 
-        comparisonData = await response.json();
+        const reportData = await response.json();
+
+        // Convert parameters array to a name-indexed dictionary
+        comparisonData = {};
+        if (reportData.parameters && Array.isArray(reportData.parameters)) {
+            reportData.parameters.forEach(p => {
+                comparisonData[p.name] = p;
+            });
+        } else if (Array.isArray(reportData)) {
+            // Just in case the endpoint returns an array directly
+            reportData.forEach(p => {
+                comparisonData[p.name] = p;
+            });
+        }
 
         // Update UI for comparison mode
         comparisonModal.classList.add('hidden');
@@ -610,9 +631,12 @@ function renderSystemsImpact(systemsData) {
 
     if (systemNames.length === 0) {
         container.innerHTML = `
-            <div class="text-center text-slate-400 text-sm py-6">
-                <span class="material-icons-round text-3xl mb-2 block text-emerald-500">check_circle</span>
-                <p>No system data available</p>
+            <div class="flex flex-col items-center justify-center py-6 text-center bg-emerald-50/50 dark:bg-emerald-900/10 rounded-2xl border border-emerald-100 dark:border-emerald-800/30">
+                <div class="w-12 h-12 bg-emerald-100 dark:bg-emerald-900/40 rounded-full flex items-center justify-center mb-3">
+                    <span class="material-icons-round text-2xl text-emerald-500">health_and_safety</span>
+                </div>
+                <p class="text-slate-800 dark:text-emerald-50 font-semibold mb-1">Optimal System Health</p>
+                <p class="text-xs text-slate-500 dark:text-emerald-200/60 max-w-[200px]">No significant systemic impacts detected from current values.</p>
             </div>
         `;
         return;
@@ -1307,7 +1331,9 @@ async function fetchParameterHistory(parameterName) {
      * Fetch historical data for a parameter from the backend
      */
     try {
-        const response = await fetch(`${API_BASE_URL}/parameter_history/${encodeURIComponent(parameterName)}?limit=10`);
+        const response = await fetch(`${API_BASE_URL}/api/tracking/parameter/${encodeURIComponent(parameterName)}?limit=10`, {
+            credentials: 'include'
+        });
         if (!response.ok) {
             console.warn(`No historical data for ${parameterName}`);
             return null;

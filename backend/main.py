@@ -450,6 +450,92 @@ async def get_current_user_info(current_user: dict = Depends(get_current_user)):
     """
     return UserResponse(**current_user)
 
+# ============================================================================
+# User Preferences, Data Export, and Tracking
+# ============================================================================
+
+@app.put("/api/user/theme")
+async def update_theme(request: Request, current_user: dict = Depends(get_current_user)):
+    """Update user's theme preference."""
+    try:
+        data = await request.json()
+        theme = data.get("theme", "light")
+        if theme not in ["light", "dark", "system"]:
+            raise ValueError("Invalid theme value")
+            
+        from .database import update_user_theme
+        update_user_theme(current_user['id'], theme)
+        return MessageResponse(message="Theme updated successfully", success=True)
+    except Exception as e:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
+
+@app.get("/api/user/export")
+async def export_user_data(current_user: dict = Depends(get_current_user)):
+    """Export all user data as JSON (HIPAA/GDPR compliance)."""
+    from .database import get_user_export_data
+    try:
+        data = get_user_export_data(current_user['id'])
+        if not data:
+            raise HTTPException(status_code=404, detail="User data not found")
+        return data
+    except Exception as e:
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"Failed to export data: {str(e)}")
+
+@app.delete("/api/user")
+async def delete_account(request: Request, response: Response, current_user: dict = Depends(get_current_user)):
+    """Permanently delete user account and all cascaded data."""
+    from .database import delete_user_account
+    try:
+        success = delete_user_account(current_user['id'])
+        if not success:
+            raise HTTPException(status_code=500, detail="Failed to delete account completely")
+            
+        # Log them out by clearing session
+        session_token = request.cookies.get("session_token")
+        if session_token:
+            from .auth import logout_user
+            logout_user(session_token, current_user['id'])
+        response.delete_cookie(key="session_token")
+        
+        return MessageResponse(message="Account permanently deleted", success=True)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.get("/api/tracking/parameter/{param_name}")
+async def get_parameter_tracking(param_name: str, limit: int = 50, current_user: dict = Depends(get_current_user)):
+    """Get longitudinal data for a specific lab parameter."""
+    from .database import get_parameter_history
+    try:
+        history = get_parameter_history(current_user['id'], param_name, limit)
+        return {"parameter": param_name, "history": history, "success": True}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.get("/api/reports/compare")
+async def compare_reports(id1: int, id2: int, current_user: dict = Depends(get_current_user)):
+    """Get parameters and insights for two specific reports for side-by-side comparison."""
+    from .database import get_report_parameters, get_history
+    try:
+        # Verify ownership efficiently
+        user_reports = get_history(current_user['id'], limit=1000)
+        report_ids = [r['id'] for r in user_reports]
+        if id1 not in report_ids or id2 not in report_ids:
+            raise HTTPException(status_code=403, detail="Unauthorized access to these reports")
+            
+        r1_params = get_report_parameters(id1)
+        r2_params = get_report_parameters(id2)
+        
+        report1_details = next((r for r in user_reports if r['id'] == id1), None)
+        report2_details = next((r for r in user_reports if r['id'] == id2), None)
+        
+        return {
+            "report1": {"details": report1_details, "parameters": r1_params},
+            "report2": {"details": report2_details, "parameters": r2_params},
+            "success": True
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
 
 # ============================================================================
 # Protected Endpoints (Authentication Required)

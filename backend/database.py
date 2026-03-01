@@ -4,6 +4,7 @@ import datetime
 import json
 import os
 from dotenv import load_dotenv
+from typing import Any
 
 load_dotenv()
 
@@ -553,7 +554,7 @@ def get_user_by_username(username):
         cursor = conn.cursor(cursor_factory=RealDictCursor)
         cursor.execute('''
             SELECT id, email, username, password_hash, full_name, date_of_birth, gender, 
-                   age, ethnicity, is_active, created_at, last_login
+                   age, ethnicity, theme, is_active, created_at, last_login
             FROM users
             WHERE username = %s
         ''', (username,))
@@ -579,7 +580,7 @@ def get_user_by_email(email):
         cursor = conn.cursor(cursor_factory=RealDictCursor)
         cursor.execute('''
             SELECT id, email, username, password_hash, full_name, date_of_birth, gender, 
-                   age, ethnicity, is_active, created_at, last_login
+                   age, ethnicity, theme, is_active, created_at, last_login
             FROM users
             WHERE email = %s
         ''', (email,))
@@ -605,7 +606,7 @@ def get_user_by_id(user_id):
         cursor = conn.cursor(cursor_factory=RealDictCursor)
         cursor.execute('''
             SELECT id, email, username, full_name, date_of_birth, gender, 
-                   age, ethnicity, is_active, created_at, last_login
+                   age, ethnicity, theme, is_active, created_at, last_login
             FROM users
             WHERE id = %s
         ''', (user_id,))
@@ -636,6 +637,114 @@ def update_last_login(user_id):
         conn.commit()
     finally:
         cursor.close()
+        conn.close()
+
+def update_user_theme(user_id, theme):
+    """Update user's theme preference."""
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    try:
+        cursor.execute('''
+            UPDATE users SET theme = %s WHERE id = %s
+        ''', (theme, user_id))
+        conn.commit()
+    finally:
+        cursor.close()
+        conn.close()
+
+def delete_user_account(user_id):
+    """
+    Permanently delete a user account and all cascaded data.
+    Warning: This action is irreversible. Uses savepoints for optional tables.
+    """
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    try:
+         # 1. Delete parameter flags
+         try:
+             cursor.execute('SAVEPOINT delete_flags')
+             cursor.execute('DELETE FROM parameter_flags WHERE user_id = %s', (user_id,))
+             cursor.execute('RELEASE SAVEPOINT delete_flags')
+         except Exception:
+             cursor.execute('ROLLBACK TO SAVEPOINT delete_flags')
+             
+         # 2. Delete shareable links
+         try:
+             cursor.execute('SAVEPOINT delete_links')
+             cursor.execute('DELETE FROM shareable_links WHERE user_id = %s', (user_id,))
+             cursor.execute('RELEASE SAVEPOINT delete_links')
+         except Exception:
+             cursor.execute('ROLLBACK TO SAVEPOINT delete_links')
+             
+         # 3. Delete historical parameters
+         cursor.execute('DELETE FROM historical_parameters WHERE user_id = %s', (user_id,))
+         # 4. Delete reports
+         cursor.execute('DELETE FROM reports WHERE user_id = %s', (user_id,))
+         # 5. Delete activity logs
+         try:
+             cursor.execute('SAVEPOINT delete_logs')
+             cursor.execute('DELETE FROM activity_log WHERE user_id = %s', (user_id,))
+             cursor.execute('RELEASE SAVEPOINT delete_logs')
+         except Exception:
+             cursor.execute('ROLLBACK TO SAVEPOINT delete_logs')
+             
+         # 6. Delete user sessions
+         cursor.execute('DELETE FROM user_sessions WHERE user_id = %s', (user_id,))
+         # 7. Delete user
+         cursor.execute('DELETE FROM users WHERE id = %s', (user_id,))
+         conn.commit()
+         return True
+    except Exception as e:
+         conn.rollback()
+         print(f"Error deleting user account: {e}")
+         return False
+    finally:
+         cursor.close()
+         conn.close()
+
+def get_user_export_data(user_id):
+    """
+    Retrieve all user data for JSON export (GDPR/HIPAA compliance).
+    """
+    conn = get_db_connection()
+    try:
+        data: dict[str, Any] = {}
+        cursor = conn.cursor(cursor_factory=RealDictCursor)
+        
+        # profile
+        cursor.execute('''
+            SELECT id, email, username, full_name, date_of_birth, gender, 
+                   age, ethnicity, theme, created_at, last_login
+            FROM users WHERE id = %s
+        ''', (user_id,))
+        user = cursor.fetchone()
+        if user:
+            user = dict(user)
+            if user.get('date_of_birth'): user['date_of_birth'] = str(user['date_of_birth'])
+            if user.get('created_at'): user['created_at'] = str(user['created_at'])
+            if user.get('last_login'): user['last_login'] = str(user['last_login'])
+            data['profile'] = user
+        else:
+            return None
+        
+        # reports
+        cursor.execute('SELECT id, filename, original_filename, timestamp, summary_status, report_type, lab_name, lab_date, is_favorite, is_archived, notes, updated_at FROM reports WHERE user_id = %s ORDER BY timestamp DESC', (user_id,))
+        reports = [dict(r) for r in cursor.fetchall()]
+        for r in reports:
+            if r.get('timestamp'): r['timestamp'] = str(r['timestamp'])
+            if r.get('updated_at'): r['updated_at'] = str(r['updated_at'])
+            if r.get('lab_date'): r['lab_date'] = str(r['lab_date'])
+        data['reports'] = reports
+        
+        # parameters
+        cursor.execute('SELECT report_id, parameter_name, value, unit, reference_range, status, severity, confidence_score, recorded_at FROM historical_parameters WHERE user_id = %s ORDER BY recorded_at DESC', (user_id,))
+        params = [dict(p) for p in cursor.fetchall()]
+        for p in params:
+            if p.get('recorded_at'): p['recorded_at'] = str(p['recorded_at'])
+        data['parameters'] = params
+        
+        return data
+    finally:
         conn.close()
 
 # ============================================================================

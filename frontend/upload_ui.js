@@ -56,6 +56,13 @@ uploadArea.addEventListener('click', () => {
     fileInput.click();
 });
 
+uploadArea.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        fileInput.click();
+    }
+});
+
 browseBtn.addEventListener('click', (e) => {
     e.stopPropagation();
     fileInput.click();
