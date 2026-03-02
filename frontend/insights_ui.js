@@ -1591,6 +1591,10 @@ function renderTrendChart(chartId, labels, data, color) {
         existingChart.destroy();
     }
 
+    const gradientFill = ctx.createLinearGradient(0, 0, 0, 150);
+    gradientFill.addColorStop(0, color + '40'); // 25% opacity
+    gradientFill.addColorStop(1, color + '00'); // 0% opacity
+
     new Chart(ctx, {
         type: 'line',
         data: {
@@ -1599,14 +1603,14 @@ function renderTrendChart(chartId, labels, data, color) {
                 label: 'Value',
                 data: data,
                 borderColor: color,
-                backgroundColor: color + '20',
-                borderWidth: 2,
-                pointRadius: 3,
+                backgroundColor: gradientFill,
+                borderWidth: 3,
+                pointRadius: 4,
                 pointBackgroundColor: color,
                 pointBorderColor: '#fff',
-                pointBorderWidth: 1,
-                pointHoverRadius: 5,
-                tension: 0.3,
+                pointBorderWidth: 2,
+                pointHoverRadius: 6,
+                tension: 0.4,
                 fill: true
             }]
         },
@@ -1676,7 +1680,51 @@ function closeSystemDetail() {
 // ==========================================
 // PAGE LOAD
 // ==========================================
+// PAGE LOAD
+// ==========================================
 
 document.addEventListener('DOMContentLoaded', initializePage);
+
+// ==========================================
+// ANTICIPATORY UX - CALENDAR REMINDER
+// ==========================================
+
+function downloadCalendarReminder() {
+    const reminderDate = new Date();
+    reminderDate.setMonth(reminderDate.getMonth() + 3);
+
+    const formatDateForICS = (date) => {
+        return date.toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z';
+    };
+
+    const start = formatDateForICS(reminderDate);
+    reminderDate.setHours(reminderDate.getHours() + 1);
+    const end = formatDateForICS(reminderDate);
+
+    const icsContent = `BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//MedLab Analyzer//EN
+BEGIN:VEVENT
+UID:${new Date().getTime()}@medlabanalyzer.com
+DTSTAMP:${formatDateForICS(new Date())}
+DTSTART:${start}
+DTEND:${end}
+SUMMARY:Follow-up Lab Test - MedLab Analyzer Reminder
+DESCRIPTION:It has been 3 months since your last lab report analysis. It is clinically recommended to take follow-up tests for the parameters that required your attention to monitor your progress.
+END:VEVENT
+END:VCALENDAR`;
+
+    const blob = new Blob([icsContent], { type: 'text/calendar;charset=utf-8' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = 'Lab_Test_Reminder.ics';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+
+    if (typeof showNotification === 'function') {
+        showNotification('Success', 'Reminder downloaded to your device.', 'success');
+    }
+}
 
 console.log('MedLab Analyzer Insights UI (Tailwind) initialized successfully');
