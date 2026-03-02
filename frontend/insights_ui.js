@@ -370,117 +370,203 @@ function animateCircularProgress() {
 // ==========================================
 
 function initializePage() {
-    // Check sessionStorage for data
-    const summaryData = sessionStorage.getItem('analysisSummary');
-    const paramsDataStr = sessionStorage.getItem('analysisResults');
-    const systemsImpactStr = sessionStorage.getItem('systemsImpact');
-    let paramsData = [];
-
-    if (paramsDataStr) {
-        try {
-            paramsData = JSON.parse(paramsDataStr);
-            // Load backend insights
-            const insightsDataStr = sessionStorage.getItem('analysisInsights');
-            let insightsData = { detailed_insights: [] };
-            if (insightsDataStr) {
-                insightsData = JSON.parse(insightsDataStr);
-            }
-            console.log("Loaded params for insights", paramsData);
-            console.log("Loaded backend insights", insightsData);
-            renderDynamicInsights(paramsData, insightsData);
-        } catch (e) { console.error(e); }
+    // Inject Skeletons for a "Juicy" UX
+    const container = document.getElementById('parameterDetails');
+    if (container) {
+        container.innerHTML = Array(3).fill(`
+            <div class="bg-white dark:bg-slate-900/60 rounded-2xl p-6 shadow-sm border border-gray-100 dark:border-slate-700/30 mb-6 cursor-wait">
+                <div class="flex flex-col md:flex-row gap-6">
+                    <div class="md:w-1/3 flex items-start gap-4">
+                        <div class="w-12 h-12 rounded-xl skeleton-loading shrink-0"></div>
+                        <div class="w-full space-y-3 mt-1">
+                            <div class="h-4 skeleton-loading w-3/4 rounded"></div>
+                            <div class="h-3 skeleton-loading w-1/2 rounded mt-2"></div>
+                        </div>
+                    </div>
+                    <div class="md:w-2/3 space-y-3 mt-1">
+                        <div class="h-4 skeleton-loading w-full rounded"></div>
+                        <div class="h-4 skeleton-loading w-5/6 rounded mt-2"></div>
+                        <div class="h-4 skeleton-loading w-4/6 rounded mt-2"></div>
+                    </div>
+                </div>
+            </div>
+        `).join('');
     }
 
-    // Load and render systems impact
-    if (systemsImpactStr) {
-        try {
-            const systemsImpact = JSON.parse(systemsImpactStr);
-            console.log("Loaded systems impact", systemsImpact);
-            renderSystemsImpact(systemsImpact);
-            renderBodyFigure(systemsImpact);
-        } catch (e) { console.error('Error parsing systems impact', e); }
-    }
+    // Artificial wait for anticipatory UX
+    setTimeout(() => {
+        // Check sessionStorage for data
+        const summaryData = sessionStorage.getItem('analysisSummary');
+        const paramsDataStr = sessionStorage.getItem('analysisResults');
+        const systemsImpactStr = sessionStorage.getItem('systemsImpact');
+        let paramsData = [];
 
-    if (summaryData) {
-        try {
-            const summary = JSON.parse(summaryData);
-
-            // Update Stats Cards
-            // Card 1: Total
-            document.querySelector('.neon-glow-blue + div h3').textContent = 'TOTAL EXTRACTED'; // Keep label
-            document.querySelector('.neon-glow-blue span').textContent = summary.total_extracted || 0;
-
-            // Card 2: Optimal
-            document.querySelector('.neon-glow-green span').textContent = summary.optimal_count || 0;
-
-            // Card 3: Attention
-            document.querySelector('.neon-glow-coral span').textContent = summary.attention_count || 0;
-
-            // Wellness Score
-            const max = summary.total_extracted || 1;
-            const optimal = summary.optimal_count || 0;
-            const score = Math.round((optimal / max) * 100);
-
-            const wellnessText = document.getElementById('wellnessScoreText');
-            const wellnessLabel = document.getElementById('wellnessScoreLabel');
-            const wellnessCircle = document.getElementById('circleWellness');
-
-            if (wellnessText) {
-                wellnessText.textContent = score;
-                let label = "Needs Attention";
-                if (score >= 90) label = "Excellent";
-                else if (score >= 70) label = "Good";
-                else if (score >= 50) label = "Fair";
-
-                if (wellnessLabel) wellnessLabel.textContent = label;
-
-                if (wellnessCircle) {
-                    const offset = 264 * (1 - (score / 100));
-                    wellnessCircle.setAttribute('stroke-dashoffset', offset);
+        if (paramsDataStr) {
+            try {
+                paramsData = JSON.parse(paramsDataStr);
+                // Load backend insights
+                const insightsDataStr = sessionStorage.getItem('analysisInsights');
+                let insightsData = { detailed_insights: [] };
+                if (insightsDataStr) {
+                    insightsData = JSON.parse(insightsDataStr);
                 }
-            }
-
-            // Update Progress Circles (Calculate dash offsets)
-            // Circumference is approx 264
-
-            const optimalPct = (summary.optimal_count / max);
-            const attentionPct = (summary.attention_count / max);
-
-            const circle2 = document.getElementById('circle2');
-            if (circle2) {
-                // Invert logic: stroke-dashoffset = circumference * (1 - percentage)
-                // Actually existing CSS seems to just act as a loader, we should maintain the animation 
-                // but strictly speaking we should set the final values here if we want accuracy.
-                // For now, let's keep the visual "alive" but update the text.
-            }
-
-            // Analysis Depth
-            const depthBar = document.querySelector('.text-teal-600');
-            if (depthBar) depthBar.textContent = summary.analysis_depth || '100%';
-
-        } catch (e) {
-            console.error('Error parsing summary data', e);
+                console.log("Loaded params for insights", paramsData);
+                console.log("Loaded backend insights", insightsData);
+                renderDynamicInsights(paramsData, insightsData);
+            } catch (e) { console.error(e); }
         }
+
+        // Load and render systems impact
+        if (systemsImpactStr) {
+            try {
+                const systemsImpact = JSON.parse(systemsImpactStr);
+                console.log("Loaded systems impact", systemsImpact);
+                renderSystemsImpact(systemsImpact);
+                renderBodyFigure(systemsImpact);
+            } catch (e) { console.error('Error parsing systems impact', e); }
+        }
+
+        if (summaryData) {
+            try {
+                const summary = JSON.parse(summaryData);
+
+                // Update Stats Cards
+                // Card 1: Total
+                document.querySelector('.neon-glow-blue + div h3').textContent = 'TOTAL EXTRACTED'; // Keep label
+                document.querySelector('.neon-glow-blue span').textContent = summary.total_extracted || 0;
+
+                // Card 2: Optimal
+                document.querySelector('.neon-glow-green span').textContent = summary.optimal_count || 0;
+
+                // Card 3: Attention
+                document.querySelector('.neon-glow-coral span').textContent = summary.attention_count || 0;
+
+                // Wellness Score
+                const max = summary.total_extracted || 1;
+                const optimal = summary.optimal_count || 0;
+                const score = Math.round((optimal / max) * 100);
+
+                const wellnessText = document.getElementById('wellnessScoreText');
+                const wellnessLabel = document.getElementById('wellnessScoreLabel');
+                const wellnessCircle = document.getElementById('circleWellness');
+
+                if (wellnessText) {
+                    wellnessText.textContent = score;
+                    let label = "Needs Attention";
+                    if (score >= 90) label = "Excellent";
+                    else if (score >= 70) label = "Good";
+                    else if (score >= 50) label = "Fair";
+
+                    if (wellnessLabel) wellnessLabel.textContent = label;
+
+                    if (wellnessCircle) {
+                        const offset = 264 * (1 - (score / 100));
+                        wellnessCircle.setAttribute('stroke-dashoffset', offset);
+                    }
+                }
+
+                // Update Progress Circles (Calculate dash offsets)
+                // Circumference is approx 264
+
+                const optimalPct = (summary.optimal_count / max);
+                const attentionPct = (summary.attention_count / max);
+
+                const circle2 = document.getElementById('circle2');
+                if (circle2) {
+                    // Invert logic: stroke-dashoffset = circumference * (1 - percentage)
+                    // Actually existing CSS seems to just act as a loader, we should maintain the animation 
+                    // but strictly speaking we should set the final values here if we want accuracy.
+                    // For now, let's keep the visual "alive" but update the text.
+                }
+
+                // Analysis Depth
+                const depthBar = document.querySelector('.text-teal-600');
+                if (depthBar) depthBar.textContent = summary.analysis_depth || '100%';
+
+            } catch (e) {
+                console.error('Error parsing summary data', e);
+            }
+        }
+
+        // ── Critical Value Alert ─────────────────────────────────────────────────
+        // If any parameters are Critical severity, show blocking modal AFTER render
+        try {
+            const criticalParams = (Array.isArray(paramsData) ? paramsData : []).filter(
+                p => p.status === 'Critical' || (p.severity || '').toUpperCase() === 'CRITICAL'
+            );
+            if (criticalParams.length > 0 && typeof window.showCriticalAlert === 'function') {
+                // Small delay so the page has rendered behind the modal
+                setTimeout(() => {
+                    window.showCriticalAlert(criticalParams.map(p => ({ name: p.name, value: p.value, unit: p.unit || '' })));
+                }, 400);
+            }
+        } catch (critErr) {
+            console.warn('Critical alert check failed:', critErr);
+        }
+
+        // Generate Natural Language AI Summary
+        if (summaryData) {
+            try {
+                generateAndDisplayAISummary(JSON.parse(summaryData), paramsData);
+            } catch (e) { console.error('Error generating AI Summary', e); }
+        }
+
+        // Animate progress circles
+        animateCircularProgress();
+    }, 600); // 600ms artificial wait for juicy UX
+}
+
+// ==========================================
+// AI NATURAL LANGUAGE SUMMARY
+// ==========================================
+
+function generateAndDisplayAISummary(summary, paramsData) {
+    const container = document.getElementById('aiSummaryContainer');
+    const textContainer = document.getElementById('aiSummaryText');
+    if (!container || !textContainer || !paramsData || !paramsData.length) return;
+
+    container.classList.remove('hidden');
+
+    const max = summary.total_extracted || 1;
+    const optimal = summary.optimal_count || 0;
+    const score = Math.round((optimal / max) * 100);
+
+    let overachingHealth = "Your biomarkers are largely balanced.";
+    if (score >= 90) overachingHealth = "Your results are absolutely excellent, showing strong baseline health.";
+    else if (score >= 70) overachingHealth = "Your results look generally good, though a few metrics require some fine-tuning.";
+    else if (score >= 50) overachingHealth = "Your profile shows several key areas that need attention and lifestyle adjustment.";
+    else overachingHealth = "Your blood work indicates significant clinical deviations that strongly recommend medical consultation.";
+
+    const criticalParams = paramsData.filter(p => p.status === 'Critical' || (p.severity || '').toUpperCase() === 'CRITICAL');
+    const highLowParams = paramsData.filter(p => !criticalParams.includes(p) && (p.status === 'High' || p.status === 'Low' || p.status === 'Review'));
+
+    let details = "";
+    if (criticalParams.length > 0) {
+        const names = criticalParams.map(p => `<strong>${p.name}</strong>`).join(', ');
+        details += `Critically, you have urgent alerts for ${names} that require immediate clinical review. `;
     }
 
-    // ── Critical Value Alert ─────────────────────────────────────────────────
-    // If any parameters are Critical severity, show blocking modal AFTER render
-    try {
-        const criticalParams = (Array.isArray(paramsData) ? paramsData : []).filter(
-            p => p.status === 'Critical' || (p.severity || '').toUpperCase() === 'CRITICAL'
-        );
-        if (criticalParams.length > 0 && typeof window.showCriticalAlert === 'function') {
-            // Small delay so the page has rendered behind the modal
-            setTimeout(() => {
-                window.showCriticalAlert(criticalParams.map(p => ({ name: p.name, value: p.value, unit: p.unit || '' })));
-            }, 400);
-        }
-    } catch (critErr) {
-        console.warn('Critical alert check failed:', critErr);
+    if (highLowParams.length > 0) {
+        const top3 = highLowParams.slice(0, 3).map(p => `<strong>${p.name}</strong> (${p.status})`).join(', ');
+        details += `Additionally, keep an eye on ${top3}${highLowParams.length > 3 ?\` and \${highLowParams.length - 3} others\` : ''}. `;
+    } else if (criticalParams.length === 0) {
+        details += "All extracted parameters fall within their optimal or normal physiological ranges! Keep up the good work.";
     }
 
-    // Animate progress circles
-    animateCircularProgress();
+    const htmlContent = \`
+        <p>\${overachingHealth} \${details}</p>
+        <p class="mt-2 text-sm text-indigo-500/80 dark:text-indigo-400/80 italic">This AI summary is generated from your data but is not a medical diagnosis.</p>
+    \`;
+
+    textContainer.classList.add('opacity-0', 'transition-opacity', 'duration-700');
+    
+    // Slight delay for "typing" effect simulation
+    setTimeout(() => {
+        textContainer.innerHTML = htmlContent;
+        requestAnimationFrame(() => {
+            textContainer.classList.remove('opacity-0');
+        });
+    }, 400);
 }
 
 // ==========================================
@@ -548,11 +634,11 @@ function renderBodyFigure(systemsData) {
                     }
 
                     relationshipsSvg += `
-                        <path d="M ${sourceRegion.x},${sourceRegion.y} Q ${controlX},${controlY} ${targetRegion.x},${targetRegion.y}" 
-                            fill="none" stroke="${strokeColor}" stroke-width="0.8" 
-                            stroke-opacity="${strokeOpacity}" stroke-dasharray="2,2"
-                            class="hover:stroke-opacity-60 transition-all"/>
-                    `;
+        < path d = "M ${sourceRegion.x},${sourceRegion.y} Q ${controlX},${controlY} ${targetRegion.x},${targetRegion.y}"
+    fill = "none" stroke = "${strokeColor}" stroke - width="0.8"
+    stroke - opacity="${strokeOpacity}" stroke - dasharray="2,2"
+    class="hover:stroke-opacity-60 transition-all" />
+        `;
                 }
             });
         }
@@ -575,38 +661,40 @@ function renderBodyFigure(systemsData) {
             colors = { fill: '#ef4444', stroke: '#dc2626', pulse: true }; // Red
         }
 
-        const markerId = `marker-${systemName.replace(/\s+/g, '-').toLowerCase()}`;
+        const markerId = `marker - ${ systemName.replace(/\s+/g, '-').toLowerCase() } `;
 
         // Create SVG marker with click handler
         markersSvg += `
-            <g class="body-marker cursor-pointer hover:opacity-80 transition-opacity" data-system="${systemName}" onclick="showSystemDetail('${systemName}')">
-                <!-- Outer pulse ring (only for abnormal) -->
-                ${colors.pulse ? `
+        < g class="body-marker cursor-pointer hover:opacity-80 transition-opacity" data - system="${systemName}" onclick = "showSystemDetail('${systemName}')" >
+                < !--Outer pulse ring(only for abnormal) -->
+        ${
+            colors.pulse ? `
                 <circle cx="${region.x}" cy="${region.y}" r="8" 
                     fill="none" stroke="${colors.stroke}" stroke-opacity="0.3" stroke-width="1.5">
                     <animate attributeName="r" dur="2.5s" repeatCount="indefinite" values="6;10;6"/>
                     <animate attributeName="stroke-opacity" dur="2.5s" repeatCount="indefinite" values="0.4;0.1;0.4"/>
                 </circle>
-                ` : ''}
-                <!-- Central marker -->
-                <circle cx="${region.x}" cy="${region.y}" r="4" 
-                    fill="${colors.fill}" stroke="${colors.stroke}" stroke-width="1"
-                    class="cursor-pointer" style="filter: drop-shadow(0 1px 2px rgba(0,0,0,0.2))"/>
-            </g>
+                ` : ''
+    }
+                < !--Central marker-- >
+        <circle cx="${region.x}" cy="${region.y}" r="4"
+            fill="${colors.fill}" stroke="${colors.stroke}" stroke-width="1"
+            class="cursor-pointer" style="filter: drop-shadow(0 1px 2px rgba(0,0,0,0.2))" />
+            </g >
         `;
 
         // Create HTML label with health score
         const labelSide = region.x > 50 ? 'left' : 'right';
         const labelX = labelSide === 'left' ? '5%' : '55%';
-        const labelY = `${(region.y / 240) * 100}%`;
+        const labelY = `${ (region.y / 240) * 100 }% `;
 
         const abnormalCount = data.abnormal_count || 0;
         const showHealthScore = abnormalCount > 0;
 
         labelsHtml += `
-            <div class="absolute pointer-events-auto group/label cursor-pointer" 
-                 style="top: ${labelY}; ${labelSide}: 2px; transform: translateY(-50%);"
-                 onclick="showSystemDetail('${systemName}')">
+        < div class="absolute pointer-events-auto group/label cursor-pointer"
+    style = "top: ${labelY}; ${labelSide}: 2px; transform: translateY(-50%);"
+    onclick = "showSystemDetail('${systemName}')" >
                 <div class="px-2 py-1 rounded-md text-[9px] font-bold shadow-md whitespace-nowrap
                     ${healthScore >= 90 ? 'bg-emerald-500 text-white' :
                 healthScore >= 70 ? 'bg-amber-500 text-white' :
@@ -615,18 +703,18 @@ function renderBodyFigure(systemsData) {
                     ${healthScore >= 90 ? 'opacity-50' : ''}">
                     ${systemName.toUpperCase().slice(0, 12)}${showHealthScore ? ` ${healthScore}` : ''}
                 </div>
-                <!-- Tooltip on hover -->
-                <div class="absolute ${labelSide === 'left' ? 'left-full ml-2' : 'right-full mr-2'} top-1/2 -translate-y-1/2 
+                <!--Tooltip on hover-- >
+        <div class="absolute ${labelSide === 'left' ? 'left-full ml-2' : 'right-full mr-2'} top-1/2 -translate-y-1/2 
                      opacity-0 group-hover/label:opacity-100 transition-opacity z-50 pointer-events-none">
-                    <div class="bg-slate-900 dark:bg-slate-800 text-white text-[10px] px-3 py-2 rounded-lg shadow-xl whitespace-nowrap">
-                        <div class="font-bold mb-1">${systemName}</div>
-                        <div class="text-slate-300">Health Score: ${healthScore}/100</div>
-                        <div class="text-slate-400 mt-1">${data.status}</div>
-                        ${abnormalCount > 0 ? `<div class="text-rose-400 mt-1">${abnormalCount} abnormal</div>` : ''}
-                        <div class="text-cyan-400 mt-2 text-[9px]">Click for details →</div>
-                    </div>
-                </div>
+            <div class="bg-slate-900 dark:bg-slate-800 text-white text-[10px] px-3 py-2 rounded-lg shadow-xl whitespace-nowrap">
+                <div class="font-bold mb-1">${systemName}</div>
+                <div class="text-slate-300">Health Score: ${healthScore}/100</div>
+                <div class="text-slate-400 mt-1">${data.status}</div>
+                ${abnormalCount > 0 ? `<div class="text-rose-400 mt-1">${abnormalCount} abnormal</div>` : ''}
+                <div class="text-cyan-400 mt-2 text-[9px]">Click for details →</div>
             </div>
+        </div>
+            </div >
         `;
     });
 
@@ -655,13 +743,13 @@ function renderSystemsImpact(systemsData) {
 
     if (systemNames.length === 0) {
         container.innerHTML = `
-            <div class="flex flex-col items-center justify-center py-6 text-center bg-emerald-50/50 dark:bg-emerald-900/10 rounded-2xl border border-emerald-100 dark:border-emerald-800/30">
+        < div class="flex flex-col items-center justify-center py-6 text-center bg-emerald-50/50 dark:bg-emerald-900/10 rounded-2xl border border-emerald-100 dark:border-emerald-800/30" >
                 <div class="w-12 h-12 bg-emerald-100 dark:bg-emerald-900/40 rounded-full flex items-center justify-center mb-3">
                     <span class="material-icons-round text-2xl text-emerald-500">health_and_safety</span>
                 </div>
                 <p class="text-slate-800 dark:text-emerald-50 font-semibold mb-1">Optimal System Health</p>
                 <p class="text-xs text-slate-500 dark:text-emerald-200/60 max-w-[200px]">No significant systemic impacts detected from current values.</p>
-            </div>
+            </div >
         `;
         return;
     }
@@ -720,7 +808,7 @@ function renderSystemsImpact(systemsData) {
 
         // Build parameter list tooltip
         const abnormalList = system.abnormal_parameters.map(p =>
-            `${p.name}: ${p.value} (${p.status})`
+            `${ p.name }: ${ p.value } (${ p.status })`
         ).join(', ') || 'All within range';
 
         // Calculate progress percentage for score circle
@@ -729,9 +817,9 @@ function renderSystemsImpact(systemsData) {
         const dashOffset = circumference * (1 - scorePercentage / 100);
 
         html += `
-            <div class="flex items-start gap-3 p-3 ${bgColor} rounded-xl border ${borderColor} transition-all hover:shadow-md group cursor-pointer"
-                 onclick="showSystemDetail('${systemName}')"
-                 title="${abnormalList}">
+        < div class="flex items-start gap-3 p-3 ${bgColor} rounded-xl border ${borderColor} transition-all hover:shadow-md group cursor-pointer"
+    onclick = "showSystemDetail('${systemName}')"
+    title = "${abnormalList}" >
                 <div class="w-9 h-9 ${iconBg} rounded-lg flex items-center justify-center ${iconText} border dark:border-current/20 flex-shrink-0">
                     <span class="material-icons-round text-lg">${system.icon}</span>
                 </div>
@@ -773,7 +861,7 @@ function renderSystemsImpact(systemsData) {
                         </div>
                     ` : ''}
                 </div>
-            </div>
+            </div >
         `;
     });
 
@@ -803,8 +891,8 @@ function renderDynamicInsights(parameters, insightsData = { detailed_insights: [
             setTimeout(() => {
                 if (typeof confetti === 'function') confetti({ particleCount: 150, spread: 80, origin: { y: 0.6 }, zIndex: 10000 });
                 const msg = celebrations.length === 1
-                    ? `🎉 Great job! Your ${celebrations[0].name} improved by ${celebrations[0].percent}% to Normal.`
-                    : `🎉 Great job! ${celebrations.length} metrics improved to Normal since your last test.`;
+                    ? `🎉 Great job! Your ${ celebrations[0].name } improved by ${ celebrations[0].percent }% to Normal.`
+                    : `🎉 Great job! ${ celebrations.length } metrics improved to Normal since your last test.`;
                 showNotification(msg, 'success');
             }, 1000);
         }
@@ -815,17 +903,17 @@ function renderDynamicInsights(parameters, insightsData = { detailed_insights: [
 
     if (abnormalItems.length === 0) {
         parameterDetailsContainer.innerHTML = `
-            <div class="p-8 text-center card-light rounded-2xl">
+        < div class="p-8 text-center card-light rounded-2xl" >
                 <span class="material-icons-round text-5xl text-emerald-500 mb-4">check_circle</span>
                 <h3 class="text-xl font-bold text-slate-800 dark:text-white">All Results Normal</h3>
                 <p class="text-slate-500">No parameters flagged for attention.</p>
-            </div>
+            </div >
         `;
         return;
     }
 
     let html = `
-        <div class="flex items-center gap-4 mb-8">
+        < div class="flex items-center gap-4 mb-8" >
             <h2 class="text-xl font-bold text-slate-800 dark:text-white flex items-center gap-2">
                 <span class="w-1 h-8 bg-cyan-500 rounded-full"></span>
                 Attention Required
@@ -835,165 +923,165 @@ function renderDynamicInsights(parameters, insightsData = { detailed_insights: [
                 <span class="material-icons-round text-sm">warning</span>
                 ${abnormalItems.length} Issues Found
             </span>
-        </div>
+        </div >
         <div class="space-y-6">
-    `;
+            `;
 
     abnormalItems.forEach(param => {
-        // Get backend insight data
-        let backendInsight = null;
-        if (insightsData && insightsData.detailed_insights) {
-            backendInsight = insightsData.detailed_insights.find(
-                i => i.parameter === param.name && i.status.toUpperCase() === param.status.toUpperCase()
-            );
+                // Get backend insight data
+                let backendInsight = null;
+            if (insightsData && insightsData.detailed_insights) {
+                backendInsight = insightsData.detailed_insights.find(
+                    i => i.parameter === param.name && i.status.toUpperCase() === param.status.toUpperCase()
+                );
         }
 
-        // Severity mapping
-        const severityCode = param.severity || backendInsight?.severity || 'MEDIUM';
-        const severityLabel = param.severity_label || backendInsight?.severity_label || 'Moderate Deviation';
-        const severityClass = {
-            'LOW': 'severity-badge-mild',
+            // Severity mapping
+            const severityCode = param.severity || backendInsight?.severity || 'MEDIUM';
+            const severityLabel = param.severity_label || backendInsight?.severity_label || 'Moderate Deviation';
+            const severityClass = {
+                'LOW': 'severity-badge-mild',
             'MEDIUM': 'severity-badge-moderate',
             'HIGH': 'severity-badge-moderate',
             'CRITICAL': 'severity-badge-critical'
         }[severityCode] || 'severity-badge-moderate';
 
-        // COMPARISON LOGIC
-        let comparisonHTML = '';
-        if (comparisonReport && comparisonReport[param.name]) {
+            // COMPARISON LOGIC
+            let comparisonHTML = '';
+            if (comparisonReport && comparisonReport[param.name]) {
             const prev = comparisonReport[param.name];
             const prevVal = parseFloat(prev.value);
             const currVal = parseFloat(param.value);
 
             if (!isNaN(prevVal) && !isNaN(currVal)) {
                 const diff = currVal - prevVal;
-                const percentChange = (diff / prevVal) * 100;
+            const percentChange = (diff / prevVal) * 100;
                 const arrow = diff > 0 ? 'arrow_upward' : (diff < 0 ? 'arrow_downward' : 'remove');
                 const color = diff > 0 ? 'text-rose-500' : 'text-emerald-500'; // Context dependent, keeping simple for now
 
-                comparisonHTML = `
-                    <div class="mt-2 p-2 bg-indigo-50 dark:bg-indigo-900/20 rounded-lg flex justify-between items-center text-xs">
-                        <span class="text-indigo-600 dark:text-indigo-300 font-medium">Previous: ${prevVal} ${prev.unit}</span>
-                        <div class="flex items-center gap-1 ${color} font-bold">
-                            <span class="material-icons-round text-xs">${arrow}</span>
-                            <span>${Math.abs(percentChange).toFixed(1)}%</span>
-                        </div>
-                    </div>
-                `;
+            comparisonHTML = `
+            <div class="mt-2 p-2 bg-indigo-50 dark:bg-indigo-900/20 rounded-lg flex justify-between items-center text-xs">
+                <span class="text-indigo-600 dark:text-indigo-300 font-medium">Previous: ${prevVal} ${prev.unit}</span>
+                <div class="flex items-center gap-1 ${color} font-bold">
+                    <span class="material-icons-round text-xs">${arrow}</span>
+                    <span>${Math.abs(percentChange).toFixed(1)}%</span>
+                </div>
+            </div>
+            `;
             }
         }
 
-        // Confidence data
-        const confidenceScore = backendInsight?.confidence_score || 60;
-        const confidenceRationale = backendInsight?.confidence_rationale || 'Limited contextual data';
+            // Confidence data
+            const confidenceScore = backendInsight?.confidence_score || 60;
+            const confidenceRationale = backendInsight?.confidence_rationale || 'Limited contextual data';
         const confidenceClass = confidenceScore >= 75 ? 'confidence-high' : (confidenceScore >= 50 ? 'confidence-medium' : 'confidence-low');
 
-        // Audit trail
-        const auditTrail = backendInsight?.audit_trail;
+            // Audit trail
+            const auditTrail = backendInsight?.audit_trail;
 
-        // Insight text
-        const insightText = backendInsight?.insight || generateInsightText(param, insightsData);
+            // Insight text
+            const insightText = backendInsight?.insight || generateInsightText(param, insightsData);
 
-        // Supporting parameters
-        const supportingParams = backendInsight?.supporting_params || [];
+            // Supporting parameters
+            const supportingParams = backendInsight?.supporting_params || [];
 
-        // Color scheme
-        let statusColor = "amber";
-        if (param.status === 'Critical') statusColor = "rose";
-        else if (param.status === 'Low') statusColor = "blue";
+            // Color scheme
+            let statusColor = "amber";
+            if (param.status === 'Critical') statusColor = "rose";
+            else if (param.status === 'Low') statusColor = "blue";
 
-        const rangeStr = param.range ? `Reference: ${param.range}` : 'No reference range';
+            const rangeStr = param.range ? `Reference: ${param.range}` : 'No reference range';
 
-        html += `
-        <!-- Parameter Card with Enhanced Phase 2-4 Features -->
-        <div class="card-light rounded-[2rem] p-8 hover:shadow-lg dark:hover:shadow-[0_8px_30px_rgb(0,0,0,0.12)] transition-all duration-300 border border-slate-100 dark:border-slate-800 group relative overflow-hidden">
-            
-            <!-- Status Line -->
-            <div class="absolute left-0 top-0 bottom-0 w-1 bg-${statusColor}-500 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+            html += `
+            <!-- Parameter Card with Enhanced Phase 2-4 Features -->
+            <div class="card-light rounded-[2rem] p-8 hover:shadow-lg dark:hover:shadow-[0_8px_30px_rgb(0,0,0,0.12)] transition-all duration-300 border border-slate-100 dark:border-slate-800 group relative overflow-hidden">
 
-            <div class="flex flex-col gap-6">
-                <!-- Header with Severity Badge -->
-                <div class="flex justify-between items-start">
-                    <div class="flex-1">
-                        <div class="flex items-center gap-3 mb-2">
-                            <h3 class="text-lg font-bold text-slate-800 dark:text-white">${param.name}</h3>
-                            <span class="severity-badge ${severityClass}">
-                                <span class="severity-dot severity-dot-${severityCode.toLowerCase()}"></span>
-                                ${severityLabel}
-                            </span>
-                        </div>
-                        ${supportingParams.length > 0 ? `
+                <!-- Status Line -->
+                <div class="absolute left-0 top-0 bottom-0 w-1 bg-${statusColor}-500 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+
+                <div class="flex flex-col gap-6">
+                    <!-- Header with Severity Badge -->
+                    <div class="flex justify-between items-start">
+                        <div class="flex-1">
+                            <div class="flex items-center gap-3 mb-2">
+                                <h3 class="text-lg font-bold text-slate-800 dark:text-white">${param.name}</h3>
+                                <span class="severity-badge ${severityClass}">
+                                    <span class="severity-dot severity-dot-${severityCode.toLowerCase()}"></span>
+                                    ${severityLabel}
+                                </span>
+                            </div>
+                            ${supportingParams.length > 0 ? `
                         <div class="flex flex-wrap gap-1 mt-2">
                             <span class="text-xs text-slate-500">Related:</span>
                             ${supportingParams.map(sp => `<span class="text-xs px-2 py-0.5 bg-slate-100 dark:bg-slate-800 rounded-full text-slate-600 dark:text-slate-400">${sp}</span>`).join('')}
                         </div>
                         ` : ''}
-                    </div>
-                    <div class="text-right">
-                        <div class="text-3xl font-bold text-slate-800 dark:text-white font-mono tracking-tight">${param.value}</div>
-                        <div class="text-sm font-bold text-slate-400">${param.unit}</div>
-                    </div>
-                </div>
-
-                <!-- Confidence Indicator (Phase 3) -->
-                <div class="confidence-indicator">
-                    <div class="flex justify-between items-center mb-1">
-                        <span class="text-xs font-semibold text-slate-600 dark:text-slate-400">System Confidence</span>
-                        <span class="text-xs font-bold text-slate-700 dark:text-slate-300">${confidenceScore}%</span>
-                    </div>
-                    <div class="confidence-bar-container">
-                        <div class="confidence-bar ${confidenceClass}" style="width: ${confidenceScore}%"></div>
-                    </div>
-                    <details class="mt-2">
-                        <summary class="text-xs text-slate-500 cursor-pointer hover:text-slate-700 dark:hover:text-slate-300">View rationale</summary>
-                        <p class="text-xs text-slate-600 dark:text-slate-400 mt-1 pl-4">${confidenceRationale}</p>
-                    </details>
-                </div>
-
-                <!-- Range Visualization -->
-                <div class="relative h-2 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
-                    <div class="absolute top-0 bottom-0 left-1/4 right-1/4 bg-slate-200 dark:bg-slate-700 rounded-full"></div>
-                    <div class="absolute top-1/2 -translate-y-1/2 w-4 h-4 bg-${statusColor}-500 rounded-full ring-4 ring-white dark:ring-slate-900 shadow-lg left-[${param.status === 'Low' ? '15%' : '85%'}]">
-                        <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2 py-1 bg-slate-900 text-white text-[10px] font-bold rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">
-                            ${param.value}
+                        </div>
+                        <div class="text-right">
+                            <div class="text-3xl font-bold text-slate-800 dark:text-white font-mono tracking-tight">${param.value}</div>
+                            <div class="text-sm font-bold text-slate-400">${param.unit}</div>
                         </div>
                     </div>
-                </div>
-                <div class="flex justify-between mt-2 text-xs font-medium text-slate-400">
-                    <span>Low</span>
-                    <span class="text-slate-500">${rangeStr}</span>
-                    <span>High</span>
-                </div>
 
-                ${comparisonHTML}
+                    <!-- Confidence Indicator (Phase 3) -->
+                    <div class="confidence-indicator">
+                        <div class="flex justify-between items-center mb-1">
+                            <span class="text-xs font-semibold text-slate-600 dark:text-slate-400">System Confidence</span>
+                            <span class="text-xs font-bold text-slate-700 dark:text-slate-300">${confidenceScore}%</span>
+                        </div>
+                        <div class="confidence-bar-container">
+                            <div class="confidence-bar ${confidenceClass}" style="width: ${confidenceScore}%"></div>
+                        </div>
+                        <details class="mt-2">
+                            <summary class="text-xs text-slate-500 cursor-pointer hover:text-slate-700 dark:hover:text-slate-300">View rationale</summary>
+                            <p class="text-xs text-slate-600 dark:text-slate-400 mt-1 pl-4">${confidenceRationale}</p>
+                        </details>
+                    </div>
 
-                <!-- Historical Trend (Phase 6) -->
-                <div class="mt-4 pt-4 border-t border-slate-200 dark:border-slate-700">
-                    <details class="mt-2" ontoggle="if(this.open) fetchAndRenderTrend('${param.name}')">
-                        <summary class="text-xs font-semibold text-slate-600 dark:text-slate-400 cursor-pointer hover:text-slate-700 dark:hover:text-slate-300">
-                            Historical Trend
-                            <span id="trend-badge-${param.name.replace(/\s+/g, '-')}" class="ml-2 inline-block"></span>
-                        </summary>
-                        <div class="mt-3 pl-4">
-                            <div style="position: relative; height: 150px; width: 100%;">
-                                <canvas id="trend-chart-${param.name.replace(/\s+/g, '-')}"></canvas>
+                    <!-- Range Visualization -->
+                    <div class="relative h-2 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
+                        <div class="absolute top-0 bottom-0 left-1/4 right-1/4 bg-slate-200 dark:bg-slate-700 rounded-full"></div>
+                        <div class="absolute top-1/2 -translate-y-1/2 w-4 h-4 bg-${statusColor}-500 rounded-full ring-4 ring-white dark:ring-slate-900 shadow-lg left-[${param.status === 'Low' ? '15%' : '85%'}]">
+                            <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2 py-1 bg-slate-900 text-white text-[10px] font-bold rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">
+                                ${param.value}
                             </div>
-                            <div id="trend-message-${param.name.replace(/\s+/g, '-')}" class="text-xs text-slate-500 dark:text-slate-400 mt-2">Loading trend data...</div>
                         </div>
-                    </details>
-                </div>
-
-                <!-- Insight -->
-                <div class="bg-slate-50 dark:bg-slate-900/40 rounded-xl p-4 border border-slate-100 dark:border-slate-800 relative">
-                    <div class="absolute -top-3 -left-3 w-8 h-8 bg-white dark:bg-slate-800 rounded-lg shadow-sm border border-slate-100 dark:border-slate-700 flex items-center justify-center">
-                        <span class="material-icons-round text-sm text-${statusColor}-500">smart_toy</span>
                     </div>
-                    <p class="text-sm text-slate-600 dark:text-slate-300 leading-relaxed pt-2">
-                        ${insightText}
-                    </p>
-                </div>
+                    <div class="flex justify-between mt-2 text-xs font-medium text-slate-400">
+                        <span>Low</span>
+                        <span class="text-slate-500">${rangeStr}</span>
+                        <span>High</span>
+                    </div>
 
-                ${auditTrail ? `
+                    ${comparisonHTML}
+
+                    <!-- Historical Trend (Phase 6) -->
+                    <div class="mt-4 pt-4 border-t border-slate-200 dark:border-slate-700">
+                        <details class="mt-2" ontoggle="if(this.open) fetchAndRenderTrend('${param.name}')">
+                            <summary class="text-xs font-semibold text-slate-600 dark:text-slate-400 cursor-pointer hover:text-slate-700 dark:hover:text-slate-300">
+                                Historical Trend
+                                <span id="trend-badge-${param.name.replace(/\s+/g, '-')}" class="ml-2 inline-block"></span>
+                            </summary>
+                            <div class="mt-3 pl-4">
+                                <div style="position: relative; height: 150px; width: 100%;">
+                                    <canvas id="trend-chart-${param.name.replace(/\s+/g, '-')}"></canvas>
+                                </div>
+                                <div id="trend-message-${param.name.replace(/\s+/g, '-')}" class="text-xs text-slate-500 dark:text-slate-400 mt-2">Loading trend data...</div>
+                            </div>
+                        </details>
+                    </div>
+
+                    <!-- Insight -->
+                    <div class="bg-slate-50 dark:bg-slate-900/40 rounded-xl p-4 border border-slate-100 dark:border-slate-800 relative">
+                        <div class="absolute -top-3 -left-3 w-8 h-8 bg-white dark:bg-slate-800 rounded-lg shadow-sm border border-slate-100 dark:border-slate-700 flex items-center justify-center">
+                            <span class="material-icons-round text-sm text-${statusColor}-500">smart_toy</span>
+                        </div>
+                        <p class="text-sm text-slate-600 dark:text-slate-300 leading-relaxed pt-2">
+                            ${insightText}
+                        </p>
+                    </div>
+
+                    ${auditTrail ? `
                 <!-- Audit Trail (Phase 4) -->
                 <details class="audit-trail-section">
                     <summary class="text-xs font-semibold text-slate-500 hover:text-teal-500 transition-colors">
@@ -1030,16 +1118,16 @@ function renderDynamicInsights(parameters, insightsData = { detailed_insights: [
                     </div>
                 </details>
                 ` : ''}
-            </div>
-        </div>`;
+                </div>
+            </div>`;
     });
 
-    html += `</div>`;
+            html += `</div>`;
 
     // Add Follow-Up Recommendations Section (Phase 2)
     if (insightsData.followup_recommendations && insightsData.followup_recommendations.length > 0) {
         html += `
-        <div class="mt-12">
+                < div class="mt-12" >
             <div class="flex items-center gap-4 mb-6">
                 <h2 class="text-xl font-bold text-slate-800 dark:text-white flex items-center gap-2">
                     <span class="w-1 h-8 bg-blue-500 rounded-full"></span>
@@ -1089,12 +1177,12 @@ function renderDynamicInsights(parameters, insightsData = { detailed_insights: [
             `;
         });
 
-        html += `</div></div>`;
+        html += `</div></div > `;
     }
 
     // Explainability Panel (Phase 4)
     html += `
-    <div class="mt-12 card-light rounded-2xl p-8 border border-slate-100 dark:border-slate-800">
+        < div class="mt-12 card-light rounded-2xl p-8 border border-slate-100 dark:border-slate-800" >
         <h3 class="text-lg font-bold text-slate-800 dark:text-white mb-6 flex items-center gap-2">
             <span class="material-icons-round text-cyan-500">psychology</span>
             How Insights Are Generated
@@ -1133,8 +1221,8 @@ function renderDynamicInsights(parameters, insightsData = { detailed_insights: [
                 <strong>Transparency Note:</strong> All insights are generated through explicit, traceable rules. This system does not use machine learning predictions or black-box algorithms for clinical interpretation.
             </p>
         </div>
-    </div>
-    `;
+    </div >
+        `;
 
     // Inject
     parameterDetailsContainer.innerHTML = html;
@@ -1157,9 +1245,9 @@ function generateInsightText(param, insightsData) {
     }
 
     // Fallback to generic text
-    if (param.status === 'Critical') return `Critical value detected. Immediate medical attention may be required.`;
-    if (param.status === 'High') return `Elevated ${param.name} can be associated with various conditions. Clinical correlation recommended.`;
-    if (param.status === 'Low') return `Lower than normal ${param.name} detected. Discuss dietary or medical interventions with your doctor.`;
+    if (param.status === 'Critical') return `Critical value detected.Immediate medical attention may be required.`;
+    if (param.status === 'High') return `Elevated ${ param.name } can be associated with various conditions.Clinical correlation recommended.`;
+    if (param.status === 'Low') return `Lower than normal ${ param.name } detected.Discuss dietary or medical interventions with your doctor.`;
     return `Value is outside standard reference range.`;
 }
 
@@ -1187,7 +1275,7 @@ function showSystemDetail(systemName) {
     const normalParams = systemData.normal_parameters || [];
 
     modal.innerHTML = `
-        <div class="bg-white dark:bg-slate-900 rounded-2xl shadow-2xl max-w-2xl w-full max-h-[80vh] overflow-hidden animate-slideUp">
+        < div class="bg-white dark:bg-slate-900 rounded-2xl shadow-2xl max-w-2xl w-full max-h-[80vh] overflow-hidden animate-slideUp" >
             <div class="p-6 border-b border-slate-200 dark:border-slate-700">
                 <div class="flex items-center justify-between">
                     <div class="flex items-center gap-3">
@@ -1355,8 +1443,8 @@ function showSystemDetail(systemName) {
                     <strong>Note:</strong> This grouping is for organizational purposes only. Consult your healthcare provider for medical interpretation.
                 </p>
             </div>
-        </div>
-    `;
+        </div >
+        `;
 
     // Add click outside to close
     modal.addEventListener('click', (e) => {
@@ -1382,17 +1470,17 @@ async function fetchParameterHistory(parameterName) {
      * Fetch historical data for a parameter from the backend
      */
     try {
-        const response = await fetch(`${API_BASE_URL}/api/tracking/parameter/${encodeURIComponent(parameterName)}?limit=10`, {
+        const response = await fetch(`${ API_BASE_URL } /api/tracking / parameter / ${ encodeURIComponent(parameterName) }?limit = 10`, {
             credentials: 'include'
         });
         if (!response.ok) {
-            console.warn(`No historical data for ${parameterName}`);
+            console.warn(`No historical data for ${ parameterName }`);
             return null;
         }
         const data = await response.json();
         return data.history && data.history.length > 0 ? data.history : null;
     } catch (error) {
-        console.error(`Error fetching history for ${parameterName}:`, error);
+        console.error(`Error fetching history for ${ parameterName }: `, error);
         return null;
     }
 }
@@ -1402,9 +1490,9 @@ async function fetchAndRenderTrend(parameterName) {
      * Fetch and render trend visualization for a parameter
      */
     const history = await fetchParameterHistory(parameterName);
-    const chartId = `trend-chart-${parameterName.replace(/\s+/g, '-')}`;
-    const badgeId = `trend-badge-${parameterName.replace(/\s+/g, '-')}`;
-    const messageId = `trend-message-${parameterName.replace(/\s+/g, '-')}`;
+    const chartId = `trend - chart - ${ parameterName.replace(/\s+/g, '-') } `;
+    const badgeId = `trend - badge - ${ parameterName.replace(/\s+/g, '-') } `;
+    const messageId = `trend - message - ${ parameterName.replace(/\s+/g, '-') } `;
 
     const canvas = document.getElementById(chartId);
     const badgeEl = document.getElementById(badgeId);
@@ -1449,13 +1537,13 @@ async function fetchAndRenderTrend(parameterName) {
 
     // Update badge
     badgeEl.innerHTML = `
-        <span class="px-2 py-1 rounded-full text-xs font-bold" style="background-color: ${trendColor}20; color: ${trendColor}">
-            ${trendIcon} ${trendDirection.toUpperCase()} ${Math.abs(changePercent)}%
-        </span>
-    `;
+        < span class="px-2 py-1 rounded-full text-xs font-bold" style = "background-color: ${trendColor}20; color: ${trendColor}" >
+            ${ trendIcon } ${ trendDirection.toUpperCase() } ${ Math.abs(changePercent) }%
+        </span >
+        `;
 
     // Update message
-    messageEl.innerHTML = `Based on ${values.length} previous measurements`;
+    messageEl.innerHTML = `Based on ${ values.length } previous measurements`;
 
     // Render sparkline chart
     renderTrendChart(chartId, dates, values, trendColor);
@@ -1508,7 +1596,7 @@ function renderTrendChart(chartId, labels, data, color) {
                     displayColors: false,
                     callbacks: {
                         title: (items) => items[0].label,
-                        label: (item) => `Value: ${item.raw}`
+                        label: (item) => `Value: ${ item.raw } `
                     }
                 }
             },

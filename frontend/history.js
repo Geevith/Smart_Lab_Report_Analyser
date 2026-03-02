@@ -174,7 +174,7 @@ function buildReportCard(report, index) {
     const escapedNotes = (report.notes || '').replace(/'/g, "\\'").replace(/"/g, '&quot;');
 
     return `
-        <div class="report-card fade-in bg-white dark:bg-slate-900/60 border border-gray-100 dark:border-slate-700/30 rounded-2xl p-5 shadow-sm hover:shadow-lg transition-all"
+        <div class="report-card juicy-hover fade-in bg-white dark:bg-slate-900/60 border border-gray-100 dark:border-slate-700/30 rounded-2xl p-5 shadow-sm transition-all"
              style="animation-delay: ${index * 50}ms" id="report-${report.id}">
             <div class="flex flex-col sm:flex-row gap-4 justify-between items-start sm:items-center">
                 <!-- Left: Info -->

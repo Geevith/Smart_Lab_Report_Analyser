@@ -299,6 +299,37 @@
             </div>
         </div>
 
+        <!-- AI Natural Language Summary -->
+        <div id="aiSummaryContainer"
+            class="hidden mb-12 bg-gradient-to-br from-indigo-50 to-purple-50 dark:from-indigo-900/20 dark:to-purple-900/20 border border-indigo-100 dark:border-indigo-800/30 rounded-3xl p-8 relative overflow-hidden shadow-sm">
+            <div
+                class="absolute top-0 right-0 p-6 opacity-10 dark:opacity-5 pointer-events-none text-indigo-900 dark:text-indigo-400">
+                <span class="material-symbols-outlined text-9xl">auto_awesome</span>
+            </div>
+            <div class="relative z-10 flex flex-col md:flex-row gap-4 md:gap-6">
+                <div
+                    class="w-12 h-12 rounded-full bg-white dark:bg-slate-800 shadow-sm flex flex-shrink-0 items-center justify-center text-indigo-600 dark:text-indigo-400">
+                    <span class="material-symbols-outlined">auto_awesome</span>
+                </div>
+                <div>
+                    <h3
+                        class="text-lg font-bold text-indigo-900 dark:text-indigo-300 mb-2 mt-1 flex items-center gap-2">
+                        AI Executive Summary
+                        <span
+                            class="px-2 py-0.5 rounded-full bg-indigo-100 dark:bg-indigo-900/50 text-indigo-700 dark:text-indigo-300 text-[10px] uppercase tracking-wider font-bold">Beta</span>
+                    </h3>
+                    <div id="aiSummaryText"
+                        class="text-slate-700 dark:text-slate-300 leading-relaxed font-medium text-[0.95rem]">
+                        <div class="animate-pulse flex flex-col gap-2 w-full mt-3">
+                            <div class="h-4 bg-indigo-200/50 dark:bg-indigo-800/30 rounded w-full"></div>
+                            <div class="h-4 bg-indigo-200/50 dark:bg-indigo-800/30 rounded w-5/6"></div>
+                            <div class="h-4 bg-indigo-200/50 dark:bg-indigo-800/30 rounded w-4/6"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <!-- Main Content Grid -->
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-12">
             <!-- Left Column: Parameter Details -->

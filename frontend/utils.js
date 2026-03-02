@@ -223,3 +223,29 @@ function consumeRedirectAfterLogin() {
     sessionStorage.removeItem('redirect_after_login');
     return url;
 }
+
+// ── Fluid Page Transitions ────────────────────────────────────────────────────
+
+document.addEventListener('DOMContentLoaded', () => {
+    // Intercept local link clicks for smooth exit transition
+    document.body.addEventListener('click', (e) => {
+        const link = e.target.closest('a');
+        if (!link) return;
+
+        // Only intercept local HTML links without target="_blank" and not downloads
+        if (link.hostname === window.location.hostname &&
+            link.href.endsWith('.html') &&
+            !link.target &&
+            !link.hasAttribute('download')) {
+
+            e.preventDefault();
+            const targetUrl = link.href;
+
+            document.body.classList.add('page-transition-exit');
+
+            setTimeout(() => {
+                window.location.href = targetUrl;
+            }, 250); // Matches CSS animation duration
+        }
+    });
+});
