@@ -61,9 +61,10 @@
             font-family: 'Plus Jakarta Sans', sans-serif;
         }
         .card-light {
-            background-color: var(--bg-card);
-            border: 1px solid var(--border-light);
-            box-shadow: var(--shadow-soft);
+            background-color: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.07);
         }
         html.dark .card-light {
             background: rgba(15, 23, 42, 0.6);
@@ -76,12 +77,12 @@
             box-shadow: 0 0 25px rgba(34, 211, 238, 0.15);
         }
         html.dark .card-attention {
-            border-color: rgba(251, 113, 133, 0.2);
-            box-shadow: 0 0 15px rgba(251, 113, 133, 0.05);
+            border-color: rgba(251, 113, 133, 0.3) !important;
+            box-shadow: 0 0 15px rgba(251, 113, 133, 0.15) !important;
         }
         html.dark .card-attention:hover {
-            border-color: rgba(251, 113, 133, 0.5);
-            box-shadow: 0 0 25px rgba(251, 113, 133, 0.15);
+            border-color: rgba(251, 113, 133, 0.6) !important;
+            box-shadow: 0 0 25px rgba(251, 113, 133, 0.25) !important;
         }
         .gradient-scale-vibrant {
             background: var(--vibrant-gradient);
@@ -132,7 +133,8 @@
     </style>
 </head>
 
-<body class="antialiased selection:bg-blue-100 dark:selection:bg-blue-900">
+<body
+    class="antialiased selection:bg-blue-100 dark:selection:bg-blue-900 bg-gradient-to-b from-slate-50 to-slate-100 dark:from-[#0B1120] dark:to-[#0F172A] min-h-screen">
     <!-- Navigation -->
     <nav
         class="bg-white/90 dark:bg-slate-950/80 backdrop-blur-xl border-b border-slate-200 dark:border-cyan-900/30 sticky top-0 z-50">

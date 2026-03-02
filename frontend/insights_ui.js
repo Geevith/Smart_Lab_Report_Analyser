@@ -548,18 +548,18 @@ function generateAndDisplayAISummary(summary, paramsData) {
 
     if (highLowParams.length > 0) {
         const top3 = highLowParams.slice(0, 3).map(p => `<strong>${p.name}</strong> (${p.status})`).join(', ');
-        details += `Additionally, keep an eye on ${top3}${highLowParams.length > 3 ?\` and \${highLowParams.length - 3} others\` : ''}. `;
+        details += `Additionally, keep an eye on ${top3}${highLowParams.length > 3 ? ` and ${highLowParams.length - 3} others` : ''}. `;
     } else if (criticalParams.length === 0) {
         details += "All extracted parameters fall within their optimal or normal physiological ranges! Keep up the good work.";
     }
 
-    const htmlContent = \`
-        <p>\${overachingHealth} \${details}</p>
+    const htmlContent = `
+        <p>${overachingHealth} ${details}</p>
         <p class="mt-2 text-sm text-indigo-500/80 dark:text-indigo-400/80 italic">This AI summary is generated from your data but is not a medical diagnosis.</p>
-    \`;
+    `;
 
     textContainer.classList.add('opacity-0', 'transition-opacity', 'duration-700');
-    
+
     // Slight delay for "typing" effect simulation
     setTimeout(() => {
         textContainer.innerHTML = htmlContent;
@@ -661,21 +661,20 @@ function renderBodyFigure(systemsData) {
             colors = { fill: '#ef4444', stroke: '#dc2626', pulse: true }; // Red
         }
 
-        const markerId = `marker - ${ systemName.replace(/\s+/g, '-').toLowerCase() } `;
+        const markerId = `marker - ${systemName.replace(/\s+/g, '-').toLowerCase()} `;
 
         // Create SVG marker with click handler
         markersSvg += `
         < g class="body-marker cursor-pointer hover:opacity-80 transition-opacity" data - system="${systemName}" onclick = "showSystemDetail('${systemName}')" >
                 < !--Outer pulse ring(only for abnormal) -->
-        ${
-            colors.pulse ? `
+        ${colors.pulse ? `
                 <circle cx="${region.x}" cy="${region.y}" r="8" 
                     fill="none" stroke="${colors.stroke}" stroke-opacity="0.3" stroke-width="1.5">
                     <animate attributeName="r" dur="2.5s" repeatCount="indefinite" values="6;10;6"/>
                     <animate attributeName="stroke-opacity" dur="2.5s" repeatCount="indefinite" values="0.4;0.1;0.4"/>
                 </circle>
                 ` : ''
-    }
+            }
                 < !--Central marker-- >
         <circle cx="${region.x}" cy="${region.y}" r="4"
             fill="${colors.fill}" stroke="${colors.stroke}" stroke-width="1"
@@ -686,7 +685,7 @@ function renderBodyFigure(systemsData) {
         // Create HTML label with health score
         const labelSide = region.x > 50 ? 'left' : 'right';
         const labelX = labelSide === 'left' ? '5%' : '55%';
-        const labelY = `${ (region.y / 240) * 100 }% `;
+        const labelY = `${(region.y / 240) * 100}% `;
 
         const abnormalCount = data.abnormal_count || 0;
         const showHealthScore = abnormalCount > 0;
@@ -808,7 +807,7 @@ function renderSystemsImpact(systemsData) {
 
         // Build parameter list tooltip
         const abnormalList = system.abnormal_parameters.map(p =>
-            `${ p.name }: ${ p.value } (${ p.status })`
+            `${p.name}: ${p.value} (${p.status})`
         ).join(', ') || 'All within range';
 
         // Calculate progress percentage for score circle
@@ -891,8 +890,8 @@ function renderDynamicInsights(parameters, insightsData = { detailed_insights: [
             setTimeout(() => {
                 if (typeof confetti === 'function') confetti({ particleCount: 150, spread: 80, origin: { y: 0.6 }, zIndex: 10000 });
                 const msg = celebrations.length === 1
-                    ? `🎉 Great job! Your ${ celebrations[0].name } improved by ${ celebrations[0].percent }% to Normal.`
-                    : `🎉 Great job! ${ celebrations.length } metrics improved to Normal since your last test.`;
+                    ? `🎉 Great job! Your ${celebrations[0].name} improved by ${celebrations[0].percent}% to Normal.`
+                    : `🎉 Great job! ${celebrations.length} metrics improved to Normal since your last test.`;
                 showNotification(msg, 'success');
             }, 1000);
         }
@@ -928,38 +927,38 @@ function renderDynamicInsights(parameters, insightsData = { detailed_insights: [
             `;
 
     abnormalItems.forEach(param => {
-                // Get backend insight data
-                let backendInsight = null;
-            if (insightsData && insightsData.detailed_insights) {
-                backendInsight = insightsData.detailed_insights.find(
-                    i => i.parameter === param.name && i.status.toUpperCase() === param.status.toUpperCase()
-                );
+        // Get backend insight data
+        let backendInsight = null;
+        if (insightsData && insightsData.detailed_insights) {
+            backendInsight = insightsData.detailed_insights.find(
+                i => i.parameter === param.name && i.status.toUpperCase() === param.status.toUpperCase()
+            );
         }
 
-            // Severity mapping
-            const severityCode = param.severity || backendInsight?.severity || 'MEDIUM';
-            const severityLabel = param.severity_label || backendInsight?.severity_label || 'Moderate Deviation';
-            const severityClass = {
-                'LOW': 'severity-badge-mild',
+        // Severity mapping
+        const severityCode = param.severity || backendInsight?.severity || 'MEDIUM';
+        const severityLabel = param.severity_label || backendInsight?.severity_label || 'Moderate Deviation';
+        const severityClass = {
+            'LOW': 'severity-badge-mild',
             'MEDIUM': 'severity-badge-moderate',
             'HIGH': 'severity-badge-moderate',
             'CRITICAL': 'severity-badge-critical'
         }[severityCode] || 'severity-badge-moderate';
 
-            // COMPARISON LOGIC
-            let comparisonHTML = '';
-            if (comparisonReport && comparisonReport[param.name]) {
+        // COMPARISON LOGIC
+        let comparisonHTML = '';
+        if (comparisonReport && comparisonReport[param.name]) {
             const prev = comparisonReport[param.name];
             const prevVal = parseFloat(prev.value);
             const currVal = parseFloat(param.value);
 
             if (!isNaN(prevVal) && !isNaN(currVal)) {
                 const diff = currVal - prevVal;
-            const percentChange = (diff / prevVal) * 100;
+                const percentChange = (diff / prevVal) * 100;
                 const arrow = diff > 0 ? 'arrow_upward' : (diff < 0 ? 'arrow_downward' : 'remove');
                 const color = diff > 0 ? 'text-rose-500' : 'text-emerald-500'; // Context dependent, keeping simple for now
 
-            comparisonHTML = `
+                comparisonHTML = `
             <div class="mt-2 p-2 bg-indigo-50 dark:bg-indigo-900/20 rounded-lg flex justify-between items-center text-xs">
                 <span class="text-indigo-600 dark:text-indigo-300 font-medium">Previous: ${prevVal} ${prev.unit}</span>
                 <div class="flex items-center gap-1 ${color} font-bold">
@@ -971,28 +970,29 @@ function renderDynamicInsights(parameters, insightsData = { detailed_insights: [
             }
         }
 
-            // Confidence data
-            const confidenceScore = backendInsight?.confidence_score || 60;
-            const confidenceRationale = backendInsight?.confidence_rationale || 'Limited contextual data';
+        // Confidence data
+        const confidenceScore = backendInsight?.confidence_score || 60;
+        const confidenceRationale = backendInsight?.confidence_rationale || 'Limited contextual data';
         const confidenceClass = confidenceScore >= 75 ? 'confidence-high' : (confidenceScore >= 50 ? 'confidence-medium' : 'confidence-low');
 
-            // Audit trail
-            const auditTrail = backendInsight?.audit_trail;
+        // Audit trail
+        const auditTrail = backendInsight?.audit_trail;
 
-            // Insight text
-            const insightText = backendInsight?.insight || generateInsightText(param, insightsData);
+        // Insight text
+        const rawInsightText = backendInsight?.insight || generateInsightText(param, insightsData);
+        const insightText = enrichInsightText(rawInsightText);
 
-            // Supporting parameters
-            const supportingParams = backendInsight?.supporting_params || [];
+        // Supporting parameters
+        const supportingParams = backendInsight?.supporting_params || [];
 
-            // Color scheme
-            let statusColor = "amber";
-            if (param.status === 'Critical') statusColor = "rose";
-            else if (param.status === 'Low') statusColor = "blue";
+        // Color scheme
+        let statusColor = "amber";
+        if (param.status === 'Critical') statusColor = "rose";
+        else if (param.status === 'Low') statusColor = "blue";
 
-            const rangeStr = param.range ? `Reference: ${param.range}` : 'No reference range';
+        const rangeStr = param.range ? `Reference: ${param.range}` : 'No reference range';
 
-            html += `
+        html += `
             <!-- Parameter Card with Enhanced Phase 2-4 Features -->
             <div class="card-light rounded-[2rem] p-8 hover:shadow-lg dark:hover:shadow-[0_8px_30px_rgb(0,0,0,0.12)] transition-all duration-300 border border-slate-100 dark:border-slate-800 group relative overflow-hidden">
 
@@ -1122,7 +1122,7 @@ function renderDynamicInsights(parameters, insightsData = { detailed_insights: [
             </div>`;
     });
 
-            html += `</div>`;
+    html += `</div>`;
 
     // Add Follow-Up Recommendations Section (Phase 2)
     if (insightsData.followup_recommendations && insightsData.followup_recommendations.length > 0) {
@@ -1134,6 +1134,10 @@ function renderDynamicInsights(parameters, insightsData = { detailed_insights: [
                     Suggested Follow-Up Tests
                 </h2>
                 <div class="h-px bg-slate-200 dark:bg-slate-800 flex-1"></div>
+                <button onclick="downloadCalendarReminder()" class="flex items-center gap-2 bg-indigo-50 dark:bg-indigo-900/40 text-indigo-600 dark:text-indigo-400 px-3 py-1.5 rounded-lg hover:bg-indigo-100 dark:hover:bg-indigo-800/60 transition-colors text-sm font-semibold border border-indigo-200 dark:border-indigo-800 shadow-sm">
+                    <span class="material-icons-round text-sm">event</span>
+                    Remind in 3 Months
+                </button>
             </div>
             <div class="bg-amber-50 dark:bg-amber-900/10 border border-amber-200 dark:border-amber-800/30 rounded-xl p-4 mb-6">
                 <div class="flex items-start gap-3">
@@ -1246,9 +1250,32 @@ function generateInsightText(param, insightsData) {
 
     // Fallback to generic text
     if (param.status === 'Critical') return `Critical value detected.Immediate medical attention may be required.`;
-    if (param.status === 'High') return `Elevated ${ param.name } can be associated with various conditions.Clinical correlation recommended.`;
-    if (param.status === 'Low') return `Lower than normal ${ param.name } detected.Discuss dietary or medical interventions with your doctor.`;
+    if (param.status === 'High') return `Elevated ${param.name} can be associated with various conditions.Clinical correlation recommended.`;
+    if (param.status === 'Low') return `Lower than normal ${param.name} detected.Discuss dietary or medical interventions with your doctor.`;
     return `Value is outside standard reference range.`;
+}
+
+const MEDICAL_TERMS = {
+    'Cholesterol': '🥩 A type of fat found in your blood.',
+    'LDL': '🍔 "Bad" cholesterol that builds up in arteries.',
+    'HDL': '🥑 "Good" cholesterol that removes bad cholesterol.',
+    'Triglycerides': '🧈 A type of fat from unused calories.',
+    'Hemoglobin': '🩸 Protein in red blood cells that carries oxygen.',
+    'Glucose': "🍬 Blood sugar, your body's main source of energy.",
+    'Creatinine': '🧹 Waste product filtered by kidneys.',
+    'Bilirubin': '🟡 Substance made during normal breakdown of red blood cells.',
+    'Platelets': '🩹 Blood cells that help form clots and stop bleeding.',
+    'Erythrocytes': '🔴 Red blood cells.'
+};
+
+function enrichInsightText(text) {
+    if (!text) return text;
+    let enriched = text;
+    Object.keys(MEDICAL_TERMS).forEach(term => {
+        const regex = new RegExp(`\\\\b(${term}) \\\\b`, 'gi');
+        enriched = enriched.replace(regex, `< span class="relative group inline-block cursor-help border-b-2 border-dashed border-indigo-300 dark:border-indigo-600 text-indigo-700 dark:text-indigo-300 font-medium pb-0.5" > $1 < span class="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-48 p-2 bg-slate-800 text-white text-xs rounded-lg shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-10 pointer-events-none text-center leading-tight" > ${MEDICAL_TERMS[term]} <svg class="absolute text-slate-800 h-2 w-full left-0 top-full" x="0px" y="0px" viewBox="0 0 255 255"><polygon class="fill-current" points="0,0 127.5,127.5 255,0" /></svg></span ></span > `);
+    });
+    return enriched;
 }
 
 // ==========================================
@@ -1470,17 +1497,17 @@ async function fetchParameterHistory(parameterName) {
      * Fetch historical data for a parameter from the backend
      */
     try {
-        const response = await fetch(`${ API_BASE_URL } /api/tracking / parameter / ${ encodeURIComponent(parameterName) }?limit = 10`, {
+        const response = await fetch(`${API_BASE_URL} /api/tracking / parameter / ${encodeURIComponent(parameterName)}?limit = 10`, {
             credentials: 'include'
         });
         if (!response.ok) {
-            console.warn(`No historical data for ${ parameterName }`);
+            console.warn(`No historical data for ${parameterName}`);
             return null;
         }
         const data = await response.json();
         return data.history && data.history.length > 0 ? data.history : null;
     } catch (error) {
-        console.error(`Error fetching history for ${ parameterName }: `, error);
+        console.error(`Error fetching history for ${parameterName}: `, error);
         return null;
     }
 }
@@ -1490,9 +1517,9 @@ async function fetchAndRenderTrend(parameterName) {
      * Fetch and render trend visualization for a parameter
      */
     const history = await fetchParameterHistory(parameterName);
-    const chartId = `trend - chart - ${ parameterName.replace(/\s+/g, '-') } `;
-    const badgeId = `trend - badge - ${ parameterName.replace(/\s+/g, '-') } `;
-    const messageId = `trend - message - ${ parameterName.replace(/\s+/g, '-') } `;
+    const chartId = `trend - chart - ${parameterName.replace(/\s+/g, '-')} `;
+    const badgeId = `trend - badge - ${parameterName.replace(/\s+/g, '-')} `;
+    const messageId = `trend - message - ${parameterName.replace(/\s+/g, '-')} `;
 
     const canvas = document.getElementById(chartId);
     const badgeEl = document.getElementById(badgeId);
@@ -1538,12 +1565,12 @@ async function fetchAndRenderTrend(parameterName) {
     // Update badge
     badgeEl.innerHTML = `
         < span class="px-2 py-1 rounded-full text-xs font-bold" style = "background-color: ${trendColor}20; color: ${trendColor}" >
-            ${ trendIcon } ${ trendDirection.toUpperCase() } ${ Math.abs(changePercent) }%
+            ${trendIcon} ${trendDirection.toUpperCase()} ${Math.abs(changePercent)}%
         </span >
         `;
 
     // Update message
-    messageEl.innerHTML = `Based on ${ values.length } previous measurements`;
+    messageEl.innerHTML = `Based on ${values.length} previous measurements`;
 
     // Render sparkline chart
     renderTrendChart(chartId, dates, values, trendColor);
@@ -1596,7 +1623,7 @@ function renderTrendChart(chartId, labels, data, color) {
                     displayColors: false,
                     callbacks: {
                         title: (items) => items[0].label,
-                        label: (item) => `Value: ${ item.raw } `
+                        label: (item) => `Value: ${item.raw} `
                     }
                 }
             },
