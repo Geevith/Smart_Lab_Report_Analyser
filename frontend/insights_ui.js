@@ -86,7 +86,7 @@ async function loadHistory() {
     listContainer.innerHTML = '<div class="flex items-center justify-center py-8"><div class="animate-spin rounded-full h-8 w-8 border-b-2 border-teal-500"></div></div>';
 
     try {
-        const response = await fetch(`${API_BASE_URL}/history`);
+        const response = await fetch(`${API_BASE_URL}/history`, { credentials: 'include' });
         if (!response.ok) throw new Error('Failed to fetch history');
 
         const history = await response.json();
@@ -108,7 +108,8 @@ async function loadHistory() {
         history.forEach(report => {
             html += `
                 <div class="p-4 border border-slate-200 dark:border-slate-800 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800 cursor-pointer transition-colors flex justify-between items-center group"
-                     onclick="compareWithReport(${report.id}, '${report.filename}', '${report.timestamp}')">
+                     onclick="compareWithReport(${report.id}, this.dataset.filename, '${report.timestamp}')"
+                     data-filename="${report.filename ? report.filename.replace(/"/g, '&quot;') : 'Report'}">
                     <div>
                         <div class="font-semibold text-slate-800 dark:text-white">${report.filename}</div>
                         <div class="text-xs text-slate-500 dark:text-slate-400 flex items-center gap-2 mt-1">
@@ -134,7 +135,7 @@ let comparisonData = null;
 
 async function compareWithReport(reportId, filename, date) {
     try {
-        const response = await fetch(`${API_BASE_URL}/report/${reportId}`);
+        const response = await fetch(`${API_BASE_URL}/report/${reportId}`, { credentials: 'include' });
         if (!response.ok) throw new Error('Failed to fetch report details');
 
         const reportData = await response.json();

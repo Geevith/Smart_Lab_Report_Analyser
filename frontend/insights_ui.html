@@ -74,6 +74,14 @@
             border-color: rgba(34, 211, 238, 0.5);
             box-shadow: 0 0 25px rgba(34, 211, 238, 0.15);
         }
+        html.dark .card-attention {
+            border-color: rgba(251, 113, 133, 0.2);
+            box-shadow: 0 0 15px rgba(251, 113, 133, 0.05);
+        }
+        html.dark .card-attention:hover {
+            border-color: rgba(251, 113, 133, 0.5);
+            box-shadow: 0 0 25px rgba(251, 113, 133, 0.15);
+        }
         .gradient-scale-vibrant {
             background: var(--vibrant-gradient);
         }
@@ -238,7 +246,7 @@
             </div>
 
             <div
-                class="card-light rounded-[2rem] p-8 flex items-center gap-6 group hover:bg-slate-50 dark:hover:bg-slate-800 transition-all duration-300 dark:border-rose-900/30">
+                class="card-light card-attention rounded-[2rem] p-8 flex items-center gap-6 group hover:bg-slate-50 dark:hover:bg-slate-800 transition-all duration-300">
                 <div class="relative w-24 h-24 flex items-center justify-center neon-glow-coral">
                     <svg class="w-full h-full -rotate-90">
                         <circle class="text-slate-100 dark:text-slate-800" cx="48" cy="48" fill="transparent" r="42"
