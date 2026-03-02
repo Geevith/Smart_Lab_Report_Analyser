@@ -266,10 +266,15 @@ function showPreviewModal() {
     previewModal.classList.remove('hidden');
     document.body.style.overflow = 'hidden';
 
-    // Reset to loading state
+    // Reset to loading state with medical heartbeat SVG
     extractedText.innerHTML = `
-        <div class="flex items-center justify-center py-12">
-            <div class="animate-spin w-8 h-8 border-4 border-primary border-t-transparent rounded-full"></div>
+        <div class="flex flex-col items-center justify-center py-12 gap-4">
+            <svg class="w-16 h-16 text-primary" viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M 0 50 h 30 l 10 -30 l 20 60 l 10 -30 h 30" stroke-dasharray="300" stroke-dashoffset="300">
+                    <animate attributeName="stroke-dashoffset" values="300;0;-300" dur="1.5s" repeatCount="indefinite" />
+                </path>
+            </svg>
+            <p class="text-sm font-medium text-gray-500 dark:text-gray-400 animate-pulse">Extracting Clinical Data...</p>
         </div>
     `;
 }

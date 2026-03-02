@@ -189,6 +189,15 @@
             </div>
         </div>
 
+        <!-- Milestones & Streaks -->
+        <div class="mb-8">
+            <h3 class="text-sm font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-4">Achievements
+            </h3>
+            <div id="milestonesContainer" class="flex gap-4 overflow-x-auto pb-4 custom-scrollbar">
+                <!-- Injected via JS -->
+            </div>
+        </div>
+
         <!-- Controls Bar -->
         <div class="flex flex-col md:flex-row gap-4 mb-6">
             <!-- Search -->
@@ -231,11 +240,53 @@
         </div>
 
         <!-- Loading State -->
-        <div id="loading" class="hidden flex flex-col items-center justify-center py-20">
-            <div class="w-16 h-16 bg-teal-50 dark:bg-teal-900/30 rounded-full flex items-center justify-center mb-4">
-                <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+        <div id="loading" class="hidden grid gap-4">
+            <!-- Skeleton Cards -->
+            <div
+                class="bg-white dark:bg-slate-900/60 border border-gray-100 dark:border-slate-700/30 rounded-2xl p-5 shadow-sm flex flex-col sm:flex-row gap-4 justify-between items-start sm:items-center cursor-wait">
+                <div class="flex items-start gap-4 flex-grow w-full max-w-lg">
+                    <div class="w-12 h-12 rounded-xl skeleton-loading shrink-0"></div>
+                    <div class="w-full space-y-3 mt-1">
+                        <div class="h-4 skeleton-loading w-3/4 rounded"></div>
+                        <div class="h-3 skeleton-loading w-1/2 rounded mt-2"></div>
+                    </div>
+                </div>
+                <div class="flex items-center gap-2 shrink-0">
+                    <div class="w-20 h-8 skeleton-loading rounded-lg"></div>
+                    <div class="w-9 h-9 skeleton-loading rounded-lg"></div>
+                    <div class="w-9 h-9 skeleton-loading rounded-lg"></div>
+                </div>
             </div>
-            <p class="text-gray-500 dark:text-gray-400 font-medium">Loading your reports...</p>
+            <div
+                class="bg-white dark:bg-slate-900/60 border border-gray-100 dark:border-slate-700/30 rounded-2xl p-5 shadow-sm flex flex-col sm:flex-row gap-4 justify-between items-start sm:items-center cursor-wait">
+                <div class="flex items-start gap-4 flex-grow w-full max-w-lg">
+                    <div class="w-12 h-12 rounded-xl skeleton-loading shrink-0"></div>
+                    <div class="w-full space-y-3 mt-1">
+                        <div class="h-4 skeleton-loading w-3/4 rounded"></div>
+                        <div class="h-3 skeleton-loading w-1/2 rounded mt-2"></div>
+                    </div>
+                </div>
+                <div class="flex items-center gap-2 shrink-0">
+                    <div class="w-20 h-8 skeleton-loading rounded-lg"></div>
+                    <div class="w-9 h-9 skeleton-loading rounded-lg"></div>
+                    <div class="w-9 h-9 skeleton-loading rounded-lg"></div>
+                </div>
+            </div>
+            <div
+                class="bg-white dark:bg-slate-900/60 border border-gray-100 dark:border-slate-700/30 rounded-2xl p-5 shadow-sm flex flex-col sm:flex-row gap-4 justify-between items-start sm:items-center opacity-60 cursor-wait">
+                <div class="flex items-start gap-4 flex-grow w-full max-w-lg">
+                    <div class="w-12 h-12 rounded-xl skeleton-loading shrink-0"></div>
+                    <div class="w-full space-y-3 mt-1">
+                        <div class="h-4 skeleton-loading w-3/4 rounded"></div>
+                        <div class="h-3 skeleton-loading w-1/2 rounded mt-2"></div>
+                    </div>
+                </div>
+                <div class="flex items-center gap-2 shrink-0">
+                    <div class="w-20 h-8 skeleton-loading rounded-lg"></div>
+                    <div class="w-9 h-9 skeleton-loading rounded-lg"></div>
+                    <div class="w-9 h-9 skeleton-loading rounded-lg"></div>
+                </div>
+            </div>
         </div>
 
         <!-- Empty State -->

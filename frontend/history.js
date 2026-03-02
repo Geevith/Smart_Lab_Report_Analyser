@@ -127,6 +127,9 @@ async function loadHistory() {
         const history = await res.json();
         loadingState?.classList.add('hidden');
 
+        // Render Milestones based on history
+        renderMilestones(history);
+
         if (history.length === 0) {
             emptyState?.classList.remove('hidden');
             return;
@@ -409,3 +412,48 @@ async function openReport(reportId, filename) {
 
 // ---- Toast Notification ----
 // showToast is replaced by showNotification from utils.js
+
+function renderMilestones(history) {
+    const container = document.getElementById('milestonesContainer');
+    if (!container) return;
+
+    // Calculate full history count without filters
+    const statTotalEl = document.getElementById('statTotal');
+    const count = statTotalEl && statTotalEl.textContent !== '-' ? parseInt(statTotalEl.textContent, 10) : history.length;
+
+    const milestones = [
+        { id: 'first', title: 'First Upload', desc: 'Started your journey', req: 1, icon: 'emoji_events', color: 'emerald' },
+        { id: 'consistent', title: 'Consistent Tracker', desc: '3+ reports analyzed', req: 3, icon: 'military_tech', color: 'blue' },
+        { id: 'advocate', title: 'Health Advocate', desc: '5+ reports analyzed', req: 5, icon: 'workspace_premium', color: 'purple' },
+        { id: 'proactive', title: 'Proactive', desc: '10+ reports analyzed', req: 10, icon: 'diamond', color: 'amber' }
+    ];
+
+    const styles = {
+        emerald: { active: 'bg-emerald-50 dark:bg-emerald-900/20 border-emerald-200 dark:border-emerald-800/30 text-emerald-500' },
+        blue: { active: 'bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800/30 text-blue-500' },
+        purple: { active: 'bg-purple-50 dark:bg-purple-900/20 border-purple-200 dark:border-purple-800/30 text-purple-500' },
+        amber: { active: 'bg-amber-50 dark:bg-amber-900/20 border-amber-200 dark:border-amber-800/30 text-amber-500' }
+    };
+
+    let html = '';
+    milestones.forEach(m => {
+        const achieved = count >= m.req;
+        const opacity = achieved ? 'opacity-100' : 'opacity-40 grayscale';
+        const s = styles[m.color];
+        const achievedClass = achieved ? s.active : 'bg-gray-50 dark:bg-slate-800/50 border-gray-200 dark:border-slate-700/50 text-gray-400';
+
+        html += `
+            <div class="flex-shrink-0 flex items-center gap-3 p-4 rounded-xl border transition-all ${achievedClass} ${opacity} min-w-[220px]">
+                <div class="w-10 h-10 rounded-full flex items-center justify-center bg-white/50 dark:bg-black/20 shrink-0 shadow-sm">
+                    <span class="material-icons-round text-2xl">${m.icon}</span>
+                </div>
+                <div>
+                    <h4 class="font-bold text-sm text-gray-900 dark:text-white">${m.title}</h4>
+                    <p class="text-xs text-gray-500 dark:text-gray-400 font-medium">${m.desc}</p>
+                </div>
+            </div>
+        `;
+    });
+
+    container.innerHTML = html;
+}

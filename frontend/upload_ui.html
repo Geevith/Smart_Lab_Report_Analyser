@@ -277,10 +277,16 @@
             </div>
 
             <div class="mb-6 relative">
-                <div
-                    class="w-20 h-20 bg-teal-50 dark:bg-teal-900/30 rounded-full flex items-center justify-center mx-auto mb-4 relative z-10">
-                    <span id="progressIcon"
-                        class="material-icons-round text-4xl text-primary animate-pulse">cloud_upload</span>
+                <div id="progressAnimationContainer"
+                    class="w-24 h-24 bg-teal-50 dark:bg-teal-900/30 rounded-full flex items-center justify-center mx-auto mb-4 relative z-10 shadow-inner overflow-hidden">
+                    <svg class="w-16 h-16 text-primary drop-shadow-md" viewBox="0 0 100 100" fill="none"
+                        stroke="currentColor" stroke-width="5" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M -10 50 h 35 l 10 -30 l 20 60 l 10 -30 h 35" stroke-dasharray="300"
+                            stroke-dashoffset="300">
+                            <animate attributeName="stroke-dashoffset" values="300;0;-300" dur="1.5s"
+                                repeatCount="indefinite" />
+                        </path>
+                    </svg>
                 </div>
                 <!-- Ping Effect -->
                 <div

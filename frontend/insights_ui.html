@@ -21,6 +21,7 @@
 
     <!-- Chart.js for trend visualization -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 
     <link rel="stylesheet" href="clinical_design_system.css">
     <link rel="stylesheet" href="mobile_touch_optimizations.css">
@@ -208,7 +209,27 @@
         </div>
 
         <!-- KPI Cards -->
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-16">
+            <div
+                class="card-light rounded-[2rem] p-8 flex items-center gap-6 group hover:bg-slate-50 dark:hover:bg-slate-800 transition-all duration-300">
+                <div class="relative w-24 h-24 flex items-center justify-center neon-glow-cyan">
+                    <svg class="w-full h-full -rotate-90">
+                        <circle class="text-slate-100 dark:text-slate-800" cx="48" cy="48" fill="transparent" r="42"
+                            stroke="currentColor" stroke-width="8"></circle>
+                        <circle id="circleWellness" class="text-cyan-600 dark:text-cyan-400 circular-progress" cx="48"
+                            cy="48" fill="transparent" r="42" stroke="currentColor" stroke-dasharray="264"
+                            stroke-dashoffset="264" stroke-linecap="round" stroke-width="8"></circle>
+                    </svg>
+                    <span id="wellnessScoreText"
+                        class="absolute text-2xl font-bold text-slate-900 dark:text-cyan-400">--</span>
+                </div>
+                <div>
+                    <h3 class="text-xs font-bold uppercase tracking-widest text-cyan-700 dark:text-cyan-400 mb-1">
+                        Wellness Score</h3>
+                    <p id="wellnessScoreLabel" class="text-sm text-slate-500 dark:text-cyan-400/70 font-bold">
+                        Calculating...</p>
+                </div>
+            </div>
             <div class="card-light rounded-[2rem] p-8 flex items-center gap-6 group transition-all duration-300">
                 <div class="relative w-24 h-24 flex items-center justify-center neon-glow-blue">
                     <svg class="w-full h-full -rotate-90">

@@ -416,9 +416,32 @@ function initializePage() {
             // Card 3: Attention
             document.querySelector('.neon-glow-coral span').textContent = summary.attention_count || 0;
 
+            // Wellness Score
+            const max = summary.total_extracted || 1;
+            const optimal = summary.optimal_count || 0;
+            const score = Math.round((optimal / max) * 100);
+
+            const wellnessText = document.getElementById('wellnessScoreText');
+            const wellnessLabel = document.getElementById('wellnessScoreLabel');
+            const wellnessCircle = document.getElementById('circleWellness');
+
+            if (wellnessText) {
+                wellnessText.textContent = score;
+                let label = "Needs Attention";
+                if (score >= 90) label = "Excellent";
+                else if (score >= 70) label = "Good";
+                else if (score >= 50) label = "Fair";
+
+                if (wellnessLabel) wellnessLabel.textContent = label;
+
+                if (wellnessCircle) {
+                    const offset = 264 * (1 - (score / 100));
+                    wellnessCircle.setAttribute('stroke-dashoffset', offset);
+                }
+            }
+
             // Update Progress Circles (Calculate dash offsets)
             // Circumference is approx 264
-            const max = summary.total_extracted || 1;
 
             const optimalPct = (summary.optimal_count / max);
             const attentionPct = (summary.attention_count / max);
@@ -759,6 +782,33 @@ function renderSystemsImpact(systemsData) {
 
 function renderDynamicInsights(parameters, insightsData = { detailed_insights: [] }, comparisonReport = null) {
     if (!parameterDetailsContainer) return;
+
+    // Trend Celebrations
+    if (comparisonReport) {
+        let celebrations = [];
+        parameters.forEach(param => {
+            const prev = comparisonReport[param.name];
+            if (prev && ['High', 'Low', 'Critical'].includes(prev.status) && param.status === 'Normal') {
+                const prevVal = parseFloat(prev.value);
+                const currVal = parseFloat(param.value);
+                if (!isNaN(prevVal) && !isNaN(currVal)) {
+                    const diff = currVal - prevVal;
+                    const percent = Math.abs((diff / prevVal) * 100).toFixed(1);
+                    celebrations.push({ name: param.name, percent });
+                }
+            }
+        });
+
+        if (celebrations.length > 0) {
+            setTimeout(() => {
+                if (typeof confetti === 'function') confetti({ particleCount: 150, spread: 80, origin: { y: 0.6 }, zIndex: 10000 });
+                const msg = celebrations.length === 1
+                    ? `🎉 Great job! Your ${celebrations[0].name} improved by ${celebrations[0].percent}% to Normal.`
+                    : `🎉 Great job! ${celebrations.length} metrics improved to Normal since your last test.`;
+                showNotification(msg, 'success');
+            }, 1000);
+        }
+    }
 
     // Filter for abnormal items: High, Low, Critical
     const abnormalItems = parameters.filter(p => ['High', 'Low', 'Critical'].includes(p.status));
