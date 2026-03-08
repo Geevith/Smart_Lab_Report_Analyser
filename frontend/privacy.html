@@ -223,11 +223,65 @@
                 margin: 24px auto;
             }
         }
+
+        /* BUG-09 FIX: Dark mode support */
+        @media (prefers-color-scheme: dark) {
+            body {
+                background: #0f172a;
+                color: #e2e8f0;
+            }
+
+            header {
+                background: #1e293b;
+                border-bottom-color: #334155;
+            }
+
+            .badge {
+                background: #064e3b;
+                color: #6ee7b7;
+            }
+
+            h2 {
+                color: #f1f5f9;
+            }
+
+            p,
+            li {
+                color: #cbd5e1;
+            }
+
+            .page-meta {
+                color: #94a3b8;
+                border-bottom-color: #334155;
+            }
+
+            .highlight-box {
+                background: #1e293b;
+                border-color: #334155;
+            }
+
+            .highlight-box p {
+                color: #94a3b8;
+            }
+
+            footer {
+                color: #64748b;
+            }
+
+            a {
+                color: #60a5fa;
+            }
+        }
     </style>
 </head>
 
 <body>
     <header>
+        <!-- BUG-15 FIX: Back to app navigation -->
+        <a href="upload_ui.html"
+            style="display:inline-flex;align-items:center;gap:6px;font-size:13px;color:#6B7280;text-decoration:none;margin-right:12px;transition:color 0.2s;">
+            &#8592; Back to App
+        </a>
         <div class="brand-icon">SL</div>
         <span>Smart Lab</span>
         <span class="badge">Privacy</span>

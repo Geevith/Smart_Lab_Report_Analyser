@@ -18,6 +18,23 @@ document.addEventListener('DOMContentLoaded', async () => {
     setupThemeSelector();
     setupExportData();
     setupDeleteAccount();
+
+    // BUG-16 FIX: Wire the header dark mode toggle button
+    const darkToggle = document.getElementById('settingsHeaderDarkToggle');
+    if (darkToggle) {
+        // Set correct icon on load
+        const updateIcon = () => {
+            const icon = darkToggle.querySelector('span');
+            if (icon) icon.textContent = document.documentElement.classList.contains('dark') ? 'light_mode' : 'dark_mode';
+        };
+        updateIcon();
+        darkToggle.addEventListener('click', () => {
+            document.documentElement.classList.toggle('dark');
+            const isDark = document.documentElement.classList.contains('dark');
+            localStorage.setItem('theme', isDark ? 'dark' : 'light');
+            updateIcon();
+        });
+    }
 });
 
 // ==========================================

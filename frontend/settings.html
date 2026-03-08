@@ -54,9 +54,15 @@
                 <a href="upload_ui.html" class="hover:text-primary transition-colors flex items-center gap-1">
                     <span class="material-icons-round text-lg">add_circle_outline</span> New Analysis
                 </a>
-                <a href="history.html?v=1" class="hover:text-primary transition-colors flex items-center gap-1">
+                <a href="history.html" class="hover:text-primary transition-colors flex items-center gap-1">
                     <span class="material-icons-round text-lg">history</span> My History
                 </a>
+                <!-- BUG-16 FIX: Dark mode toggle in header (consistent with other pages) -->
+                <button id="settingsHeaderDarkToggle"
+                    class="w-9 h-9 rounded-xl flex items-center justify-center bg-gray-100 dark:bg-slate-800 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-slate-700 transition-all"
+                    title="Toggle dark mode" aria-label="Toggle dark mode">
+                    <span class="material-icons-round text-lg">dark_mode</span>
+                </button>
                 <!-- User Info Display -->
                 <div id="userInfo" class="hidden"></div>
                 <div id="navActions" class="flex items-center gap-2"></div>

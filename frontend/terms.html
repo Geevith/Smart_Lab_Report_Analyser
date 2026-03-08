@@ -160,11 +160,56 @@
             font-size: 13px;
             color: #9CA3AF;
         }
+
+        /* BUG-09 FIX: Dark mode support */
+        @media (prefers-color-scheme: dark) {
+            body {
+                background: #0f172a;
+                color: #e2e8f0;
+            }
+
+            header {
+                background: #1e293b;
+                border-bottom-color: #334155;
+            }
+
+            .badge {
+                background: #312e81;
+                color: #a5b4fc;
+            }
+
+            h2 {
+                color: #f1f5f9;
+            }
+
+            p,
+            li {
+                color: #cbd5e1;
+            }
+
+            .page-meta {
+                color: #94a3b8;
+                border-bottom-color: #334155;
+            }
+
+            footer {
+                color: #64748b;
+            }
+
+            .back-link {
+                color: #94a3b8;
+            }
+        }
     </style>
 </head>
 
 <body>
     <header>
+        <!-- BUG-15 FIX: Back to app navigation -->
+        <a href="upload_ui.html" class="back-link"
+            style="display:inline-flex;align-items:center;gap:6px;font-size:13px;color:#6B7280;text-decoration:none;margin-right:12px;hover:color:#111827;">
+            &#8592; Back to App
+        </a>
         <div class="brand-icon">SL</div>
         <span>Smart Lab</span>
         <span class="badge">Legal</span>

@@ -170,12 +170,12 @@ async def get_current_user(request: Request) -> dict:
     Raises HTTP 401 if not authenticated
     """
     session_token = request.cookies.get("session_token")
-    print(f"DEBUG: get_current_user called for {request.url.path}", flush=True)
-    
+    # BUG-17 FIX: Removed debug print statement
+
     if not session_token:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Not authenticated (DEBUG). Please login."
+            detail="Not authenticated. Please login."
         )
     
     user = validate_session(session_token)
@@ -385,13 +385,15 @@ async def login(login_data: UserLogin, request: Request, response: Response):
         
         # Set session cookie (HTTPOnly for security)
         max_age = SESSION_MAX_AGE if not login_data.remember_me else SESSION_MAX_AGE * 30  # 30 days for remember me
+        # BUG-20 FIX: env-driven secure flag — True in production (HTTPS), False in development
+        IS_PRODUCTION = os.getenv("ENVIRONMENT", "development") == "production"
         response.set_cookie(
             key="session_token",
             value=session_token,
             max_age=max_age,
             httponly=True,  # Prevent JavaScript access
             samesite="lax",  # CSRF protection
-            secure=False  # Set to True in production with HTTPS
+            secure=IS_PRODUCTION  # True in production HTTPS
         )
 
         # Set CSRF token cookie (NOT httponly — JS needs to read and send it as header)
@@ -402,7 +404,7 @@ async def login(login_data: UserLogin, request: Request, response: Response):
             max_age=max_age,
             httponly=False,   # JavaScript must be able to read this
             samesite="lax",
-            secure=False,
+            secure=IS_PRODUCTION,
         )
         
         return {

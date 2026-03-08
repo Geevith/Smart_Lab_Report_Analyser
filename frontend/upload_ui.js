@@ -236,6 +236,17 @@ async function handlePreview() {
         });
 
         if (!response.ok) {
+            // U-1 FIX: Surface auth errors clearly instead of silently falling back
+            if (response.status === 401) {
+                closePreview();
+                showNotification('You must be logged in to analyze reports.', 'error');
+                setTimeout(() => {
+                    if (confirm('A login is required to analyze reports. Go to login page?')) {
+                        window.location.href = 'login.html?redirect=upload_ui.html';
+                    }
+                }, 300);
+                return;
+            }
             throw new Error(`Preview failed: ${response.statusText}`);
         }
 
@@ -245,7 +256,7 @@ async function handlePreview() {
     } catch (error) {
         console.error('Preview error:', error);
 
-        // Fallback: show basic preview without backend
+        // Fallback: show basic preview without backend (network errors only)
         const fallbackData = {
             text: "Preview not available. Click 'Continue to Analysis' to proceed.",
             quality: {

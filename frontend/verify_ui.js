@@ -127,9 +127,10 @@ function initializePage() {
             showNotification('Error loading analysis data', 'error');
         }
     } else {
-        console.log('No analysis data found, using demo data');
-        // Demo data for testing
-        parametersData = generateDemoData();
+        // BUG-07 FIX: No real data — redirect to upload instead of showing fake demo data
+        showNotification('No report data found. Please upload a report first.', 'warning');
+        setTimeout(() => { window.location.href = 'upload_ui.html'; }, 1800);
+        return;
     }
 
     // Calculate stats

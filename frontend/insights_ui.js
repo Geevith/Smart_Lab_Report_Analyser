@@ -430,20 +430,29 @@ function initializePage() {
             try {
                 const summary = JSON.parse(summaryData);
 
-                // Update Stats Cards
-                // Card 1: Total
-                document.querySelector('.neon-glow-blue + div h3').textContent = 'TOTAL EXTRACTED'; // Keep label
-                document.querySelector('.neon-glow-blue span').textContent = summary.total_extracted || 0;
+                const total = summary.total_extracted || 0;
+                const optimal = summary.optimal_count || 0;
+                const attention = summary.attention_count || 0;
 
-                // Card 2: Optimal
-                document.querySelector('.neon-glow-green span').textContent = summary.optimal_count || 0;
+                // BUG-01 FIX: Use unique IDs for robust KPI updates
+                const kpiTotalEl = document.getElementById('kpiTotalText');
+                const kpiOptimalEl = document.getElementById('kpiOptimalText');
+                const kpiAttentionEl = document.getElementById('kpiAttentionText');
+                if (kpiTotalEl) kpiTotalEl.textContent = total;
+                if (kpiOptimalEl) kpiOptimalEl.textContent = optimal;
+                if (kpiAttentionEl) kpiAttentionEl.textContent = attention;
 
-                // Card 3: Attention
-                document.querySelector('.neon-glow-coral span').textContent = summary.attention_count || 0;
+                // BUG-08 FIX: Dynamic report reference number
+                const reportId = sessionStorage.getItem('currentReportId');
+                const refEl = document.getElementById('reportRefNumber');
+                if (refEl && reportId) {
+                    refEl.textContent = `Ref: #RPT-${reportId}`;
+                } else if (refEl) {
+                    refEl.textContent = `Ref: #RPT-NEW`;
+                }
 
                 // Wellness Score
-                const max = summary.total_extracted || 1;
-                const optimal = summary.optimal_count || 0;
+                const max = total || 1;
                 const score = Math.round((optimal / max) * 100);
 
                 const wellnessText = document.getElementById('wellnessScoreText');
@@ -465,19 +474,14 @@ function initializePage() {
                     }
                 }
 
-                // Update Progress Circles (Calculate dash offsets)
-                // Circumference is approx 264
-
-                const optimalPct = (summary.optimal_count / max);
-                const attentionPct = (summary.attention_count / max);
-
+                // Update Progress Circles with data-driven dashoffsets
+                const circumference = 264;
+                const circle1 = document.getElementById('circle1');
                 const circle2 = document.getElementById('circle2');
-                if (circle2) {
-                    // Invert logic: stroke-dashoffset = circumference * (1 - percentage)
-                    // Actually existing CSS seems to just act as a loader, we should maintain the animation 
-                    // but strictly speaking we should set the final values here if we want accuracy.
-                    // For now, let's keep the visual "alive" but update the text.
-                }
+                const circle3 = document.getElementById('circle3');
+                if (circle1) circle1.setAttribute('stroke-dashoffset', Math.max(0, circumference * (1 - (total / Math.max(total * 1.1, 1)))));
+                if (circle2) circle2.setAttribute('stroke-dashoffset', Math.max(0, circumference * (1 - (optimal / Math.max(total, 1)))));
+                if (circle3) circle3.setAttribute('stroke-dashoffset', Math.max(0, circumference * (1 - (attention / Math.max(total, 1)))));
 
                 // Analysis Depth
                 const depthBar = document.querySelector('.text-teal-600');
