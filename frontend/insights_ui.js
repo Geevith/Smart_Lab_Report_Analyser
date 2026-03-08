@@ -638,10 +638,10 @@ function renderBodyFigure(systemsData) {
                     }
 
                     relationshipsSvg += `
-        < path d = "M ${sourceRegion.x},${sourceRegion.y} Q ${controlX},${controlY} ${targetRegion.x},${targetRegion.y}"
-    fill = "none" stroke = "${strokeColor}" stroke - width="0.8"
-    stroke - opacity="${strokeOpacity}" stroke - dasharray="2,2"
-    class="hover:stroke-opacity-60 transition-all" />
+        <path d="M ${sourceRegion.x},${sourceRegion.y} Q ${controlX},${controlY} ${targetRegion.x},${targetRegion.y}"
+            fill="none" stroke="${strokeColor}" stroke-width="0.8"
+            stroke-opacity="${strokeOpacity}" stroke-dasharray="2,2"
+            class="hover:stroke-opacity-60 transition-all" />
         `;
                 }
             });
@@ -669,8 +669,8 @@ function renderBodyFigure(systemsData) {
 
         // Create SVG marker with click handler
         markersSvg += `
-        < g class="body-marker cursor-pointer hover:opacity-80 transition-opacity" data - system="${systemName}" onclick = "showSystemDetail('${systemName}')" >
-                < !--Outer pulse ring(only for abnormal) -->
+        <g class="body-marker cursor-pointer hover:opacity-80 transition-opacity" data-system="${systemName}" onclick="showSystemDetail('${systemName}')">
+                <!--Outer pulse ring(only for abnormal)-->
         ${colors.pulse ? `
                 <circle cx="${region.x}" cy="${region.y}" r="8" 
                     fill="none" stroke="${colors.stroke}" stroke-opacity="0.3" stroke-width="1.5">
@@ -679,11 +679,11 @@ function renderBodyFigure(systemsData) {
                 </circle>
                 ` : ''
             }
-                < !--Central marker-- >
+                <!--Central marker-->
         <circle cx="${region.x}" cy="${region.y}" r="4"
             fill="${colors.fill}" stroke="${colors.stroke}" stroke-width="1"
             class="cursor-pointer" style="filter: drop-shadow(0 1px 2px rgba(0,0,0,0.2))" />
-            </g >
+            </g>
         `;
 
         // Create HTML label with health score
@@ -695,9 +695,9 @@ function renderBodyFigure(systemsData) {
         const showHealthScore = abnormalCount > 0;
 
         labelsHtml += `
-        < div class="absolute pointer-events-auto group/label cursor-pointer"
-    style = "top: ${labelY}; ${labelSide}: 2px; transform: translateY(-50%);"
-    onclick = "showSystemDetail('${systemName}')" >
+        <div class="absolute pointer-events-auto group/label cursor-pointer"
+            style="top: ${labelY}; ${labelSide}: 2px; transform: translateY(-50%);"
+            onclick="showSystemDetail('${systemName}')">
                 <div class="px-2 py-1 rounded-md text-[9px] font-bold shadow-md whitespace-nowrap
                     ${healthScore >= 90 ? 'bg-emerald-500 text-white' :
                 healthScore >= 70 ? 'bg-amber-500 text-white' :
@@ -706,7 +706,7 @@ function renderBodyFigure(systemsData) {
                     ${healthScore >= 90 ? 'opacity-50' : ''}">
                     ${systemName.toUpperCase().slice(0, 12)}${showHealthScore ? ` ${healthScore}` : ''}
                 </div>
-                <!--Tooltip on hover-- >
+                <!--Tooltip on hover-->
         <div class="absolute ${labelSide === 'left' ? 'left-full ml-2' : 'right-full mr-2'} top-1/2 -translate-y-1/2 
                      opacity-0 group-hover/label:opacity-100 transition-opacity z-50 pointer-events-none">
             <div class="bg-slate-900 dark:bg-slate-800 text-white text-[10px] px-3 py-2 rounded-lg shadow-xl whitespace-nowrap">
@@ -717,7 +717,7 @@ function renderBodyFigure(systemsData) {
                 <div class="text-cyan-400 mt-2 text-[9px]">Click for details →</div>
             </div>
         </div>
-            </div >
+            </div>
         `;
     });
 
@@ -746,13 +746,13 @@ function renderSystemsImpact(systemsData) {
 
     if (systemNames.length === 0) {
         container.innerHTML = `
-        < div class="flex flex-col items-center justify-center py-6 text-center bg-emerald-50/50 dark:bg-emerald-900/10 rounded-2xl border border-emerald-100 dark:border-emerald-800/30" >
+        <div class="flex flex-col items-center justify-center py-6 text-center bg-emerald-50/50 dark:bg-emerald-900/10 rounded-2xl border border-emerald-100 dark:border-emerald-800/30">
                 <div class="w-12 h-12 bg-emerald-100 dark:bg-emerald-900/40 rounded-full flex items-center justify-center mb-3">
                     <span class="material-icons-round text-2xl text-emerald-500">health_and_safety</span>
                 </div>
                 <p class="text-slate-800 dark:text-emerald-50 font-semibold mb-1">Optimal System Health</p>
                 <p class="text-xs text-slate-500 dark:text-emerald-200/60 max-w-[200px]">No significant systemic impacts detected from current values.</p>
-            </div >
+            </div>
         `;
         return;
     }
@@ -820,9 +820,9 @@ function renderSystemsImpact(systemsData) {
         const dashOffset = circumference * (1 - scorePercentage / 100);
 
         html += `
-        < div class="flex items-start gap-3 p-3 ${bgColor} rounded-xl border ${borderColor} transition-all hover:shadow-md group cursor-pointer"
-    onclick = "showSystemDetail('${systemName}')"
-    title = "${abnormalList}" >
+        <div class="flex items-start gap-3 p-3 ${bgColor} rounded-xl border ${borderColor} transition-all hover:shadow-md group cursor-pointer"
+            onclick="showSystemDetail('${systemName}')"
+            title="${abnormalList}">
                 <div class="w-9 h-9 ${iconBg} rounded-lg flex items-center justify-center ${iconText} border dark:border-current/20 flex-shrink-0">
                     <span class="material-icons-round text-lg">${system.icon}</span>
                 </div>
@@ -864,7 +864,7 @@ function renderSystemsImpact(systemsData) {
                         </div>
                     ` : ''}
                 </div>
-            </div >
+            </div>
         `;
     });
 
@@ -906,17 +906,17 @@ function renderDynamicInsights(parameters, insightsData = { detailed_insights: [
 
     if (abnormalItems.length === 0) {
         parameterDetailsContainer.innerHTML = `
-        < div class="p-8 text-center card-light rounded-2xl" >
+        <div class="p-8 text-center card-light rounded-2xl">
                 <span class="material-icons-round text-5xl text-emerald-500 mb-4">check_circle</span>
                 <h3 class="text-xl font-bold text-slate-800 dark:text-white">All Results Normal</h3>
                 <p class="text-slate-500">No parameters flagged for attention.</p>
-            </div >
+            </div>
         `;
         return;
     }
 
     let html = `
-        < div class="flex items-center gap-4 mb-8" >
+        <div class="flex items-center gap-4 mb-8">
             <h2 class="text-xl font-bold text-slate-800 dark:text-white flex items-center gap-2">
                 <span class="w-1 h-8 bg-cyan-500 rounded-full"></span>
                 Attention Required
@@ -926,7 +926,7 @@ function renderDynamicInsights(parameters, insightsData = { detailed_insights: [
                 <span class="material-icons-round text-sm">warning</span>
                 ${abnormalItems.length} Issues Found
             </span>
-        </div >
+        </div>
         <div class="space-y-6">
             `;
 
@@ -1131,7 +1131,7 @@ function renderDynamicInsights(parameters, insightsData = { detailed_insights: [
     // Add Follow-Up Recommendations Section (Phase 2)
     if (insightsData.followup_recommendations && insightsData.followup_recommendations.length > 0) {
         html += `
-                < div class="mt-12" >
+                <div class="mt-12">
             <div class="flex items-center gap-4 mb-6">
                 <h2 class="text-xl font-bold text-slate-800 dark:text-white flex items-center gap-2">
                     <span class="w-1 h-8 bg-blue-500 rounded-full"></span>
@@ -1185,12 +1185,12 @@ function renderDynamicInsights(parameters, insightsData = { detailed_insights: [
             `;
         });
 
-        html += `</div></div > `;
+        html += `</div></div>`;
     }
 
     // Explainability Panel (Phase 4)
     html += `
-        < div class="mt-12 card-light rounded-2xl p-8 border border-slate-100 dark:border-slate-800" >
+        <div class="mt-12 card-light rounded-2xl p-8 border border-slate-100 dark:border-slate-800">
         <h3 class="text-lg font-bold text-slate-800 dark:text-white mb-6 flex items-center gap-2">
             <span class="material-icons-round text-cyan-500">psychology</span>
             How Insights Are Generated
@@ -1229,7 +1229,7 @@ function renderDynamicInsights(parameters, insightsData = { detailed_insights: [
                 <strong>Transparency Note:</strong> All insights are generated through explicit, traceable rules. This system does not use machine learning predictions or black-box algorithms for clinical interpretation.
             </p>
         </div>
-    </div >
+    </div>
         `;
 
     // Inject
@@ -1277,7 +1277,7 @@ function enrichInsightText(text) {
     let enriched = text;
     Object.keys(MEDICAL_TERMS).forEach(term => {
         const regex = new RegExp(`\\\\b(${term}) \\\\b`, 'gi');
-        enriched = enriched.replace(regex, `< span class="relative group inline-block cursor-help border-b-2 border-dashed border-indigo-300 dark:border-indigo-600 text-indigo-700 dark:text-indigo-300 font-medium pb-0.5" > $1 < span class="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-48 p-2 bg-slate-800 text-white text-xs rounded-lg shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-10 pointer-events-none text-center leading-tight" > ${MEDICAL_TERMS[term]} <svg class="absolute text-slate-800 h-2 w-full left-0 top-full" x="0px" y="0px" viewBox="0 0 255 255"><polygon class="fill-current" points="0,0 127.5,127.5 255,0" /></svg></span ></span > `);
+        enriched = enriched.replace(regex, `<span class="relative group inline-block cursor-help border-b-2 border-dashed border-indigo-300 dark:border-indigo-600 text-indigo-700 dark:text-indigo-300 font-medium pb-0.5">$1<span class="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-48 p-2 bg-slate-800 text-white text-xs rounded-lg shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-10 pointer-events-none text-center leading-tight">${MEDICAL_TERMS[term]}<svg class="absolute text-slate-800 h-2 w-full left-0 top-full" x="0px" y="0px" viewBox="0 0 255 255"><polygon class="fill-current" points="0,0 127.5,127.5 255,0" /></svg></span></span>`);
     });
     return enriched;
 }
@@ -1306,7 +1306,7 @@ function showSystemDetail(systemName) {
     const normalParams = systemData.normal_parameters || [];
 
     modal.innerHTML = `
-        < div class="bg-white dark:bg-slate-900 rounded-2xl shadow-2xl max-w-2xl w-full max-h-[80vh] overflow-hidden animate-slideUp" >
+        <div class="bg-white dark:bg-slate-900 rounded-2xl shadow-2xl max-w-2xl w-full max-h-[80vh] overflow-hidden animate-slideUp">
             <div class="p-6 border-b border-slate-200 dark:border-slate-700">
                 <div class="flex items-center justify-between">
                     <div class="flex items-center gap-3">
@@ -1474,7 +1474,7 @@ function showSystemDetail(systemName) {
                     <strong>Note:</strong> This grouping is for organizational purposes only. Consult your healthcare provider for medical interpretation.
                 </p>
             </div>
-        </div >
+        </div>
         `;
 
     // Add click outside to close
@@ -1568,9 +1568,9 @@ async function fetchAndRenderTrend(parameterName) {
 
     // Update badge
     badgeEl.innerHTML = `
-        < span class="px-2 py-1 rounded-full text-xs font-bold" style = "background-color: ${trendColor}20; color: ${trendColor}" >
+        <span class="px-2 py-1 rounded-full text-xs font-bold" style="background-color: ${trendColor}20; color: ${trendColor}">
             ${trendIcon} ${trendDirection.toUpperCase()} ${Math.abs(changePercent)}%
-        </span >
+        </span>
         `;
 
     // Update message
