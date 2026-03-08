@@ -178,7 +178,7 @@ AI-powered interpretation systems can reduce diagnosis time by up to **60%** whi
 | Data Processing | pandas | Data manipulation |
 | Visualization | Altair | Charts and graphs |
 | PDF Generation | ReportLab | Report creation |
-| Database | SQLite | Report history |
+| Database | PostgreSQL (via Supabase and psycopg2) | Report history |
 
 ---
 

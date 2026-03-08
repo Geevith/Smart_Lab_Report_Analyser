@@ -69,7 +69,9 @@ async function apiFetch(url, options = {}) {
     if (response.status === 401) {
         sessionStorage.setItem('redirect_after_login', location.href);
         location.href = '/login.html';
-        throw new ApiError(401, 'unauthorized', 'Session expired. Please log in again.');
+        // Return a never-resolving promise to completely halt the execution 
+        // context while the browser navigates away, preventing any catch blocks or UI flashes.
+        return new Promise(() => { });
     }
 
     if (response.status === 204) return null;

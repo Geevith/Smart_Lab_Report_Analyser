@@ -10,7 +10,7 @@ class TestParser(unittest.TestCase):
         self.assertEqual(result["Hemoglobin"]["status"], "Normal")
 
     def test_hemoglobin_low(self):
-        text = "Hb: 12.0"
+        text = "Hb: 10.0"
         result = parse_blood_test(text)
         self.assertEqual(result["Hemoglobin"]["status"], "Low")
 

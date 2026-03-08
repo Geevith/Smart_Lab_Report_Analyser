@@ -567,13 +567,16 @@ async def preview_file(
     file_location = f"temp/{file.filename}"
     
     try:
+        import asyncio
+        loop = asyncio.get_event_loop()
+        
         with open(file_location, "wb+") as file_object:
             shutil.copyfileobj(file.file, file_object)
         
         # Perform quality assessment for images
         quality = {}
         if file.content_type and file.content_type.startswith('image/'):
-            quality = assess_image(file_location)
+            quality = await loop.run_in_executor(_ocr_executor, assess_image, file_location)
         else:
             # Default quality for PDFs (can be enhanced later)
             quality = {
@@ -586,7 +589,7 @@ async def preview_file(
             }
         
         # Extract text with enhanced function
-        extraction = extract_text_enhanced(file_location, rotation)
+        extraction = await loop.run_in_executor(_ocr_executor, extract_text_enhanced, file_location, rotation)
         
         # Add suggestions based on extraction results
         if extraction['success_rate'] < 50:

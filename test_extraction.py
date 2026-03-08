@@ -4,6 +4,7 @@ import base64
 from PIL import Image, ImageDraw, ImageFont
 
 # Create a test image with medical terms that might trigger safety filters
+os.makedirs('temp', exist_ok=True)
 img = Image.new('RGB', (800, 600), color='white')
 d = ImageDraw.Draw(img)
 
@@ -21,7 +22,6 @@ No fractures identified.
 d.text((10,10), text, fill=(0,0,0))
 img.save('temp/test_image.png')
 
-import os
 from dotenv import load_dotenv
 load_dotenv('.env')
 

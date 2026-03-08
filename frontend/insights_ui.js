@@ -1501,7 +1501,7 @@ async function fetchParameterHistory(parameterName) {
      * Fetch historical data for a parameter from the backend
      */
     try {
-        const response = await fetch(`${API_BASE_URL} /api/tracking / parameter / ${encodeURIComponent(parameterName)}?limit = 10`, {
+        const response = await fetch(`${API_BASE_URL}/api/tracking/parameter/${encodeURIComponent(parameterName)}?limit=10`, {
             credentials: 'include'
         });
         if (!response.ok) {

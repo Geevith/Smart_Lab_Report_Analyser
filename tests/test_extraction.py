@@ -8,13 +8,13 @@ class TestExtraction(unittest.TestCase):
         self.assertEqual(result, "Unsupported file format.")
         
     def test_pdf_extraction_no_file(self):
-        # Should return empty string and print error (captured if we want, but simple check is enough)
+        # Should return text key with empty string
         result = extract_from_pdf("non_existent.pdf")
-        self.assertEqual(result, "")
+        self.assertEqual(result.get('text'), "")
 
     def test_image_extraction_no_file(self):
          result = extract_from_image("non_existent.png")
-         self.assertEqual(result, "")
+         self.assertEqual(result.get('text'), "")
 
 if __name__ == '__main__':
     unittest.main()

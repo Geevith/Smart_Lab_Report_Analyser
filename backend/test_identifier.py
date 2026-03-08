@@ -14,6 +14,7 @@ from difflib import get_close_matches
 
 class TestKnowledgeBase:
     """Manages the master test knowledge base"""
+    __test__ = False
     
     def __init__(self, kb_path: str = None):
         if kb_path is None:
@@ -78,6 +79,7 @@ class TestKnowledgeBase:
 
 class IdentifiedTest:
     """Result of test identification"""
+    __test__ = False
     
     def __init__(self, name: str, test_id: str, category: str, unit: str,
                  reference_range: Dict, confidence: str, panel: str = None,
@@ -109,6 +111,7 @@ class IdentifiedTest:
 
 class TestIdentifier:
     """Intelligent test identification engine"""
+    __test__ = False
     
     def __init__(self, kb_path: str = None):
         self.kb = TestKnowledgeBase(kb_path)

@@ -5,14 +5,14 @@ Tests demographic-specific ranges, cross-parameter analysis, and pattern detecti
 
 import sys
 import os
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'backend'))
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
 
 from backend.abnormality_detector import (
     AbnormalityDetector,
     DemographicRangeSelector,
-    ReferenceRange,
-    TestStatus
+    ReferenceRange
 )
+import backend.abnormality_detector as ad
 from backend.clinical_intelligence import generate_contextual_insights
 from backend.pattern_detector import detect_patterns_for_user, ClinicalPatternRules
 
@@ -38,7 +38,7 @@ def test_demographic_range_selection():
     print(f"\nTest 1a: Male Hemoglobin = 14.5 g/dL")
     print(f"  Status: {result_male.status.value}")
     print(f"  Source: {result_male.parsed_range.source_note if result_male.parsed_range else 'N/A'}")
-    print(f"  ✓ PASS" if result_male.status == TestStatus.NORMAL else "  ✗ FAIL")
+    print(f"  ✓ PASS" if result_male.status == ad.TestStatus.NORMAL else "  ✗ FAIL")
     
     # Test Case 1b: Female hemoglobin with same value (should use female range 12-15.5)
     result_female = detector.detect_abnormality(
@@ -53,7 +53,7 @@ def test_demographic_range_selection():
     print(f"\nTest 1b: Female Hemoglobin = 14.5 g/dL")
     print(f"  Status: {result_female.status.value}")
     print(f"  Source: {result_female.parsed_range.source_note if result_female.parsed_range else 'N/A'}")
-    print(f"  ✓ PASS" if result_female.status == TestStatus.NORMAL else "  ✗ FAIL")
+    print(f"  ✓ PASS" if result_female.status == ad.TestStatus.NORMAL else "  ✗ FAIL")
     
     # Test Case 1c: Pregnancy-adjusted hemoglobin
     result_pregnancy = detector.detect_abnormality(
@@ -69,7 +69,7 @@ def test_demographic_range_selection():
     print(f"\nTest 1c: Pregnant Female Hemoglobin = 11.5 g/dL")
     print(f"  Status: {result_pregnancy.status.value}")
     print(f"  Source: {result_pregnancy.parsed_range.source_note if result_pregnancy.parsed_range else 'N/A'}")
-    print(f"  ✓ PASS" if result_pregnancy.status == TestStatus.NORMAL else "  ✗ FAIL")
+    print(f"  ✓ PASS" if result_pregnancy.status == ad.TestStatus.NORMAL else "  ✗ FAIL")
 
 
 def test_cross_parameter_analysis():
@@ -205,7 +205,7 @@ def test_backward_compatibility():
     print(f"  Status: {result.status.value}")
     print(f"  Confidence: {result.confidence_score:.2f}")
     print(f"  Notes: {result.notes}")
-    print(f"  ✓ PASS" if result.status == TestStatus.LOW else "  ✗ FAIL")
+    print(f"  ✓ PASS" if result.status == ad.TestStatus.LOW else "  ✗ FAIL")
 
 
 def print_test_summary():

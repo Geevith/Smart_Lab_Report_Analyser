@@ -1,9 +1,8 @@
-# Test the intelligent parser
 import sys
 import os
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'backend'))
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
 
-from test_identifier import TestIdentifier
+from backend.test_identifier import TestIdentifier
 
 # Simple direct test
 identifier = TestIdentifier()
