@@ -1,12 +1,17 @@
 import psycopg2
+import psycopg2.pool
 from psycopg2.extras import RealDictCursor
 import datetime
 import json
 import os
+import threading
+import logging
 from dotenv import load_dotenv
 from typing import Any
 
 load_dotenv()
+
+log = logging.getLogger(__name__)
 
 # Database Configuration
 DB_HOST = os.getenv("DB_HOST")
@@ -15,31 +20,64 @@ DB_USER = os.getenv("DB_USER")
 DB_PASS = os.getenv("DB_PASS")
 DB_PORT = os.getenv("DB_PORT", "5432")
 
+# ── Connection Pool ────────────────────────────────────────────────────────────
+# ThreadedConnectionPool is safe for multi-threaded servers (gunicorn / uvicorn)
+# minconn=2: keep at least 2 connections alive to avoid cold-start latency
+# maxconn=10: enough for concurrent requests on a standard Render instance
+_pool: psycopg2.pool.ThreadedConnectionPool | None = None
+_pool_lock = threading.Lock()
+
+def _get_pool() -> psycopg2.pool.ThreadedConnectionPool:
+    """Lazily creates and returns the shared connection pool."""
+    global _pool
+    if _pool is None:
+        with _pool_lock:
+            if _pool is None:
+                try:
+                    _pool = psycopg2.pool.ThreadedConnectionPool(
+                        minconn=2,
+                        maxconn=10,
+                        host=DB_HOST,
+                        database=DB_NAME,
+                        user=DB_USER,
+                        password=DB_PASS,
+                        port=DB_PORT,
+                        connect_timeout=10,
+                    )
+                    log.info("✅ DB connection pool created (min=2, max=10)")
+                except Exception as e:
+                    log.error("❌ Failed to create DB connection pool: %s", e)
+                    raise
+    return _pool
+
+
 def get_db_connection():
-    """Establishes a connection to the PostgreSQL database."""
+    """Get a connection from the pool. Return it with return_db_connection()."""
     try:
-        conn = psycopg2.connect(
-            host=DB_HOST,
-            database=DB_NAME,
-            user=DB_USER,
-            password=DB_PASS,
-            port=DB_PORT
-        )
-        return conn
+        return _get_pool().getconn()
     except Exception as e:
-        print(f"Database connection error: {e}")
-        raise e
+        log.error("DB pool getconn failed: %s", e)
+        raise
+
+
+def return_db_connection(conn):
+    """Return a connection back to the pool instead of closing it."""
+    try:
+        if conn and not conn.closed:
+            _get_pool().putconn(conn)
+    except Exception as e:
+        log.warning("DB pool putconn failed: %s", e)
 
 def init_db():
     """Initializes the database. Tables are typically managed via Admin/Migration tools."""
     # Since we are using Supabase, table creation is handled via Migrations.
-    # This function checks connectivity.
+    # Eagerly initialise the pool for an early connectivity check.
     try:
         conn = get_db_connection()
-        conn.close()
-        print("Database connection successful.")
+        return_db_connection(conn)
+        log.info("Database connection successful.")
     except Exception as e:
-        print(f"Failed to connect to database: {e}")
+        log.error("Failed to connect to database: %s", e)
 
 # ============================================================================
 # Report Functions
@@ -61,7 +99,7 @@ def save_report(user_id, filename, summary_status, original_filename=None, file_
         return report_id
     finally:
         cursor.close()
-        conn.close()
+        return_db_connection(conn)
 
 def save_parameters(user_id, report_id, parameters_dict):
     """Save parameters for a report."""
@@ -90,7 +128,7 @@ def save_parameters(user_id, report_id, parameters_dict):
         conn.commit()
     finally:
         cursor.close()
-        conn.close()
+        return_db_connection(conn)
 
 def get_parameter_history(user_id, parameter_name, limit=10):
     """Get historical values for a specific parameter."""
@@ -119,7 +157,7 @@ def get_parameter_history(user_id, parameter_name, limit=10):
         return history
     finally:
         cursor.close()
-        conn.close()
+        return_db_connection(conn)
 
 def get_all_parameters_with_history():
     """Get all unique parameters that have historical data."""
@@ -135,7 +173,7 @@ def get_all_parameters_with_history():
         return [row[0] for row in rows]
     finally:
         cursor.close()
-        conn.close()
+        return_db_connection(conn)
 
 def get_report_parameters(report_id):
     """Get all parameters for a specific report."""
@@ -165,7 +203,7 @@ def get_report_parameters(report_id):
         return parameters
     finally:
         cursor.close()
-        conn.close()
+        return_db_connection(conn)
 
 def get_history(user_id, limit=50, search=None, favorite_only=False, status_filter=None, sort_order="newest"):
     """Retrieves the last N reports for a user with optional search/filter/sort."""
@@ -220,7 +258,7 @@ def get_history(user_id, limit=50, search=None, favorite_only=False, status_filt
         return history
     finally:
         cursor.close()
-        conn.close()
+        return_db_connection(conn)
 
 
 def delete_report(user_id, report_id):
@@ -258,7 +296,7 @@ def delete_report(user_id, report_id):
         return False
     finally:
         cursor.close()
-        conn.close()
+        return_db_connection(conn)
 
 def save_report_insights(user_id, report_id, insights_json):
     """Save the AI insights JSON to a report."""
@@ -277,7 +315,7 @@ def save_report_insights(user_id, report_id, insights_json):
         return False
     finally:
         cursor.close()
-        conn.close()
+        return_db_connection(conn)
 
 
 def toggle_favorite(user_id, report_id):
@@ -301,7 +339,7 @@ def toggle_favorite(user_id, report_id):
         return None
     finally:
         cursor.close()
-        conn.close()
+        return_db_connection(conn)
 
 
 def update_report_notes(user_id, report_id, notes):
@@ -321,7 +359,7 @@ def update_report_notes(user_id, report_id, notes):
         return False
     finally:
         cursor.close()
-        conn.close()
+        return_db_connection(conn)
 
 
 def get_history_stats(user_id):
@@ -345,7 +383,7 @@ def get_history_stats(user_id):
         }
     finally:
         cursor.close()
-        conn.close()
+        return_db_connection(conn)
 
 def get_report_parameters(report_id):
     """Get all parameters for a specific report."""
@@ -372,7 +410,7 @@ def get_report_parameters(report_id):
         return parameters
     finally:
         cursor.close()
-        conn.close()
+        return_db_connection(conn)
 
 # ============================================================================
 # Parameter Verification Functions
@@ -410,7 +448,7 @@ def create_parameter_flag(user_id, report_id, parameter_name, original_value, co
         return flag_id
     finally:
         cursor.close()
-        conn.close()
+        return_db_connection(conn)
 
 def get_parameter_flags(user_id=None, limit=50):
     """
@@ -446,7 +484,7 @@ def get_parameter_flags(user_id=None, limit=50):
         rows = cursor.fetchall()
         return [dict(row) for row in rows]
     finally:
-        conn.close()
+        return_db_connection(conn)
 
 def update_parameter_value(user_id, report_id, parameter_name, new_value, new_unit=None):
     """
@@ -487,7 +525,7 @@ def update_parameter_value(user_id, report_id, parameter_name, new_value, new_un
         return False
     finally:
         cursor.close()
-        conn.close()
+        return_db_connection(conn)
 
 def get_report_id_from_session(user_id):
     """
@@ -512,7 +550,7 @@ def get_report_id_from_session(user_id):
         return result[0] if result else None
     finally:
         cursor.close()
-        conn.close()
+        return_db_connection(conn)
 
 
 # ============================================================================
@@ -545,7 +583,7 @@ def create_user(email, username, password_hash, full_name=None, date_of_birth=No
         raise ValueError(f"User creation failed: {str(e)}")
     finally:
         cursor.close()
-        conn.close()
+        return_db_connection(conn)
 
 def get_user_by_username(username):
     """Get user by username using RealDictCursor for cleaner mapping."""
@@ -571,7 +609,7 @@ def get_user_by_username(username):
             return user
         return None
     finally:
-        conn.close()
+        return_db_connection(conn)
 
 def get_user_by_email(email):
     """Get user by email."""
@@ -597,7 +635,7 @@ def get_user_by_email(email):
             return user
         return None
     finally:
-        conn.close()
+        return_db_connection(conn)
 
 def get_user_by_id(user_id):
     """Get user by ID."""
@@ -623,7 +661,7 @@ def get_user_by_id(user_id):
             return user
         return None
     finally:
-        conn.close()
+        return_db_connection(conn)
 
 def update_last_login(user_id):
     """Update user's last login timestamp."""
@@ -637,7 +675,7 @@ def update_last_login(user_id):
         conn.commit()
     finally:
         cursor.close()
-        conn.close()
+        return_db_connection(conn)
 
 def update_user_theme(user_id, theme):
     """Update user's theme preference."""
@@ -650,7 +688,7 @@ def update_user_theme(user_id, theme):
         conn.commit()
     finally:
         cursor.close()
-        conn.close()
+        return_db_connection(conn)
 
 def delete_user_account(user_id):
     """
@@ -700,7 +738,7 @@ def delete_user_account(user_id):
          return False
     finally:
          cursor.close()
-         conn.close()
+         return_db_connection(conn)
 
 def get_user_export_data(user_id):
     """
@@ -745,7 +783,7 @@ def get_user_export_data(user_id):
         
         return data
     finally:
-        conn.close()
+        return_db_connection(conn)
 
 # ============================================================================
 # Session Management Functions
@@ -769,7 +807,7 @@ def create_session(user_id, session_token, ip_address=None, user_agent=None, exp
         return session_id
     finally:
         cursor.close()
-        conn.close()
+        return_db_connection(conn)
 
 def get_session(session_token):
     """Get session by token."""
@@ -786,7 +824,7 @@ def get_session(session_token):
             return dict(session)
         return None
     finally:
-        conn.close()
+        return_db_connection(conn)
 
 def validate_session(session_token):
     """Validate session and return user_id if valid, None otherwise."""
@@ -823,7 +861,7 @@ def invalidate_session(session_token):
         conn.commit()
     finally:
         cursor.close()
-        conn.close()
+        return_db_connection(conn)
 
 def cleanup_expired_sessions():
     """Remove expired sessions from database."""
@@ -837,7 +875,7 @@ def cleanup_expired_sessions():
         conn.commit()
     finally:
         cursor.close()
-        conn.close()
+        return_db_connection(conn)
 
 # ============================================================================
 # Activity Logging Functions
@@ -855,7 +893,7 @@ def log_activity(user_id, action, resource_type=None, resource_id=None, ip_addre
         conn.commit()
     finally:
         cursor.close()
-        conn.close()
+        return_db_connection(conn)
 
 def get_user_activity(user_id, limit=50):
     """Get activity log for a user."""
@@ -872,7 +910,7 @@ def get_user_activity(user_id, limit=50):
         rows = cursor.fetchall()
         return [dict(row) for row in rows]
     finally:
-        conn.close()
+        return_db_connection(conn)
 
 
 # ============================================================================
@@ -909,7 +947,7 @@ def create_shareable_link(user_id, report_id, share_token, expires_in_days=30):
         return link_id
     finally:
         cursor.close()
-        conn.close()
+        return_db_connection(conn)
 
 
 def get_shareable_link(share_token):
@@ -927,7 +965,7 @@ def get_shareable_link(share_token):
             return dict(link)
         return None
     finally:
-        conn.close()
+        return_db_connection(conn)
 
 
 def validate_shareable_link(share_token):
@@ -968,7 +1006,7 @@ def increment_share_access_count(link_id):
         conn.commit()
     finally:
         cursor.close()
-        conn.close()
+        return_db_connection(conn)
 
 
 def revoke_shareable_link(share_token, user_id):
@@ -985,7 +1023,7 @@ def revoke_shareable_link(share_token, user_id):
         return cursor.rowcount > 0
     finally:
         cursor.close()
-        conn.close()
+        return_db_connection(conn)
 
 
 def get_user_shareable_links(user_id, limit=50):
@@ -1005,5 +1043,5 @@ def get_user_shareable_links(user_id, limit=50):
         rows = cursor.fetchall()
         return [dict(row) for row in rows]
     finally:
-        conn.close()
+        return_db_connection(conn)
 

@@ -1,5 +1,6 @@
 fastapi
 uvicorn[standard]
+gunicorn
 starlette
 itsdangerous
 psycopg2-binary
@@ -22,5 +23,4 @@ supabase>=2.0.0
 google-genai
 python-dotenv
 slowapi
-psycopg2-binary
 email-validator
