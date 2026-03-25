@@ -74,6 +74,7 @@ class ReferenceRange:
     ethnicity: Optional[str] = None  # "any", "african", "asian", "caucasian", etc.
     pregnancy_status: Optional[bool] = None  # True if pregnancy-adjusted range
     source_note: Optional[str] = None  # Transparency note about range source
+    canonical_unit: Optional[str] = None  # The authoritative unit from knowledge base
 
     def __post_init__(self):
         if self.notes is None:
@@ -548,7 +549,7 @@ class DemographicRangeSelector:
         pregnancy_status: bool = None,
         source_note: str = None
     ) -> ReferenceRange:
-        """Build ReferenceRange object from dictionary"""
+        """Build ReferenceRange object from dictionary, preserving canonical unit."""
         min_val = range_dict.get("min")
         max_val = range_dict.get("max")
         
@@ -565,6 +566,12 @@ class DemographicRangeSelector:
         if ethnicity is None:
             ethnicity = range_dict.get("ethnicity", "any")
         
+        # Canonical unit: prefer range_dict unit, then fall back to top-level test unit
+        canonical_unit = (
+            range_dict.get("unit")
+            or test_data.get("unit")
+        )
+
         # Build notes
         notes = []
         if range_dict.get("note"):
@@ -579,7 +586,8 @@ class DemographicRangeSelector:
             ethnicity=ethnicity,
             pregnancy_status=pregnancy_status,
             source_note=source_note,
-            notes=notes
+            notes=notes,
+            canonical_unit=canonical_unit,
         )
     
     def _parse_gender_specific_note(
@@ -639,99 +647,292 @@ class DemographicRangeSelector:
 
 class UnitNormalizer:
     """
-    Normalize and convert units with safety checks
+    Normalize and convert units with safety checks.
+    
+    Design: CONVERSIONS[canonical_unit][input_unit] = factor_to_multiply_input_by
+    i.e. canonical_value = input_value * factor
     """
     
-    # Unit conversion factors (target unit -> source unit factor)
+    # Unit conversion factors: CONVERSIONS[target_unit][source_unit] = factor
+    # canonical_value = reported_value * factor
     CONVERSIONS = {
+        # ── Hemoglobin / Protein mass concentration ──────────────────────────
         'g/dL': {
-            'g/L': 0.1,
+            'g/dl': 1.0,
+            'gm/dl': 1.0,
             'gm/dL': 1.0,
-            'g/dl': 1.0
+            'g/L':   0.1,        # 1 g/L = 0.1 g/dL
+            'mg/dL': 0.001,      # rarely used but safe fallback
         },
+
+        # ── Glucose / Cholesterol / most biochemistry ─────────────────────────
         'mg/dL': {
             'mg/dl': 1.0,
-            'mmol/L': 18.0182,  # For glucose specifically
-            'mg/L': 0.1
+            'mg/L':  0.1,
+            # mmol/L conversions are analyte-specific; handled via context below
         },
+
+        # ── Counts per microlitre (CBC) ───────────────────────────────────────
+        # reports may use /uL, 10^3/µL, K/µL, lakh/µL, ×10³/µL …
         'cells/µL': {
-            'cells/uL': 1.0,
-            '/µL': 1.0,
-            '/uL': 1.0,
-            '10^3/µL': 1000.0,
-            'K/µL': 1000.0,
-            '10^6/µL': 1000000.0,
-            'million/µL': 1000000.0
-        }
+            'cells/ul':    1.0,
+            'cells/uL':    1.0,
+            '/µL':         1.0,
+            '/ul':         1.0,
+            '/uL':         1.0,
+            'µL':          1.0,  # bare unit sometimes seen in OCR
+            'uL':          1.0,
+            '10^3/µL':     1000.0,
+            '10^3/uL':     1000.0,
+            '10³/µL':      1000.0,
+            'x10^3/µL':    1000.0,
+            'x10^3/uL':    1000.0,
+            '×10³/µL':     1000.0,
+            '×10^3/µL':    1000.0,
+            'k/µL':        1000.0,
+            'k/uL':        1000.0,
+            'K/µL':        1000.0,
+            'K/uL':        1000.0,
+            'thou/µL':     1000.0,
+            'thou/uL':     1000.0,
+            'cmm':         1.0,   # cells per cubic mm = cells/µL
+            '/cmm':        1.0,
+            'lakh/µL':     100000.0,
+            'lakh/uL':     100000.0,
+            '10^6/µL':     1000000.0,
+            '10^6/uL':     1000000.0,
+            'million/µL':  1000000.0,
+            'million/uL':  1000000.0,
+            'mill/cmm':    1000000.0,
+            'mill/µL':     1000000.0,
+        },
+
+        # ── RBC Count (million/µL) ────────────────────────────────────────────
+        'million/µL': {
+            'million/uL':  1.0,
+            'mill/cmm':    1.0,
+            '10^6/µL':     1.0,
+            '10^6/uL':     1.0,
+            '10⁶/µL':      1.0,
+            'x10^6/µL':    1.0,
+            '×10⁶/µL':     1.0,
+            '10^3/µL':     0.001, # 10^3 cells → ÷1000 → millions
+            'k/µL':        0.001,
+            'K/µL':        0.001,
+            '/µL':         0.000001,
+            '/uL':         0.000001,
+            'cells/µL':    0.000001,
+            'cells/uL':    0.000001,
+            'cmm':         0.000001,
+        },
+
+        # ── milli/micro moles per litre ───────────────────────────────────────
+        'mmol/L': {
+            'mmol/l':      1.0,
+            'mEq/L':       1.0,   # for monovalent electrolytes (Na, K, Cl, HCO3)
+            'meq/L':       1.0,
+            'mEq/l':       1.0,
+            'mg/dL': None,        # requires molar mass — handled via analyte context
+        },
+        'µmol/L': {
+            'umol/L':      1.0,
+            'umol/l':      1.0,
+            'µmol/l':      1.0,
+            'nmol/L':      0.001,
+            'mg/dL': None,        # requires molar mass — handled via analyte context
+        },
+
+        # ── Thyroid / hormones ────────────────────────────────────────────────
+        'µIU/mL': {
+            'uIU/mL':      1.0,
+            'uIU/ml':      1.0,
+            'µIU/ml':      1.0,
+            'mIU/L':       1.0,   # mIU/L == µIU/mL numerically
+            'miu/L':       1.0,
+            'mIU/mL':      1000.0, # milli vs micro
+        },
+        'mIU/mL': {
+            'miu/mL':      1.0,
+            'miu/ml':      1.0,
+            'IU/mL':       1000.0,
+            'µIU/mL':      0.001,
+        },
+        'pg/mL': {
+            'pg/ml':       1.0,
+            'ng/L':        1.0,   # 1 ng/L = 1 pg/mL
+            'ng/dL':       10.0,  # 1 ng/dL = 10 pg/mL
+        },
+        'ng/mL': {
+            'ng/ml':       1.0,
+            'µg/L':        1.0,   # 1 µg/L = 1 ng/mL
+            'ug/L':        1.0,
+            'mcg/L':       1.0,
+            'ng/dL':       0.01,
+            'µg/dL':       0.01,  # 1 µg/dL = 0.01 µg/mL = 0.01 ng/mL
+        },
+        'ng/dL': {
+            'ng/dl':       1.0,
+            'pg/mL':       0.1,
+            'ng/mL':       100.0,
+        },
+        # µg/dL (cortisol, trace minerals, DHEA-S, vitamins A/C ...)
+        'µg/dL': {
+            'ug/dL':       1.0,
+            'mcg/dL':      1.0,
+            'µg/dl':       1.0,
+            'ng/dL':       0.001, # 1 ng/dL = 0.001 µg/dL
+            'ng/mL':       0.1,
+            'µg/L':        0.1,
+            'ug/L':        0.1,
+        },
+        'µg/L': {
+            'ug/L':        1.0,
+            'mcg/L':       1.0,
+            'ng/mL':       1.0,
+            'µg/dL':       10.0,
+        },
+
+        # ── Enzyme U/L ─────────────────────────────────────────────────────
+        'U/L': {
+            'u/L':         1.0,
+            'u/l':         1.0,
+            'IU/L':        1.0,
+            'iu/L':        1.0,
+            'mU/mL':       1.0,   # mU/mL == U/L
+            'U/mL':        1000.0,
+        },
+        'IU/mL': {
+            'iu/mL':       1.0,
+            'U/mL':        1.0,
+            'IU/L':        0.001,
+            'U/L':         0.001,
+        },
+
+        # ── Percentages ──────────────────────────────────────────────────────
+        '%': {
+            'percent':     1.0,
+            'pct':         1.0,
+        },
+
+        # ── Time-based ───────────────────────────────────────────────────────
+        'mm/hr': {
+            'mm/h':        1.0,
+            'mm per hour': 1.0,
+        },
+        'seconds': {
+            'sec':         1.0,
+            's':           1.0,
+        },
+
+        # ── Volume ───────────────────────────────────────────────────────────
+        'fL': {
+            'fl':          1.0,
+            'femtolitre':  1.0,
+        },
+        'pg': {
+            'picogram':    1.0,
+        },
+
+        # ── Lipids / coagulation (mg/dL family already handled) ───────────────
+        'mg/g': {
+            'mg/g creatinine': 1.0,
+        },
+        'µg/mL': {
+            'ug/mL':       1.0,
+            'mcg/mL':      1.0,
+            'mg/L':        1.0,   # 1 mg/L = 1 µg/mL
+        },
+        'ng/mL/hr': {
+            'ng/ml/hr':    1.0,
+        },
+    }
+
+    # Analyte-specific mmol/L → mg/dL molar mass factors
+    # canonical_value_mg_dL = reported_mmol_L * factor
+    MMOL_TO_MGDL: Dict[str, float] = {
+        'glucose':         18.0182,
+        'fasting blood glucose': 18.0182,
+        'glucose post prandial': 18.0182,
+        'cholesterol':     38.67,
+        'total cholesterol': 38.67,
+        'hdl cholesterol': 38.67,
+        'ldl cholesterol': 38.67,
+        'vldl cholesterol': 38.67,
+        'triglycerides':   88.57,
+        'urea':            6.006,
+        'bun':             2.8,   # BUN = urea × 0.4667
+        'creatinine':      88.42,
+        'uric acid':       16.81,
+        'calcium':         4.008,
+        'phosphorus':      3.097,
+        'magnesium':       2.431,
+        'bilirubin total': 17.10,
+        'bilirubin direct':17.10,
+        'albumin':         10.0,  # approximate
     }
     
     def normalize(self, value: float, unit: str, target_unit: str, test_context: str = "") -> Tuple[float, str, bool]:
         """
-        Convert value to target unit with safety checks and context awareness.
+        Convert value from `unit` to `target_unit`.
+        Returns (converted_value, final_unit, was_converted).
         """
         if not unit or not target_unit:
             return value, unit or "Unknown", False
-        
-        unit_clean = unit.strip()
-        target_clean = target_unit.strip()
-        
-        # Already in target unit
-        if unit_clean.lower() == target_clean.lower():
-            return value, target_clean, False
-            
-        # Context Check
-        # Some conversions are only valid for specific tests
-        # e.g. mmol/L -> mg/dL is different for Glucose vs Cholesterol vs Calcium
-        
-        # Glucose Factor (MMol/L -> mg/dL)
-        if "glu" in test_context.lower():
-             if unit_clean.lower() in ['mmol/l'] and target_clean.lower() in ['mg/dl']:
-                 return value * 18.0182, target_clean, True
-             if unit_clean.lower() in ['mg/dl'] and target_clean.lower() in ['mmol/l']:
-                 return value / 18.0182, target_clean, True
 
-        # General conversions (mass/volume)
-        if target_clean in self.CONVERSIONS:
-            conversion_map = self.CONVERSIONS[target_clean]
-            for source_variant, factor in conversion_map.items():
-                if source_variant.lower() == unit_clean.lower():
-                    # Special safety for mmol/L
-                    if source_variant == 'mmol/L' and "glu" not in test_context.lower():
-                         # Danger: Trying to convert mmol/L without known molar mass context
-                         # Skip unless we add specific molar masses for other analytes
-                         continue
-                         
-                    converted = value * factor
-                    return converted, target_clean, True
-        
-        return value, unit, False
-        """
-        Convert value to target unit if possible
-        
-        Returns:
-            (converted_value, actual_unit, was_converted)
-        """
-        if not unit or not target_unit:
-            return value, unit or "Unknown", False
-        
-        unit_clean = unit.strip()
+        unit_clean   = unit.strip()
         target_clean = target_unit.strip()
-        
-        # Already in target unit
+        context_low  = test_context.lower()
+
+        # ── Already in target unit (case-insensitive) ────────────────────────
         if unit_clean.lower() == target_clean.lower():
             return value, target_clean, False
-        
-        # Lookup conversion
-        if target_clean in self.CONVERSIONS:
-            conversion_map = self.CONVERSIONS[target_clean]
-            for source_variant, factor in conversion_map.items():
-                if source_variant.lower() == unit_clean.lower():
+
+        # ── Analyte-specific mmol/L → mg/dL ─────────────────────────────────
+        if unit_clean.lower() in ('mmol/l', 'mmol/L'.lower()) and target_clean.lower() == 'mg/dl':
+            factor = None
+            for analyte_key, f in self.MMOL_TO_MGDL.items():
+                if analyte_key in context_low:
+                    factor = f
+                    break
+            if factor is not None:
+                return value * factor, 'mg/dL', True
+            # Cannot safely convert without molar mass
+            logger.warning(f"mmol/L→mg/dL: no molar mass for '{test_context}', skipping conversion")
+            return value, unit_clean, False
+
+        # ── General conversion table lookup ──────────────────────────────────
+        # Try exact target unit match first
+        for tgt_key, conversion_map in self.CONVERSIONS.items():
+            if tgt_key.lower() != target_clean.lower():
+                continue
+            for src_variant, factor in conversion_map.items():
+                if factor is None:
+                    continue  # placeholder entry
+                if src_variant.lower() == unit_clean.lower():
                     converted = value * factor
+                    logger.info(
+                        f"[UnitNorm] {test_context}: {value} {unit_clean} → {converted:.4g} {tgt_key}"
+                    )
+                    return converted, tgt_key, True
+
+        # ── Reverse lookup: maybe target→source exists as inverse ─────────────
+        for src_key, conversion_map in self.CONVERSIONS.items():
+            if src_key.lower() != unit_clean.lower():
+                continue
+            for candidate_target, factor in conversion_map.items():
+                if factor is None or factor == 0:
+                    continue
+                if candidate_target.lower() == target_clean.lower():
+                    converted = value / factor
+                    logger.info(
+                        f"[UnitNorm] {test_context} (reverse): {value} {unit_clean} → {converted:.4g} {target_clean}"
+                    )
                     return converted, target_clean, True
-        
-        # Cannot convert - return original with warning
-        logger.warning(f"Cannot convert {unit_clean} to {target_clean} for {test_context}")
-        return value, unit, False
+
+        logger.warning(
+            f"[UnitNorm] Cannot convert '{unit_clean}' → '{target_clean}' for '{test_context}'"
+        )
+        return value, unit_clean, False
 
 
 class AbnormalityDetector:
@@ -786,8 +987,9 @@ class AbnormalityDetector:
         notes = []
         confidence = 1.0
         
-        # Step 1: Try to get demographic-specific range from knowledge base
-        # This takes priority over OCR-extracted reference range
+        # ── Step 1: Get reference range from knowledge base ─────────────────
+        # KB-derived range takes priority over whatever the OCR captured,
+        # because the KB stores clinically validated canonical values and units.
         parsed_range = self.demographic_selector.get_demographic_range(
             test_name,
             patient_age=patient_age,
@@ -795,115 +997,149 @@ class AbnormalityDetector:
             patient_ethnicity=patient_ethnicity,
             pregnancy_status=pregnancy_status
         )
-        
+
         if parsed_range:
-            # Successfully got demographic range
             if parsed_range.source_note:
                 notes.append(parsed_range.source_note)
             notes.extend(parsed_range.notes)
-            
-            # Override reference_range string for display
+            # Build display range string preserving the canonical unit
             if parsed_range.min_value is not None and parsed_range.max_value is not None:
-                reference_range = f"{parsed_range.min_value} - {parsed_range.max_value}"
-            
-            self.logger.info(f"Using demographic range for {test_name}: {reference_range}")
+                unit_suffix = f" {parsed_range.canonical_unit}" if parsed_range.canonical_unit else ""
+                reference_range = f"{parsed_range.min_value} - {parsed_range.max_value}{unit_suffix}"
+            self.logger.info(f"[KB] Range for '{test_name}': {reference_range}")
         else:
-            # Fallback: Parse reference range from OCR-extracted text
+            # Fallback: parse whatever is in the OCR-supplied reference_range string
             parsed_range = self.range_parser.parse(reference_range, test_name)
             notes.extend(parsed_range.notes)
-            notes.append("Using OCR-extracted range (no demographic data available)")
-            confidence *= 0.95  # Slightly lower confidence for OCR ranges
-        
-        # Step 2: Handle qualitative values
-        if isinstance(value, str) and not value.replace('.', '').replace('-', '').isdigit():
-            return self._classify_qualitative(
-                test_name, value, parsed_range, notes
-            )
-        
-        # Step 3: Physiological Plausibility Check (Pre-conversion)
-        # Check against absolute hard limits to detect unit errors or gross OCR failures
-        PHYSIOLOGICAL_BOUNDS = {
-            "Hemoglobin": (3.0, 25.0), # g/dL
-            "Glucose Fasting": (20, 1000), # mg/dL (comas occur outside)
-            "WBC Count": (100, 500000), # cells/uL
-            "Platelet Count": (1000, 2000000), # cells/uL
-            "Potassium": (1.0, 10.0), # mmol/L (incompatible with life outside)
-            "Sodium": (100, 180), # mmol/L
-            "pH": (6.7, 7.8) # Blood pH
-        }
+            notes.append("Using OCR-extracted range (test not in knowledge base)")
+            confidence *= 0.90  # OCR ranges are less reliable
 
-        # Convert value to float for processing
-        numeric_value = None
+        # ── Step 2: Handle qualitative values ───────────────────────────────
+        if isinstance(value, str) and not value.replace('.', '').replace('-', '').isdigit():
+            return self._classify_qualitative(test_name, value, parsed_range, notes)
+
+        # ── Step 3: Parse numeric value (with OCR correction) ───────────────
+        numeric_value: Optional[float] = None
         try:
             if isinstance(value, str):
-                # Clean OCR artifacts
                 value_clean = self.range_parser.clean_ocr_artifacts(value)
                 numeric_value = float(value_clean)
                 if value != value_clean:
-                    notes.append(f"Corrected OCR artifact: {value} -> {value_clean}")
+                    notes.append(f"Corrected OCR artifact: '{value}' → '{value_clean}'")
                     confidence *= 0.9
             else:
                 numeric_value = float(value)
         except (ValueError, TypeError):
-             return AbnormalityResult(
+            return AbnormalityResult(
                 test_name=test_name,
                 value=value,
                 unit=unit,
                 reference_range=reference_range,
                 status=TestStatus.REVIEW_REQUIRED,
                 confidence_score=0.0,
-                notes=[f"Cannot convert value to number: {value}"],
+                notes=[f"Cannot parse numeric value: '{value}'"],
                 severity=Severity.MEDIUM,
-                parsed_range=parsed_range
+                parsed_range=parsed_range,
             )
 
-        # Apply Physiological Check
-        if test_name in PHYSIOLOGICAL_BOUNDS:
-             min_p, max_p = PHYSIOLOGICAL_BOUNDS[test_name]
-             # Note: This check assumes the INPUT value is roughly in the standard unit scale
-             # If units are wildly different (e.g. pg vs g), this might flag false positives before normalization
-             # So we should ideally normalize FIRST. But normalization needs parsed range unit.
-             # Let's defer this check until after logic if possible, or keep it loose.
-             # For now, we apply it 'raw' if the unit matches standard expectation or is missing.
-             pass 
+        # ── Step 4: Unit Normalisation ───────────────────────────────────────
+        # Determine the authoritative target unit using a priority chain:
+        #   1. canonical_unit stored in the KB-derived ReferenceRange
+        #   2. Unit embedded at the end of the reference_range display string
+        #   3. Give up — compare as-is and penalise confidence
+        target_unit: Optional[str] = None
 
-        # Step 4: Unit Normalization
-        # We need the target unit from the parsed range to normalize
-        # If ReferenceRange object has a 'unit' (we need to add this field to the parser logic or infer it)
-        # Current ReferenceRange doesn't handle unit explicitly inside it from '13-17'.
-        # We will infer target unit from the REFERENCE_RANGE string passed if possible,
-        # OR we rely on the caller to provide canonical units.
-        
-        # Improvement: Try to detect target unit from reference_range string
-        target_unit = None
-        # Naive extraction of unit from range string like "13-17 g/dL"
-        # validation report says parser sends "min - max", we will update parser to send "min - max unit"
-        unit_match = re.search(r'[0-9]\s*([a-zA-Z/%µ]+)$', reference_range)
-        if unit_match:
-             target_unit = unit_match.group(1)
+        # Priority 1: canonical unit from knowledge base
+        if parsed_range and getattr(parsed_range, 'canonical_unit', None):
+            target_unit = parsed_range.canonical_unit
 
-        if numeric_value is not None and target_unit and unit and unit.lower() != target_unit.lower():
-             # Perform Conversion
-             converted_val, final_unit, converted = self.unit_normalizer.normalize(
-                 numeric_value, unit, target_unit, test_context=test_name
-             )
-             if converted:
-                 notes.append(f"Converted {value} {unit} -> {converted_val:.2f} {final_unit}")
-                 numeric_value = converted_val
-                 unit = final_unit
-                 # Check Physics after conversion
-                 if test_name in PHYSIOLOGICAL_BOUNDS:
-                    min_p, max_p = PHYSIOLOGICAL_BOUNDS[test_name]
-                    if not (min_p <= numeric_value <= max_p):
-                        notes.append(f"⚠️ Value {numeric_value:.1f} is physiologically implausible ({min_p}-{max_p}). Verify OCR/Units.")
-                        status = TestStatus.REVIEW_REQUIRED
+        # Priority 2: extract unit from tail of reference_range string
+        if not target_unit:
+            # Matches units like: cells/µL  g/dL  mg/dL  µIU/mL  mm/hr  %  fL  pg
+            tail_match = re.search(
+                r'[\d\.]+\s+([a-zA-Z][a-zA-Z0-9/%µ^·×\-]*)$',
+                reference_range.strip()
+            )
+            if tail_match:
+                target_unit = tail_match.group(1).strip()
+
+        # Perform conversion when units differ
+        if (
+            numeric_value is not None
+            and target_unit
+            and unit
+            and unit.strip().lower() != target_unit.strip().lower()
+        ):
+            converted_val, final_unit, was_converted = self.unit_normalizer.normalize(
+                numeric_value, unit, target_unit, test_context=test_name
+            )
+            if was_converted:
+                notes.append(
+                    f"Unit conversion: {value} {unit} → {converted_val:.4g} {final_unit}"
+                )
+                numeric_value = converted_val
+                unit = final_unit
+
+                # Post-conversion physiological sanity check
+                PHYS_BOUNDS = {
+                    "Hemoglobin":      (3.0,    25.0),     # g/dL
+                    "WBC Count":       (100,    500_000),  # cells/µL
+                    "Platelet Count":  (1_000,  2_000_000),# cells/µL
+                    "Potassium":       (1.0,    10.0),     # mmol/L
+                    "Sodium":          (100,    180),      # mmol/L
+                    "Fasting Blood Glucose": (20, 1_000),  # mg/dL
+                }
+                if test_name in PHYS_BOUNDS:
+                    lo, hi = PHYS_BOUNDS[test_name]
+                    if not (lo <= numeric_value <= hi):
+                        notes.append(
+                            f"⚠️ Post-conversion value {numeric_value:.2g} "
+                            f"outside physiological bounds ({lo}–{hi}). "
+                            "Verify report units."
+                        )
                         confidence *= 0.5
-             else:
-                 notes.append(f"Unit mismatch ({unit} vs {target_unit}) - could not convert")
-                 confidence *= 0.7 # Penalize confidence if units don't match and can't convert
+            else:
+                # Conversion table doesn't cover this pair — flag it
+                notes.append(
+                    f"Unit mismatch: report gives '{unit}', expected '{target_unit}'. "
+                    "Could not auto-convert — comparing as-is."
+                )
+                confidence *= 0.75
 
-        # Step 5: Classify based on range type
-        # ... logic continues ...
+        # ── Step 4b: Scale-rescue for CBC abbreviated notations ─────────────
+        # Many Indian labs print "370 /uL" to mean "370 × 10³/µL" (i.e. 370,000
+        # cells/µL). After 1:1 conversion (/uL → cells/µL) the value is still 370,
+        # which is far below the reference minimum of 150,000. Detect this pattern
+        # by checking if the value is more than 100× below the expected minimum,
+        # then try common scale multipliers (×1000, ×1000000).
+        _SCALE_CANDIDATE_UNITS = {
+            '/ul', '/µl', '/uL', '/µL', 'µL', 'uL', 'cmm', '/cmm',
+            'cells/µl', 'cells/ul', 'cells/µL', 'cells/uL',
+        }
+        if (
+            parsed_range.range_type == 'numeric'
+            and parsed_range.min_value is not None
+            and numeric_value is not None
+            and parsed_range.min_value > 0
+            and unit.strip().lower() in {u.lower() for u in _SCALE_CANDIDATE_UNITS}
+        ):
+            ratio = parsed_range.min_value / numeric_value
+            if ratio >= 100:                       # value is 100× or more below min
+                for scale_factor in (1000, 1_000_000):
+                    candidate = numeric_value * scale_factor
+                    # Accept if scaled value is plausible (within 10× of range)
+                    if candidate >= parsed_range.min_value / 10:
+                        notes.append(
+                            f"Scale rescue: report uses abbreviated notation "
+                            f"({value} {unit} interpreted as "
+                            f"{candidate:.4g} {unit} via x{scale_factor:,}). "
+                            "Common in labs that omit the x10^3 prefix."
+                        )
+                        numeric_value = candidate
+                        confidence *= 0.92  # small confidence penalty
+                        break
+
+        # ── Step 5: Classify ─────────────────────────────────────────────────
         if parsed_range.range_type == 'numeric':
             return self._classify_numeric(
                 test_name, numeric_value, unit, parsed_range, notes, confidence
@@ -911,10 +1147,6 @@ class AbnormalityDetector:
         elif parsed_range.range_type == 'inequality':
             return self._classify_inequality(
                 test_name, numeric_value, unit, parsed_range, notes, confidence
-            )
-        elif parsed_range.range_type in ['unparseable', 'insufficient', 'parse_error']:
-            return self._classify_unknown(
-                test_name, numeric_value, unit, reference_range, notes
             )
         else:
             return self._classify_unknown(
