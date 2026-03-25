@@ -1107,27 +1107,31 @@ class AbnormalityDetector:
                 confidence *= 0.75
 
         # ── Step 4b: Scale-rescue for CBC abbreviated notations ─────────────
-        # Many Indian labs print "370 /uL" to mean "370 × 10³/µL" (i.e. 370,000
-        # cells/µL). After 1:1 conversion (/uL → cells/µL) the value is still 370,
-        # which is far below the reference minimum of 150,000. Detect this pattern
-        # by checking if the value is more than 100× below the expected minimum,
-        # then try common scale multipliers (×1000, ×1000000).
-        _SCALE_CANDIDATE_UNITS = {
-            '/ul', '/µl', '/uL', '/µL', 'µL', 'uL', 'cmm', '/cmm',
-            'cells/µl', 'cells/ul', 'cells/µL', 'cells/uL',
+        # Many Indian labs print "370 /uL" to mean "370 × 10³/µL" (370,000).
+        # After extraction the OCR unit may be empty, "/uL", "uL", or anything
+        # else. We therefore trigger the rescue on *test name + magnitude*
+        # rather than unit string.
+        #
+        # Trigger: the numeric value is ≥100× below the expected minimum AND
+        # the test is a known large-scale count parameter.
+        _LARGE_COUNT_TESTS = {
+            'platelet count', 'wbc count', 'wbc', 'white blood cell',
+            'total leucocyte count', 'total wbc', 'tlc',
+            'platelet', 'plt', 'thrombocyte',
         }
         if (
             parsed_range.range_type == 'numeric'
             and parsed_range.min_value is not None
             and numeric_value is not None
+            and numeric_value > 0
             and parsed_range.min_value > 0
-            and unit.strip().lower() in {u.lower() for u in _SCALE_CANDIDATE_UNITS}
+            and test_name.strip().lower() in _LARGE_COUNT_TESTS
         ):
             ratio = parsed_range.min_value / numeric_value
             if ratio >= 100:                       # value is 100× or more below min
                 for scale_factor in (1000, 1_000_000):
                     candidate = numeric_value * scale_factor
-                    # Accept if scaled value is plausible (within 10× of range)
+                    # Accept if scaled value lands within 10× of the expected range
                     if candidate >= parsed_range.min_value / 10:
                         notes.append(
                             f"Scale rescue: report uses abbreviated notation "
